@@ -1,3 +1,10 @@
+/*
+ * P22 Radiola
+ *
+ * @version 1.0.6
+ * @author paulsnar <paulsnar@paulsnar.lv>
+ * @license © 2016 paulsnar. All Rights Reserved.
+ */
 (function() {
   'use strict';
 
@@ -26,12 +33,21 @@
     return true
   }
 
+  PlayManager.prototype.stop = function() {
+    this.el.pause()
+    if (this.renewSongInterval !== null) window.clearInterval(this.renewSongInterval)
+    if (this.onSongRenewal !== null) this.onSongRenewal(null)
+    this.playing = false
+
+    document.querySelector('title').textContent = 'radiola.p22.co'
+  }
+
+
   PlayManager.prototype.switchStation = function(id) {
+    var self = this
+
     if (this.playing) {
-      this.el.pause()
-      window.cancelInterval(this.renewSongInterval)
-      if (this.onSongRenewal !== null) this.onSongRenewal(null)
-      this.playing = false
+      this.stop()
     }
 
     if (!id in this.stations) {
@@ -42,8 +58,10 @@
 
     this.el.src = station.stream.url
 
-    this.playing = true
-    this.el.play()
+    window.setTimeout(function() {
+      self.playing = true
+      self.el.play()
+    }, 0)
 
     document.querySelector('title')
       .textContent = '▶ ' + station.name + ' :: radiola.p22.co'
@@ -55,6 +73,9 @@
 
         P22.Radiola.SongFinder.findSong(station)
         .then(function(data) {
+          document.querySelector('title')
+            .textContent = '▶ ' + data.artist + ' - ' + data.title + ' :: ' +
+              station.name + ' :: radiola.p22.co'
           self.onSongRenewal(data)
         })
       }
@@ -70,3 +91,4 @@
   window.P22.Radiola.PlayManager = new PlayManager()
 
 })()
+// vim: set ts=2 sts=2 et sw=2:

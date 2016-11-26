@@ -1,17 +1,31 @@
+/*
+ * P22 Radiola
+ *
+ * @version 1.0.13
+ * @author paulsnar <paulsnar@paulsnar.lv>
+ * @license © 2016 paulsnar. All Rights Reserved.
+ */
 (function() {
   'use strict';
 
   var SongFinder = {
+
+    // the stations not listed here either don't provide any currently playing information
+    // or their information provider is plain broken (CAPITAL FM, I'm looking at you.)
+
     DETECTABLES: [
       'swh', 'swh_gold',
       'swh_rock',
-      'pieci_koncerti', 'pieci'],
+      'pieci_koncerti', 'pieci_atklajumi', 'pieci_latviesi', 'pieci_hiti', 'pieci', 'pieci_100',
+      'ehr'
+    ],
+
     canFindSong: function(station) {
       return SongFinder.DETECTABLES.indexOf(station.id) !== -1
     },
 
     __findSwh: function(p) {
-      fetch('/discover_swh/' + p + '.json')
+      return fetch('/discover_swh/' + p + '.json')
       .then(function(r) { return r.json() })
       .then(function(resp) {
         var selection = { }
@@ -28,7 +42,7 @@
     },
 
     __findSwhRock: function() {
-      fetch('/discover_swh_rock.json')
+      return fetch('/discover_swh_rock.json')
       .then(function(r) { return r.json() })
       .then(function(resp) {
         var selection = resp.split('-')
@@ -37,7 +51,7 @@
     },
 
     __findPieci: function(lookFor) {
-      fetch('/discover_pieci.json')
+      return fetch('/discover_pieci.json')
       .then(function(r) { return r.json() })
       .then(function(resp) {
         var sel = null
@@ -57,10 +71,22 @@
       })
     },
 
+    __findEhr: function() {
+      return fetch('/discover_ehr.json')
+      .then(function(r) { return r.json() })
+      .then(function(resp) {
+        var sel = resp.data.slice(-1)[0]
+        return {
+          artist: sel.song_artist,
+          title: sel.song_name
+        }
+      })
+    },
+
     findSong: function(station) {
       switch (station.id) {
-        case 'swh': return SongFinder.__findSwh('swh_online')
-        case 'swh_gold': return SongFinder.__findSwh('gold_online')
+        case 'swh': return SongFinder.__findSwh('swh')
+        case 'swh_gold': return SongFinder.__findSwh('gold')
         case 'swh_rock': return SongFinder.__findSwhRock()
 
         case 'pieci_koncerti': return SongFinder.__findPieci('1')
@@ -70,6 +96,8 @@
         case 'pieci_hiti': return SongFinder.__findPieci('17')
         case 'pieci': return SongFinder.__findPieci('19')
         case 'pieci_100': return SongFinder.__findPieci('26')
+
+        case 'ehr': return SongFinder.__findEhr()
 
         default: return null
       }
