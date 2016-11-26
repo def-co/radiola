@@ -1,7 +1,7 @@
 /*
  * P22 Radiola
  *
- * @version 1.0.6
+ * @version 1.0.20
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016 paulsnar. All Rights Reserved.
  */
@@ -22,6 +22,13 @@
 
     this.renewSongInterval = null
     this.onSongRenewal = null
+
+    this.onPlaying = null
+
+    var self = this
+    this.el.addEventListener('playing', function() {
+      if (self.onPlaying !== null) self.onPlaying()
+    })
   }
 
   PlayManager.prototype.init = function(json) {

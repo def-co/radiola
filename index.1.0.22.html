@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <!--
+    P22 Radiola
+
+    v1.0.22
+    paulsnar <paulsnar@paulsnar.lv>
+    © 2016 paulsnar. All Rights Reserved.
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>radiola.p22.co</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <style>
+    body {
+      background-image: url(bg.png);
+      background-repeat: repeat;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center">
+      <span class="glyphicon glyphicon-music"></span> 
+      P22 Radiola
+    </h1>
+    <div id="js__app">
+      <div class="alert alert-info">
+        <img src="loading.gif" alt="..." />
+        Notiek ielāde...
+      </div>
+    </div>
+    <hr />
+    <footer>
+      <p>
+        <small>v1.0.22 &middot; <a href="about.1.0.22.txt">Par</a> &middot; © 2016 P22 Corp.</small>
+      </p>
+    </footer>
+  </div>
+  <script>
+    // conditionally polyfill promise for really old browsers
+    (function() {
+      if (!window.Promise) {
+        document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"><' + '/script>')
+      }
+    })()
+  </script>
+  <script>
+    // conditionally polyfill fetch for older browsers
+    (function(){
+      if (!window.fetch) {
+        document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"><' + '/script>')
+      }
+    })()
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.3/vue.min.js"></script>
+  <script>
+    window.P22 = {
+      Radiola: { }
+    }
+  </script>
+  <script src="song_finder.1.0.13.js"></script>
+  <script src="play_manager.1.0.20.js"></script>
+  <script src="radiola.1.0.22.js"></script>
+</body>
+<!-- vim: set ts=2 sts=2 et sw=2 : -->
+</html>

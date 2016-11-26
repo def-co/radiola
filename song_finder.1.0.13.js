@@ -12,6 +12,7 @@
 
     // the stations not listed here either don't provide any currently playing information
     // or their information provider is plain broken (CAPITAL FM, I'm looking at you.)
+    // or just their currently playing seems constantly empty (e.g., pieci_riti)
 
     DETECTABLES: [
       'swh', 'swh_gold',

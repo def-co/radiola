@@ -1,17 +1,25 @@
 /*
  * P22 Radiola
  *
- * @version 1.0.12
+ * @version 1.0.22
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016 paulsnar. All Rights Reserved.
  */
-(function() {
+(function(cont) {
+  'use strict';
+
+  fetch('app.tmpl.1.0.22.html')
+  .then(function(resp) { return resp.text() })
+  .then(cont)
+})(function(_AppTemplate) {
   'use strict';
 
   var app = new Vue({
     el: '#js__app',
+    template: _AppTemplate,
     data: {
       compatibility_issues: false,
+      buffering: false,
       loaded: false,
       loaded_error: false,
       stations: null,
@@ -22,6 +30,7 @@
       changeActiveStation: function(i) {
         var station = P22.Radiola.PlayManager.switchStation(i)
         this.$set(this, 'currently_playing', station)
+        this.$set(this, 'buffering', true)
       },
       updateSongStatus: function(data) {
         if (data === null) this.current_song = null
@@ -40,6 +49,7 @@
           return station.stream.old_shoutcast === false
         })
         this.$set(this, 'stations', stations)
+        localStorage.setItem('hideUnplayable', 'true')
       },
     },
     components: {
@@ -69,7 +79,7 @@
     }
   })
 
-  if (window.safari) {
+  if (window.safari && !localStorage.getItem('hideUnplayable')) {
     // Safari refuses to play SHOUTcast, since it interprets its weird ICY 200
     // headers as HTTP/0.9, therefore refusing to load it as a resource. 
     // There's no real workaround, apart from rehosting the stream, which I'm
@@ -90,11 +100,19 @@
     P22.Radiola.PlayManager.init(json)
     Vue.set(app, 'stations', json.stations)
     Vue.set(app, 'loaded', true)
+
+    if (window.safari && localStorage.getItem('hideUnplayable')) {
+      app.hideUnplayableStations()
+    }
   })
 
   P22.Radiola.PlayManager.onSongRenewal = function(data) {
     app.updateSongStatus(data)
   }
 
-})()
+  P22.Radiola.PlayManager.onPlaying = function() {
+    Vue.set(app, 'buffering', false)
+  }
+
+})
 // vim: set ts=2 sts=2 et sw=2:
