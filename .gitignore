@@ -1,0 +1,6 @@
+.DS_Store
+node_modules/
+stations.json
+
+# assets
+static/logos/

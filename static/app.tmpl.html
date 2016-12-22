@@ -1,0 +1,63 @@
+<!--
+  P22 Radiola
+
+  v1.0.23 (Rigonda)
+  paulsnar <paulsnar@paulsnar.lv>
+  © 2016 paulsnar. All Rights Reserved.
+-->
+<div class="alert alert-warning" v-if="this.compatibility_issues">
+  <p>
+    <span class="glyphicon glyphicon-alert"></span>
+    Dažas stacijas nebūs iespējams atskaņot, jo jūsu pārlūks tās neatbalsta.
+    Varat <a href="#" v-on:click="hideUnplayableStations">slēpt nespēlējamās stacijas</a>
+    vai <a href="#" v-on:click="dismissCompatibilityAlert">aizvērt šo paziņojumu.</a>
+    <button class="close" v-on:click="dismissCompatibilityAlert">&times;</button>
+  </p>
+  <p class="text-muted" style="font-style: italic;">
+    Ja jūs slēpsit nespēlējamās stacijas, šī izvēle tiks saglabāta un tās vairs netiks
+    attēlotas šajā pārlūkā.
+  </p>
+</div>
+<p class="text-muted" v-if="!this.loaded">
+  <img src="loading.gif" alt="..." />
+  Joprojām notiek ielāde...
+</p>
+<div class="alert alert-danger" v-else-if="this.loaded_error">
+  <span class="glyphicon glyphicon-alert"></span>
+  <strong>Ielāde neizdevās!</strong>
+  Mēģiniet atsvaidzināt lapu.
+</div>
+<div v-else>
+  <div class="alert alert-info" v-if="this.currently_playing !== false">
+    <div class="row">
+      <div class="col-xs-9 col-sm-10 col-md-9 col-lg-10" style="display: table; height: 34px">
+        <div style="display: table-cell; vertical-align: middle">
+          <span class="glyphicon glyphicon-play" v-if="!this.buffering"></span>
+          <img src="loading.gif" alt="..." v-if="this.buffering" />
+          <strong class="hidden-xs hidden-sm" v-else>Tagad skan:</strong>
+          <span v-if="this.current_song !== null">
+            {{ this.current_song }}
+            ::
+            <strong>{{ this.currently_playing.name }}</strong>
+          </span>
+          <span v-else>{{ this.currently_playing.name }}</span>
+        </div>
+      </div>
+      <div class="col-xs-3 col-sm-2 col-md-3 col-lg-2">
+        <button class="btn btn-default btn-block"
+            v-on:click="stop">
+          <span class="glyphicon glyphicon-stop"></span>
+          <span class="hidden-xs hidden-sm">Apturēt</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-4 col-md-2" v-for="station in stations">
+      <pr-station
+        :station="station"
+        v-on:clicked="changeActiveStation(station.id)"></pr-station>
+    </div>
+  </div>
+</div>
+<!-- vim: set ts=2 sts=2 et sw=2 : -->
