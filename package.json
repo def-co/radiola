@@ -4,15 +4,10 @@
   "description": "radiola.p22.co",
   "main": "index.js",
   "scripts": {
-    "test": "-"
+    "test": "exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "-"
-  },
-  "keywords": [
-    "-"
-  ],
+  "repository": { },
+  "keywords": [ ],
   "author": "paulsnar <paulsnar@paulsnar.lv>",
   "license": "UNLICENSED"
 }
