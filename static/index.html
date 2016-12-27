@@ -12,16 +12,29 @@
   <meta name="viewport" content="width=device-width" />
   <title>radiola.p22.co</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <style>
+    .inline-loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background-image: url(loading_alt.png);
+      animation: inline-loader 0.4s steps(8) infinite;
+    }
+    @keyframes inline-loader {
+      from { background-position: 0px; }
+      to { background-position: -128px; }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1 class="text-center">
-      <span class="glyphicon glyphicon-music"></span> 
+      <span class="glyphicon glyphicon-music"></span>
       P22 Radiola
     </h1>
     <div id="js__app">
       <div class="alert alert-info">
-        <img src="loading.gif" alt="..." />
+        <span class="inline-loading"></span>
         Notiek ielāde...
       </div>
     </div>

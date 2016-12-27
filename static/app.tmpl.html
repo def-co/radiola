@@ -19,7 +19,7 @@
   </p>
 </div>
 <p class="text-muted" v-if="!this.loaded">
-  <img src="loading.gif" alt="..." />
+  <span class="inline-loading" v-if="this.buffering"></span>
   Joprojām notiek ielāde...
 </p>
 <div class="alert alert-danger" v-else-if="this.loaded_error">
@@ -33,7 +33,7 @@
       <div class="col-xs-9 col-sm-10 col-md-9 col-lg-10" style="display: table; height: 34px">
         <div style="display: table-cell; vertical-align: middle">
           <span class="glyphicon glyphicon-play" v-if="!this.buffering"></span>
-          <img src="loading.gif" alt="..." v-if="this.buffering" />
+          <span class="inline-loading" v-if="this.buffering"></span>
           <strong class="hidden-xs hidden-sm" v-else>Tagad skan:</strong>
           <span v-if="this.current_song !== null">
             {{ this.current_song }}
