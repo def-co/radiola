@@ -1,14 +1,14 @@
 /*
  * P22 Radiola
  *
- * @version 1.0.23 (Rigonda)
+ * @version 1.1.0 (Simfonija)
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016 paulsnar. All Rights Reserved.
  */
 (function(cont) {
   'use strict';
 
-  fetch('app.tmpl.1.0.23.html')
+  fetch('app.tmpl.html')
   .then(function(resp) { return resp.text() })
   .then(cont)
 })(function(_AppTemplate) {
@@ -81,7 +81,7 @@
 
   if (window.safari && !localStorage.getItem('hideUnplayable')) {
     // Safari refuses to play SHOUTcast, since it interprets its weird ICY 200
-    // headers as HTTP/0.9, therefore refusing to load it as a resource. 
+    // headers as HTTP/0.9, therefore refusing to load it as a resource.
     // There's no real workaround, apart from rehosting the stream, which I'm
     // not that keen on.
     Vue.set(app, 'compatibility_issues', true)
