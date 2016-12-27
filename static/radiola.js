@@ -110,13 +110,16 @@
     }
   })
 
-  P22.Radiola.PlayManager.addListener('song_renewed', function(data) {
+  PM.addListener('song_renewed', function(data) {
     app.updateSongStatus(data)
   })
 
-  P22.Radiola.PlayManager.addListener('playing', function() {
+  PM.addListener('playing', function() {
     Vue.set(app, 'buffering', false)
   })
 
+  PM.addListener('stopped', function() {
+    app.updateSongStatus(null)
+  })
 })
 // vim: set ts=2 sts=2 et sw=2:

@@ -23,6 +23,10 @@
     this.playing = false
     this.lastStation = null
 
+    this._notBuffering = false
+    this._currentSong = null
+    this._currentStation = null
+
     this.renewSongInterval = null
     this.onSongRenewal = null
 
@@ -32,27 +36,48 @@
 
     var self = this
     this.el.addEventListener('playing', function() {
+      self._notBuffering = true
       self.emit('playing')
+      self._renderTitle()
     })
 
-    var title_el = document.getElementsByTagName('title')[0]
-    this.addListener('song_renewed', function(song, current_station) {
+    this.addListener('song_renewed', function(song, currentStation) {
       // console.log('[PlayManager] Changing song on %s: %O',
-      //   current_station.name, song)
-      title_el.textContent = [
-        '▶',
-        song.artist,
-        '-',
-        song.title,
-        '::',
-        current_station.name,
-        '::',
-        'radiola.p22.co',
-      ].join(' ')
+      //   currentStation.name, song)
+      self._currentSong = song
+      self._currentStation = currentStation
+      self._renderTitle()
     })
   }
   PlayManager.prototype = Object.create(EventEmitter.prototype)
   PlayManager.prototype.constructor = PlayManager
+
+  PlayManager.prototype._renderTitle = function() {
+    let title_el = document.getElementsByTagName('title')[0]
+
+    let title = ''
+    if (this.playing && this._notBuffering) {
+      title += '▶ '
+    } else if (this.playing && !this._notBuffering) {
+      title += '… '
+    }
+
+    if (this._currentSong !== null) {
+      title += this._currentSong.artist
+      title += ' - '
+      title += this._currentSong.title
+      title += ' :: '
+    }
+
+    if (this._currentStation !== null) {
+      title += this._currentStation.name
+      title += ' :: '
+    }
+
+    title += 'P22 Radiola'
+
+    title_el.textContent = title
+  }
 
   PlayManager.prototype.init = function(json) {
     this.stations = { }
@@ -68,6 +93,9 @@
     this.el.src = ''
     this.emit('stopped')
 
+    this._currentSong = null
+    this._currentStation = null
+
     if (this.renewSongInterval !== null) {
       window.clearInterval(this.renewSongInterval)
     }
@@ -78,7 +106,7 @@
       this.subscribed = false
     }
 
-    document.querySelector('title').textContent = 'radiola.p22.co'
+    this._renderTitle()
   }
 
 
@@ -100,11 +128,11 @@
 
     window.setTimeout(function() {
       self.playing = true
+      self._notBuffering = false
       self.el.play()
     }, 0)
 
-    document.querySelector('title')
-      .textContent = '▶ ' + station.name + ' :: radiola.p22.co'
+    self._renderTitle()
 
     var self = this
     SF.canFindSong(id)
