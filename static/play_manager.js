@@ -8,6 +8,8 @@
 (function() {
   'use strict';
 
+  var SF = P22.Radiola.SongFinder
+
   function PlayManager() {
     this.el = document.createElement('audio')
     document.body.appendChild(this.el)
@@ -19,17 +21,38 @@
     this.stations = null
 
     this.playing = false
+    this.lastStation = null
 
     this.renewSongInterval = null
     this.onSongRenewal = null
+
+    this.subscribed = false
 
     this.onPlaying = null
 
     var self = this
     this.el.addEventListener('playing', function() {
-      if (self.onPlaying !== null) self.onPlaying()
+      self.emit('playing')
+    })
+
+    var title_el = document.getElementsByTagName('title')[0]
+    this.addListener('song_renewed', function(song, current_station) {
+      // console.log('[PlayManager] Changing song on %s: %O',
+      //   current_station.name, song)
+      title_el.textContent = [
+        '▶',
+        song.artist,
+        '-',
+        song.title,
+        '::',
+        current_station.name,
+        '::',
+        'radiola.p22.co',
+      ].join(' ')
     })
   }
+  PlayManager.prototype = Object.create(EventEmitter.prototype)
+  PlayManager.prototype.constructor = PlayManager
 
   PlayManager.prototype.init = function(json) {
     this.stations = { }
@@ -42,9 +65,18 @@
 
   PlayManager.prototype.stop = function() {
     this.el.pause()
-    if (this.renewSongInterval !== null) window.clearInterval(this.renewSongInterval)
-    if (this.onSongRenewal !== null) this.onSongRenewal(null)
+    this.el.src = ''
+    this.emit('stopped')
+
+    if (this.renewSongInterval !== null) {
+      window.clearInterval(this.renewSongInterval)
+    }
     this.playing = false
+
+    if (this.subscribed) {
+      SF.unsubscribe(this.lastStation)
+      this.subscribed = false
+    }
 
     document.querySelector('title').textContent = 'radiola.p22.co'
   }
@@ -62,6 +94,7 @@
     }
 
     var station = this.stations[id]
+    this.lastStation = id
 
     this.el.src = station.stream.url
 
@@ -73,24 +106,33 @@
     document.querySelector('title')
       .textContent = '▶ ' + station.name + ' :: radiola.p22.co'
 
-    if (P22.Radiola.SongFinder.canFindSong(station)) {
-      var self = this
-      var _renewSong = function() {
-        if (self.onSongRenewal === null) return
-
-        P22.Radiola.SongFinder.findSong(station)
-        .then(function(data) {
-          document.querySelector('title')
-            .textContent = '▶ ' + data.artist + ' - ' + data.title + ' :: ' +
-              station.name + ' :: radiola.p22.co'
-          self.onSongRenewal(data)
+    var self = this
+    SF.canFindSong(id)
+    .then(function(canFindSong) {
+      if (canFindSong) {
+        return SF.canSubscribe(id)
+        .then(function(canSubscribe) {
+          if (canSubscribe) {
+            SF.subscribe(id)
+            SF.eventbus.addListener('song.' + id, function(song) {
+              self.emit('song_renewed', song, station)
+            })
+            self.subscribed = true
+          } else {
+            var _renewSong = function() {
+              SF.findSong(id)
+              .then(function(data) {
+                self.emit('song_renewed', data, station)
+              })
+            }
+            self.renewSongInterval = window.setInterval(_renewSong, 15000)
+            _renewSong()
+          }
         })
+      } else {
+        self.renewSongInterval = null
       }
-      this.renewSongInterval = window.setInterval(_renewSong, 15000)
-      _renewSong()
-    } else {
-      this.renewSongInterval = null
-    }
+    })
 
     return station
   }

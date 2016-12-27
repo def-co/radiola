@@ -14,6 +14,8 @@
 })(function(_AppTemplate) {
   'use strict';
 
+  var PM = P22.Radiola.PlayManager
+
   var app = new Vue({
     el: '#js__app',
     template: _AppTemplate,
@@ -28,7 +30,7 @@
     },
     methods: {
       changeActiveStation: function(i) {
-        var station = P22.Radiola.PlayManager.switchStation(i)
+        var station = PM.switchStation(i)
         this.$set(this, 'currently_playing', station)
         this.$set(this, 'buffering', true)
       },
@@ -87,7 +89,7 @@
     Vue.set(app, 'compatibility_issues', true)
   }
 
-  fetch('stations.json')
+  fetch('/stations.json')
   .then(function(resp) { return resp.json() })
   .catch(function(e) {
     Vue.set(app, 'loaded', true)
@@ -97,7 +99,7 @@
   .then(function(json) {
     json.stations = json.stations
       .filter(function(station) { return !station.__skip })
-    P22.Radiola.PlayManager.init(json)
+    PM.init(json)
     Vue.set(app, 'stations', json.stations)
     Vue.set(app, 'loaded', true)
 
@@ -106,13 +108,13 @@
     }
   })
 
-  P22.Radiola.PlayManager.onSongRenewal = function(data) {
+  P22.Radiola.PlayManager.addListener('song_renewed', function(data) {
     app.updateSongStatus(data)
-  }
+  })
 
-  P22.Radiola.PlayManager.onPlaying = function() {
+  P22.Radiola.PlayManager.addListener('playing', function() {
     Vue.set(app, 'buffering', false)
-  }
+  })
 
 })
 // vim: set ts=2 sts=2 et sw=2:
