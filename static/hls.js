@@ -154,13 +154,14 @@
     })
     this.src = URL.createObjectURL(this._mediaSource)
 
-    Promise.all(
-      unfetchedChunks.map(function(c) { return self._chunkPipeline(c) }))
+    this._chunkPipeline(unfetchedChunks)
 
     this._fetchChunksInterval = setInterval(function() {
       self._fetchNewChunkList()
       .then(function(chunks) {
-        return chunks.map(function(c) { return self._chunkPipeline(c) })
+        if (chunks.length > 0) {
+          return self._chunkPipeline(chunks)
+        }
       })
     }, Math.floor(m3u.targetDuration * 0.47 * 1000))
 
@@ -196,12 +197,12 @@
           streamUrl = U.makeAbsoluteUrl(streamlistUrl, streamUrl)
         }
 
-        return fetch(streamUrl)
+        return (fetch(streamUrl)
           .then(function(r) { return r.text() })
           .then(function(r) { return parseM3U(r) })
           .then(function(m3u) {
             return new HLSPlaylist(streamUrl, m3u, streaminf.CODECS)
-          })
+          }))
       })
   }
 
@@ -209,20 +210,29 @@
     clearInterval(this._fetchChunksInterval)
   }
 
-  HLSPlaylist.prototype._chunkPipeline = function(chunk) {
+  HLSPlaylist.prototype._chunkPipeline = function(chunks) {
     var self = this
-    // console.log('[HLS.chunkPipeline] Processing: %s', chunk.chunkUrl)
-    this._lastProcessedChunk = chunk
 
-    return this._fetchChunk(chunk.chunkUrl)
-      .then(function(buf) { return self._appendChunk(buf) })
+    if (!Array.isArray(chunks)) {
+      return this._chunkPipeline([chunks])
+    }
+
+    var _lastPromise = Promise.resolve(null)
+    var fetches = chunks.map(function(c) { return self._fetchChunk(c) })
+    for (var i = 0; i < chunks.length; i++) {
+      self._lastProcessedChunk = chunks[i]
+      _lastPromise = _lastPromise.then(function(fetch) {
+        return fetch.then(function(b) { return self._appendChunk(b) })
+      }.bind(null, fetches[i]))
+    }
+    return _lastPromise
   }
 
   HLSPlaylist.prototype._fetchChunk = function(chunk) {
     var self = this
 
-    return fetch(chunk)
-    .then(function(r) { return r.arrayBuffer() })
+    return (fetch(chunk.chunkUrl)
+      .then(function(r) { return r.arrayBuffer() }))
   }
 
   HLSPlaylist.prototype._appendChunk = function(buffer) {
@@ -242,7 +252,7 @@
   HLSPlaylist.prototype._fetchNewChunkList = function() {
     var self = this
 
-    return fetch(this._selfUrl)
+    return (fetch(this._selfUrl)
     .then(function(r) { return r.text() })
     .then(function(r) { return parseM3U(r) })
     .then(function(m3u) {
@@ -268,7 +278,7 @@
       }
 
       return newChunks
-    })
+    }))
   }
 
   // IV is either given or it is a 32 bit unsigned integer equal to sequence
