@@ -22,6 +22,7 @@
     data: {
       compatibility_issues: false,
       buffering: false,
+      buffering_error: false,
       loaded: false,
       loaded_error: false,
       stations: null,
@@ -32,6 +33,7 @@
       changeActiveStation: function(i) {
         var station = PM.switchStation(i)
         this.$set(this, 'currently_playing', station)
+        this.$set(this, 'buffering_error', false)
         this.$set(this, 'buffering', true)
       },
       updateSongStatus: function(data) {
@@ -120,6 +122,11 @@
 
   PM.addListener('stopped', function() {
     app.updateSongStatus(null)
+  })
+
+  PM.addListener('playingError', function() {
+    Vue.set(app, 'buffering', false)
+    Vue.set(app, 'buffering_error', true)
   })
 })
 // vim: set ts=2 sts=2 et sw=2:

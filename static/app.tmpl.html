@@ -28,19 +28,31 @@
   Mēģiniet atsvaidzināt lapu.
 </div>
 <div v-else>
-  <div class="alert alert-info" v-if="this.currently_playing !== false">
+  <div class="alert" v-if="this.currently_playing !== false"
+    :class="{ 'alert-info': !this.buffering_error, 'alert-warning': this.buffering_error }">
     <div class="row">
       <div class="col-xs-9 col-sm-10 col-md-9 col-lg-10" style="display: table; height: 34px">
         <div style="display: table-cell; vertical-align: middle">
-          <span class="glyphicon glyphicon-play" v-if="!this.buffering"></span>
-          <span class="inline-loading" v-if="this.buffering"></span>
-          <strong class="hidden-xs hidden-sm" v-else>Tagad skan:</strong>
-          <span v-if="this.current_song !== null">
-            {{ this.current_song }}
-            ::
+          <span v-if="this.buffering">
+            <span class="inline-loading" v-if="this.buffering"></span>
+            Tūliņ skanēs:
             <strong>{{ this.currently_playing.name }}</strong>
           </span>
-          <span v-else>{{ this.currently_playing.name }}</span>
+          <span v-if="this.buffering_error">
+            <span class="glyphicon glyphicon-exclamation-sign"></span>
+            <strong>Neizdevās atskaņot:</strong>
+            <span>{{ this.currently_playing.name }}</span>
+          </span>
+          <span v-if="!(this.buffering || this.buffering_error)">
+            <span class="glyphicon glyphicon-play"></span>
+            <strong class="hidden-xs hidden-sm">Tagad skan:</strong>
+            <span v-if="this.current_song !== null">
+              {{ this.current_song }}
+              ::
+              <strong>{{ this.currently_playing.name }}</strong>
+            </span>
+            <span v-else>{{ this.currently_playing.name }}</span>
+          </span>
         </div>
       </div>
       <div class="col-xs-3 col-sm-2 col-md-3 col-lg-2">

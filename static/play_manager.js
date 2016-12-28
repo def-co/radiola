@@ -130,6 +130,10 @@
       self.playing = true
       self._notBuffering = false
       self.el.play()
+      .catch(function(e) {
+        self.emit('playingError')
+        console.error('[PlayManager] Playing failed:', e)
+      })
     }, 0)
 
     self._renderTitle()
