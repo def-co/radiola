@@ -83,7 +83,7 @@
     }
   })
 
-  if ((window.safari || window.chrome.runtime) &&
+  if ((window.safari || (window.chrome && window.chrome.runtime)) &&
       !localStorage.getItem('hideUnplayable')) {
     // Safari refuses to play SHOUTcast, since it interprets its weird ICY 200
     // headers as HTTP/0.9, therefore refusing to load it as a resource.
@@ -106,7 +106,7 @@
     Vue.set(app, 'stations', json.stations)
     Vue.set(app, 'loaded', true)
 
-    if ((window.safari || window.chrome.runtime) &&
+    if ((window.safari || (window.chrome && window.chrome.runtime)) &&
         localStorage.getItem('hideUnplayable')) {
       app.hideUnplayableStations()
     }

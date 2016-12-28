@@ -156,11 +156,11 @@
         self.renewSongInterval = null
       }
     })
-    self._renderTitle()
+    this._renderTitle()
 
     if (window.safari) {
       // For some goddamn reason Safari decides that the tab is open as a frame
-      // and refuses to proceed if the stream is coming from an non-HTTP/1.1
+      // and completely breaks it if the stream is coming from an non-HTTP/1.1
       // server (i.e. old_shoutcast) So we default to HLS immediately and not
       // even allow the other kind of request to happen, because that will
       // break the page entirely.
@@ -182,12 +182,16 @@
     window.setTimeout(function() {
       self.playing = true
       self._notBuffering = false
-      self.el.play()
+      Promise.resolve(self.el.play()) // Firefox doesn't return a promise
       .catch(function(e) {
         // AbortError occurs when a pending play() gets interrupted by pause()
         // It happens when buffering one station and switching to another, so
         // we just ignore it :)
         if (e.name === 'AbortError') { return true }
+        // NotSupportedError occurs most often when trying to play a stream
+        // that cannot be interpreted by the browser's media stack
+        // (i.e. old_shoutcast for Chrome/Safari). We might be able to fall
+        // back to HLS, or we might not. I dunno :)
         if (e.name === 'NotSupportedError' &&
             ('hls' in station) && !self._hlsPlaylist) {
 
