@@ -8,7 +8,7 @@
 (function() {
   'use strict';
 
-  var SF = P22.Radiola.SongFinder
+  var SF = P22.Radiola.SongFinder, HLS = P22.Radiola.HLSManager
 
   function PlayManager() {
     this.el = document.createElement('audio')
@@ -28,11 +28,11 @@
     this._currentStation = null
 
     this.renewSongInterval = null
-    this.onSongRenewal = null
 
     this.subscribed = false
 
-    this.onPlaying = null
+    this._hasHls = false
+    this._usingHls = false
 
     var self = this
     this.el.addEventListener('playing', function() {
@@ -101,6 +101,11 @@
     }
     this.playing = false
 
+    if (this._usingHls) {
+      HLS.stop()
+      this._usingHls = false
+    }
+
     if (this.subscribed) {
       SF.unsubscribe(this.lastStation)
       this.subscribed = false
@@ -124,6 +129,9 @@
     var station = this.stations[id]
     this.lastStation = id
 
+    this._hasHls = 'hls' in station
+    this._usingHls = false
+
     this.el.src = station.stream.url
 
     window.setTimeout(function() {
@@ -135,6 +143,11 @@
         // It happens when buffering one station and switching to another, so
         // we just ignore it :)
         if (e.name === 'AbortError') { return true }
+        if (e.name === 'NotSupportedError' && self._hasHls && !self._usingHls) {
+          alert('Switching to HLS!')
+          self._switchToHls()
+          return true
+        }
         self.emit('playingError', e.name, e)
         console.error('[PlayManager] Playing failed: (%s)', e.name, e)
       })
@@ -171,6 +184,19 @@
     })
 
     return station
+  }
+
+  PlayManager.prototype._switchToHls = function() {
+    var self = this
+    if (!this._hasHls) return false
+
+    this._usingHls = true
+
+    return HLS.adoptPlaylist(this.stations[this.lastStation].hls)
+    .then(function(p) {
+      self.el.src = p.src
+      self.el.play()
+    })
   }
 
   window.P22.Radiola.PlayManager = new PlayManager()
