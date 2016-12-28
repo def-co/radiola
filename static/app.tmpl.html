@@ -5,70 +5,72 @@
   paulsnar <paulsnar@paulsnar.lv>
   © 2016 paulsnar. All Rights Reserved.
 -->
-<div class="alert alert-warning" v-if="this.compatibility_issues">
-  <p>
+<div>
+  <div class="alert alert-warning" v-if="this.compatibility_issues">
+    <p>
+      <span class="glyphicon glyphicon-alert"></span>
+      Dažas stacijas nebūs iespējams atskaņot, jo jūsu pārlūks tās neatbalsta.
+      Varat <a href="#" v-on:click="hideUnplayableStations">slēpt nespēlējamās stacijas</a>
+      vai <a href="#" v-on:click="dismissCompatibilityAlert">aizvērt šo paziņojumu.</a>
+      <button class="close" v-on:click="dismissCompatibilityAlert">&times;</button>
+    </p>
+    <p class="text-muted" style="font-style: italic;">
+      Ja jūs slēpsit nespēlējamās stacijas, šī izvēle tiks saglabāta un tās vairs netiks
+      attēlotas šajā pārlūkā.
+    </p>
+  </div>
+  <div class="alert alert-danger" v-if="this.loaded_error">
     <span class="glyphicon glyphicon-alert"></span>
-    Dažas stacijas nebūs iespējams atskaņot, jo jūsu pārlūks tās neatbalsta.
-    Varat <a href="#" v-on:click="hideUnplayableStations">slēpt nespēlējamās stacijas</a>
-    vai <a href="#" v-on:click="dismissCompatibilityAlert">aizvērt šo paziņojumu.</a>
-    <button class="close" v-on:click="dismissCompatibilityAlert">&times;</button>
-  </p>
-  <p class="text-muted" style="font-style: italic;">
-    Ja jūs slēpsit nespēlējamās stacijas, šī izvēle tiks saglabāta un tās vairs netiks
-    attēlotas šajā pārlūkā.
-  </p>
-</div>
-<p class="text-muted" v-if="!this.loaded">
-  <span class="inline-loading" v-if="this.buffering"></span>
-  Joprojām notiek ielāde...
-</p>
-<div class="alert alert-danger" v-else-if="this.loaded_error">
-  <span class="glyphicon glyphicon-alert"></span>
-  <strong>Ielāde neizdevās!</strong>
-  Mēģiniet atsvaidzināt lapu.
-</div>
-<div v-else>
-  <div class="alert" v-if="this.currently_playing !== false"
-    :class="{ 'alert-info': !this.buffering_error, 'alert-warning': this.buffering_error }">
-    <div class="row">
-      <div class="col-xs-9 col-sm-10 col-md-9 col-lg-10" style="display: table; height: 34px">
-        <div style="display: table-cell; vertical-align: middle">
-          <span v-if="this.buffering">
-            <span class="inline-loading" v-if="this.buffering"></span>
-            Tūliņ skanēs:
-            <strong>{{ this.currently_playing.name }}</strong>
-          </span>
-          <span v-if="this.buffering_error">
-            <span class="glyphicon glyphicon-exclamation-sign"></span>
-            <strong>Neizdevās atskaņot:</strong>
-            <span>{{ this.currently_playing.name }}</span>
-          </span>
-          <span v-if="!(this.buffering || this.buffering_error)">
-            <span class="glyphicon glyphicon-play"></span>
-            <strong class="hidden-xs hidden-sm">Tagad skan:</strong>
-            <span v-if="this.current_song !== null">
-              {{ this.current_song }}
-              ::
+    <strong>Ielāde neizdevās!</strong>
+    Mēģiniet atsvaidzināt lapu.
+  </div>
+  <div class="alert alert-info" v-if="!this.loaded">
+    <span class="inline-loading"></span>
+    Joprojām notiek ielāde...
+  </div>
+  <div v-if="this.loaded">
+    <div class="alert" v-if="this.currently_playing !== false"
+      :class="{ 'alert-info': !this.buffering_error, 'alert-warning': this.buffering_error }">
+      <div class="row">
+        <div class="col-xs-9 col-sm-10 col-md-9 col-lg-10" style="display: table; height: 34px">
+          <div style="display: table-cell; vertical-align: middle">
+            <span v-if="this.buffering">
+              <span class="inline-loading" v-if="this.buffering"></span>
+              Tūliņ skanēs:
               <strong>{{ this.currently_playing.name }}</strong>
             </span>
-            <span v-else>{{ this.currently_playing.name }}</span>
-          </span>
+            <span v-if="this.buffering_error">
+              <span class="glyphicon glyphicon-exclamation-sign"></span>
+              <strong>Neizdevās atskaņot:</strong>
+              <span>{{ this.currently_playing.name }}</span>
+            </span>
+            <span v-if="!(this.buffering || this.buffering_error)">
+              <span class="glyphicon glyphicon-play"></span>
+              <strong class="hidden-xs hidden-sm">Tagad skan:</strong>
+              <span v-if="this.current_song !== null">
+                {{ this.current_song }}
+                ::
+                <strong>{{ this.currently_playing.name }}</strong>
+              </span>
+              <span v-else>{{ this.currently_playing.name }}</span>
+            </span>
+          </div>
+        </div>
+        <div class="col-xs-3 col-sm-2 col-md-3 col-lg-2">
+          <button class="btn btn-default btn-block"
+              v-on:click="stop">
+            <span class="glyphicon glyphicon-stop"></span>
+            <span class="hidden-xs hidden-sm">Apturēt</span>
+          </button>
         </div>
       </div>
-      <div class="col-xs-3 col-sm-2 col-md-3 col-lg-2">
-        <button class="btn btn-default btn-block"
-            v-on:click="stop">
-          <span class="glyphicon glyphicon-stop"></span>
-          <span class="hidden-xs hidden-sm">Apturēt</span>
-        </button>
-      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-4 col-md-2" v-for="station in stations">
-      <pr-station
-        :station="station"
-        v-on:clicked="changeActiveStation(station.id)"></pr-station>
+    <div class="row">
+      <div class="col-xs-4 col-md-2" v-for="station in stations">
+        <pr-station
+          :station="station"
+          v-on:clicked="changeActiveStation(station.id)"></pr-station>
+      </div>
     </div>
   </div>
 </div>

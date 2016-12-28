@@ -42,7 +42,7 @@
       buffering_error: false,
       loaded: false,
       loaded_error: false,
-      stations: null,
+      stations: [ ],
       currently_playing: false,
       current_song: null,
     },
@@ -98,15 +98,6 @@
     }
   })
 
-  if ((window.safari || (window.chrome && window.chrome.runtime)) &&
-      !localStorage.getItem('hideUnplayable')) {
-    // Safari refuses to play SHOUTcast, since it interprets its weird ICY 200
-    // headers as HTTP/0.9, therefore refusing to load it as a resource.
-    // There's no real workaround, apart from rehosting the stream, which I'm
-    // not that keen on.
-    Vue.set(app, 'compatibility_issues', true)
-  }
-
   fetch('/stations.json')
   .then(function(resp) { return resp.json() })
   .catch(function(e) {
@@ -115,16 +106,22 @@
     throw e
   })
   .then(function(json) {
-    json.stations = json.stations
-      .filter(function(station) { return !station.__skip })
     PM.init(json)
     Vue.set(app, 'stations', json.stations)
     Vue.set(app, 'loaded', true)
 
-    if ((window.safari || (window.chrome && window.chrome.runtime)) &&
-        localStorage.getItem('hideUnplayable')) {
-      app.hideUnplayableStations()
+    if ((window.safari || (window.chrome && window.chrome.runtime))) {
+      // Safari refuses to play SHOUTcast, since it interprets its weird ICY 200
+      // headers as HTTP/0.9, therefore refusing to load it as a resource.
+      // There's no real workaround, apart from rehosting the stream, which I'm
+      // not that keen on.
+      if (localStorage.getItem('hideUnplayable')) {
+        app.hideUnplayableStations()
+      } else {
+        Vue.set(app, 'compatibility_issues', true)
+      }
     }
+
   })
 
   PM.addListener('song_renewed', function(data) {
@@ -143,5 +140,7 @@
     Vue.set(app, 'buffering', false)
     Vue.set(app, 'buffering_error', true)
   })
+
+  window.P22.Radiola.App = app
 })
 // vim: set ts=2 sts=2 et sw=2:
