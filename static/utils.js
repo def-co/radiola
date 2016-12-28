@@ -32,9 +32,14 @@
       } else {
         a.pathname += '/../' + parts[0]
       }
-      if (parts[1]) { a.search = '?' + parts[1] }
+      if (parts[1] && parts[1].length) {
+        a.search = '?' + parts[1]
+        return a.href
+      } else {
+        // weird safari bug (?) which appends ? still when search is empty
+        return a.href.split('?')[0]
+      }
 
-      return a.href
     },
   }
 

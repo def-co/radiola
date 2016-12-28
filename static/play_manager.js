@@ -130,34 +130,6 @@
 
     this.el.src = station.stream.url
 
-    window.setTimeout(function() {
-      self.playing = true
-      self._notBuffering = false
-      self.el.play()
-      .catch(function(e) {
-        // AbortError occurs when a pending play() gets interrupted by pause()
-        // It happens when buffering one station and switching to another, so
-        // we just ignore it :)
-        if (e.name === 'AbortError') { return true }
-        if (e.name === 'NotSupportedError' &&
-            ('hls' in station) && !self._hlsPlaylist) {
-
-          P22.Radiola.HLS.HLSPlaylist.fromStreamlist(station.hls)
-          .then(function(p) {
-            self._hlsPlaylist = p
-            self.el.src = p.src
-            self.el.play()
-          })
-          return true
-        }
-        self.emit('playingError', e.name, e)
-        console.error('[PlayManager] Playing failed: (%s)', e.name, e)
-      })
-    }, 0)
-
-    self._renderTitle()
-
-    var self = this
     SF.canFindSong(id)
     .then(function(canFindSong) {
       if (canFindSong) {
@@ -184,6 +156,53 @@
         self.renewSongInterval = null
       }
     })
+    self._renderTitle()
+
+    if (window.safari) {
+      // For some goddamn reason Safari decides that the tab is open as a frame
+      // and refuses to proceed if the stream is coming from an non-HTTP/1.1
+      // server (i.e. old_shoutcast) So we default to HLS immediately and not
+      // even allow the other kind of request to happen, because that will
+      // break the page entirely.
+      if (station.stream.old_shoutcast && ('hls' in station)) {
+        P22.Radiola.HLS.HLSPlaylist.fromStreamlist(station.hls)
+        .then(function(p) {
+          self._hlsPlaylist = p
+          self.el.src = p.src
+          self.el.play()
+        })
+        return station
+      } else if (station.stream.old_shoutcast) {
+        throw new Error('This station cannot be played in this browser. ' +
+          '(This exception is a preventive measure to not break the rest of ' +
+            'stations from playing because that happens in Safari)')
+      }
+    }
+
+    window.setTimeout(function() {
+      self.playing = true
+      self._notBuffering = false
+      self.el.play()
+      .catch(function(e) {
+        // AbortError occurs when a pending play() gets interrupted by pause()
+        // It happens when buffering one station and switching to another, so
+        // we just ignore it :)
+        if (e.name === 'AbortError') { return true }
+        if (e.name === 'NotSupportedError' &&
+            ('hls' in station) && !self._hlsPlaylist) {
+
+          P22.Radiola.HLS.HLSPlaylist.fromStreamlist(station.hls)
+          .then(function(p) {
+            self._hlsPlaylist = p
+            self.el.src = p.src
+            self.el.play()
+          })
+          return true
+        }
+        self.emit('playingError', e.name, e)
+        console.error('[PlayManager] Playing failed: (%s)', e.name, e)
+      })
+    }, 0)
 
     return station
   }
