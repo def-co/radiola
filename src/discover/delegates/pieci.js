@@ -60,8 +60,12 @@ class Pieci extends EventEmitter {
     this.addToInterval(station)
 
     const publishUpdate = (data) => {
-      stream.write('event: song\n' +
-        'data: ' + JSON.stringify(data) + '\n\n')
+      stream.write([
+        'event: song',
+        `data: ${JSON.stringify(data)}`,
+        '',
+        '',
+      ].join('\n'))
     }
 
     if (this.lastSongs[station] !== null) {
