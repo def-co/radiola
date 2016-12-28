@@ -131,8 +131,12 @@
       self._notBuffering = false
       self.el.play()
       .catch(function(e) {
-        self.emit('playingError')
-        console.error('[PlayManager] Playing failed:', e)
+        // AbortError occurs when a pending play() gets interrupted by pause()
+        // It happens when buffering one station and switching to another, so
+        // we just ignore it :)
+        if (e.name === 'AbortError') { return true }
+        self.emit('playingError', e.name, e)
+        console.error('[PlayManager] Playing failed: (%s)', e.name, e)
       })
     }, 0)
 
