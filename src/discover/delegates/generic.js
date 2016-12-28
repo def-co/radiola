@@ -45,7 +45,18 @@ class GenericDelegate extends EventEmitter {
 
     this.addListener('song', publishUpdate)
 
+    let s = setInterval(() => {
+      // prevents Hapi from closing the connection
+      stream.write([
+        'event: keepalive',
+        'data: null',
+        '',
+        '',
+      ].join('\n'))
+    }, 60000)
+
     stream.on('close', () => {
+      clearInterval(s)
       this.removeListener('song', publishUpdate)
       this.removeFromInterval()
     })

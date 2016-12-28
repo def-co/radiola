@@ -70,7 +70,18 @@ class Pieci extends EventEmitter {
 
     this.addListener(`song.${station}`, publishUpdate)
 
+    let s = setInterval(() => {
+      // prevents Hapi from closing the connection
+      stream.write([
+        'event: keepalive',
+        'data: null',
+        '',
+        '',
+      ].join('\n'))
+    }, 60000)
+
     stream.on('close', () => {
+      clearInterval(s)
       this.removeListener(`song.${station}`, publishUpdate)
       this.removeFromInterval(station)
     })
