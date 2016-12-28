@@ -288,6 +288,9 @@
   // Example: STAR FM http://starfm.live.advailo.com/audio/live/playlist.m3u8
   // Example: LR1 http://muste.radio.org.lv/shoutcast/mp4:lr1a.stream/playlist.m3u8
 
-  window.P22.Radiola.HLS = { HLSPlaylist: HLSPlaylist }
+  window.P22.Radiola.HLS = {
+    HLSPlaylist: HLSPlaylist,
+    supportsHLS: HLSPlaylist.supportsHLS,
+  }
 })()
 // vim: set ts=2 sts=2 et sw=2:

@@ -16,6 +16,23 @@
 
   var PM = P22.Radiola.PlayManager
 
+  function filterIncompatibleStations(allStations) {
+    var compatibleStations = [ ]
+    for (var i = 0; i < allStations.length; i++) {
+      var station = allStations[i]
+      if (PM.SUPPORTS_OLD_SHOUTCAST && station.old_shoutcast) {
+        compatibleStations.push(station)
+      }
+      if (PM.SUPPORTS_HLS && station.hls) {
+        compatibleStations.push(station)
+      }
+      if (!station.old_shoutcast) {
+        compatibleStations.push(station)
+      }
+    }
+    return compatibleStations
+  }
+
   var app = new Vue({
     el: '#js__app',
     template: _AppTemplate,
@@ -49,9 +66,7 @@
       },
       hideUnplayableStations: function() {
         this.dismissCompatibilityAlert()
-        var stations = this.stations.filter(function(station) {
-          return station.stream.old_shoutcast === false
-        })
+        var stations = filterIncompatibleStations(this.stations)
         this.$set(this, 'stations', stations)
         localStorage.setItem('hideUnplayable', 'true')
       },
