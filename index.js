@@ -24,6 +24,7 @@ S.decorate('reply', 'event', function(stream) {
     .type('text/event-stream')
     .header('Cache-Control', 'no-cache')
     .header('Content-Encoding', 'identity')
+    .header('Transfer-Encoding', 'identity')
 })
 
 S.register(require('inert'))
