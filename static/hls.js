@@ -8,13 +8,7 @@
 (function() {
   'use strict';
 
-  function stripQuotes(str) {
-    if (str.indexOf('"') === 0) {
-      str = str.substring(1)
-      str = str.substring(0, str.length - 1)
-    }
-    return str
-  }
+  var U = P22.Radiola.Utils
 
   function parseM3U(data) {
     var lines = data.split('\n')
@@ -41,7 +35,7 @@
           var parts = d.split(',')
           for (var j = 0; j < parts.length; j++) {
             var pair = parts[j].split('=')
-            d2[pair[0]] = stripQuotes(pair[1])
+            d2[pair[0]] = U.stripQuotes(pair[1])
           }
           struct.streaminfs = struct.streaminfs || [ ]
           struct.streaminfs.push(d2)
@@ -70,7 +64,7 @@
           var parts = d.split(',')
           for (var j = 0; j < parts.length; j++) {
             var pair = parts[j].split('=')
-            d2[pair[0]] = stripQuotes(pair[1])
+            d2[pair[0]] = U.stripQuotes(pair[1])
           }
           struct.encryption = d2
           continue
@@ -114,120 +108,24 @@
     return Promise.resolve(struct)
   }
 
-  function isAbsoluteUrl(url) {
-    return /^(?:\w{2,10}:)?(\/\/).*/i.test(url)
-  }
-  function makeAbsoluteUrl(base, url) {
-    // makes an absolute url out of a base url (with filename) and a relative one
-    var a = document.createElement('a')
-    a.href = base
-    a.search = ''
-    var parts = url.split('?')
-    if (parts[0].substring(0, 1) === '/') {
-      a.pathname = parts[0]
-    } else {
-      a.pathname += '/../' + parts[0]
-    }
-    if (parts[1]) {
-      a.search = '?' + parts[1]
-    }
-    return a.href
-  }
-
-  var _adoptedPlaylist = null,
-      _intervals = [ ]
-
-  var HLSManager = {
-    adoptPlaylist: function(playlist) {
-      return fetch(playlist)
-      .then(function(r) { return r.text() })
-      .then(function(r) { return parseM3U(r) })
-      .then(function(m3u) { // chunk pointers (hopefully)
-        if (m3u.type === 'chunk_pointers') {
-          var chosenStream = null, s = null
-          if (m3u.chunklists.length === 1) {
-            chosenStream = m3u.chunklists[0]
-            s = m3u.streaminfs[0]
-          } else {
-            var chosenBandwidth = parseInt(m3u.streaminfs[0].BANDWIDTH, 10)
-            for (var i = 0; i < m3u.streaminfs.length; i++) {
-              s = m3u.streaminfs[i]
-              var b = parseInt(s.BANDWIDTH, 10)
-              if (b > chosenBandwidth) {
-                break
-              }
-            }
-            chosenStream = m3u.chunklists[i]
-          }
-          if (!isAbsoluteUrl(chosenStream)) {
-            chosenStream = makeAbsoluteUrl(playlist, chosenStream)
-          }
-          return Promise.all([
-            Promise.resolve(chosenStream),
-            Promise.resolve(s),
-            fetch(chosenStream)
-              .then(function(r) { return r.text() })
-              .then(function(r) { return parseM3U(r) }),
-          ])
-        } else {
-          throw new Error('Invalid playlist; please pass a source list')
-        }
-      })
-      .then(function(pair) { // chunklist
-        var playlistUrl = pair[0], chosenStreaminf = pair[1], m3u = pair[2]
-        var p = new HLSPlaylist(
-          playlistUrl,
-          chosenStreaminf,
-          m3u
-        )
-        _adoptedPlaylist = p
-        return p
-      })
-    },
-    schedule: function(func, timeout) {
-      var i = _intervals.push(window.setTimeout(function() {
-        _intervals[i] = null
-        func()
-      }, timeout)) - 1
-    },
-    schedulePeriodic: function(func, timeout) {
-      var i = _intervals.push(window.setInterval(func, timeout))
-    },
-    stop: function() {
-      for (var i = 0; i < _intervals.length; i++) {
-        if (_intervals[i] !== null) {
-          console.log('[HLS.TimeManager] clearing interval %d', i)
-          window.clearTimeout(_intervals[i])
-        }
-      }
-      return true
-    },
-  }
-
   var MIMETYPE_AACAUDIO = 'audio/aac', MIMETYPE_MP4AUDIO = 'audio/mp4'
   function canMSEType(type) { return MediaSource.isTypeSupported(type) }
 
-  HLSManager.supportsHLS =
-    canMSEType(MIMETYPE_AACAUDIO) || canMSEType(MIMETYPE_MP4AUDIO)
-
-  function HLSPlaylist(playlistUrl, chosenStreaminf, m3u) {
+  function HLSPlaylist(playlistUrl, m3u, codecs) {
     var self = this
 
-    this._selfUrl = playlistUrl
-    // this._sequence = null
-    this._baseUrl = makeAbsoluteUrl(playlistUrl, '')
-    this._streaminf = chosenStreaminf
+    if (!('MediaSource' in window)) {
+      throw new Error('MediaSource not available')
+    }
 
-    // if (typeof m3u.mediaSequence !== 'number') {
-    //   throw new TypeError('Invalid sequence identifier: ' + this._sequence)
-    // }
-    // this._sequence = m3u.mediaSequence
+    this._selfUrl = playlistUrl
+    this._baseUrl = U.makeAbsoluteUrl(playlistUrl, '')
 
     var unfetchedChunks = [ ]
     for (var i = 0; i < m3u.chunks.length; i++) {
       var chunk = m3u.chunks[i], extinf = m3u.extinfs[i]
       unfetchedChunks.push({
-        chunkUrl: isAbsoluteUrl(chunk) ? chunk : this._baseUrl + chunk,
+        chunkUrl: U.isAbsoluteUrl(chunk) ? chunk : this._baseUrl + chunk,
         extinf: extinf,
       })
     }
@@ -236,49 +134,84 @@
     this._emptyFetches = 0
     this.finished = false
 
-    if (!('MediaSource' in window)) {
-      throw new Error('MediaSource not available')
-    }
-
-    var c = chosenStreaminf.CODECS
+    var mimetype = null
     if (canMSEType(MIMETYPE_AACAUDIO)) {
-      this._mime = MIMETYPE_AACAUDIO
-    } else if (canMSEType(MIMETYPE_MP4AUDIO + '; codecs="' + c + '"')) {
-      this._mime = MIMETYPE_MP4AUDIO + '; codecs="' + c + '"'
+      mimetype = MIMETYPE_AACAUDIO
+    } else if (canMSEType(MIMETYPE_MP4AUDIO + '; codecs="' + codecs + '"')) {
+      mimetype = MIMETYPE_MP4AUDIO + '; codecs="' + codecs + '"'
     } else {
       throw new Error('Cannot find audio type that can be used with MSE')
     }
 
     this._mediaSource = new MediaSource()
-    this._mediaSourceOpen = false
+    this._sourceBuffer = null
     this._mediaSourceOpenPromise = new Promise(function(res) {
       self._mediaSource.addEventListener('sourceopen', function a() {
         self._mediaSource.removeEventListener('sourceopen', a)
-        res()
+        self._sourceBuffer = self._mediaSource.addSourceBuffer(mimetype)
+        res(true)
       })
-    }).then(function() {
-      self._mediaSourceOpen = true
-      self._sourceBuffer = self._mediaSource.addSourceBuffer(self._mime)
     })
-    this._sourceBuffer = null
+    this.src = URL.createObjectURL(this._mediaSource)
 
-    this._initialFetchPromise = Promise.all(
-      unfetchedChunks.map(function(c) { return self._chunkPipeline(c) })
-    )
+    Promise.all(
+      unfetchedChunks.map(function(c) { return self._chunkPipeline(c) }))
 
-    HLSManager.schedulePeriodic(function() {
+    this._fetchChunksInterval = setInterval(function() {
       self._fetchNewChunkList()
       .then(function(chunks) {
         return chunks.map(function(c) { return self._chunkPipeline(c) })
       })
     }, Math.floor(m3u.targetDuration * 0.47 * 1000))
 
-    this.src = URL.createObjectURL(this._mediaSource)
+  }
+
+  try {
+    HLSPlaylist.supportsHLS =
+      canMSEType(MIMETYPE_AACAUDIO) || canMSEType(MIMETYPE_MP4AUDIO)
+  } catch (e) {
+    // MediaSource not available
+    HLSPlaylist.supportsHLS = false
+  }
+
+  HLSPlaylist.fromStreamlist = function(streamlistUrl) {
+    return fetch(streamlistUrl)
+      .then(function(r) { return r.text() })
+      .then(function(r) { return parseM3U(r) })
+      .then(function(m3u) {
+        if (m3u.type !== 'chunk_pointers') {
+          throw new Error('Invalid playlist; please pass a source list')
+        }
+
+        var streamUrl = null, streaminf = null
+
+        var highestBandwidth = 0
+        for (var i = 0; i < m3u.streaminfs.length; i++) {
+          if (parseInt(m3u.streaminfs[i].BANDWIDTH, 10) > highestBandwidth) {
+            streamUrl = m3u.chunklists[i]
+            streaminf = m3u.streaminfs[i]
+          }
+        }
+        if (!U.isAbsoluteUrl(streamUrl)) {
+          streamUrl = U.makeAbsoluteUrl(streamlistUrl, streamUrl)
+        }
+
+        return fetch(streamUrl)
+          .then(function(r) { return r.text() })
+          .then(function(r) { return parseM3U(r) })
+          .then(function(m3u) {
+            return new HLSPlaylist(streamUrl, m3u, streaminf.CODECS)
+          })
+      })
+  }
+
+  HLSPlaylist.prototype.destroy = function() {
+    clearInterval(this._fetchChunksInterval)
   }
 
   HLSPlaylist.prototype._chunkPipeline = function(chunk) {
     var self = this
-    console.log('[HLS.chunkPipeline] Processing: %s', chunk.chunkUrl)
+    // console.log('[HLS.chunkPipeline] Processing: %s', chunk.chunkUrl)
     this._lastProcessedChunk = chunk
 
     return this._fetchChunk(chunk.chunkUrl)
@@ -295,12 +228,7 @@
   HLSPlaylist.prototype._appendChunk = function(buffer) {
     var self = this
 
-    var p = Promise.resolve()
-    if (!this._mediaSourceOpen) {
-      p = this._mediaSourceOpenPromise
-    }
-
-    return p.then(function() {
+    return this._mediaSourceOpenPromise.then(function() {
       return new Promise(function(res) {
         self._sourceBuffer.addEventListener('updateend', function a() {
           self._sourceBuffer.removeEventListener('updateend', a)
@@ -321,7 +249,7 @@
       var newChunks = [ ], seenLastChunk = false
       for (var i = 0; i < m3u.chunks.length; i++) {
         var chunk = m3u.chunks[i]
-        var url = isAbsoluteUrl(chunk) ? chunk : self._baseUrl + chunk
+        var url = U.isAbsoluteUrl(chunk) ? chunk : self._baseUrl + chunk
 
         if (url === self._lastProcessedChunk.chunkUrl) {
           seenLastChunk = true
@@ -350,6 +278,6 @@
   // Example: STAR FM http://starfm.live.advailo.com/audio/live/playlist.m3u8
   // Example: LR1 http://muste.radio.org.lv/shoutcast/mp4:lr1a.stream/playlist.m3u8
 
-  window.P22.Radiola.HLSManager = HLSManager
+  window.P22.Radiola.HLS = { HLSPlaylist: HLSPlaylist }
 })()
 // vim: set ts=2 sts=2 et sw=2:
