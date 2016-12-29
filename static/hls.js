@@ -59,11 +59,14 @@
           struct.extinfs.push(d[1])
           continue
         } else if (line.indexOf('EXT-X-KEY:') !== -1) {
-          var d = line.split(':')[1]
+          var pieces = line.split(':')
+          pieces.shift()
+          var d = pieces.join(':')
           var d2 = { }
           var parts = d.split(',')
           for (var j = 0; j < parts.length; j++) {
-            var pair = parts[j].split('=')
+            var pieces = parts[j].split('=')
+            var pair = [ pieces.shift(), pieces.join('=') ]
             d2[pair[0]] = U.stripQuotes(pair[1])
           }
           struct.encryption = d2
@@ -126,9 +129,16 @@
       var chunk = m3u.chunks[i], extinf = m3u.extinfs[i]
       unfetchedChunks.push({
         chunkUrl: U.isAbsoluteUrl(chunk) ? chunk : this._baseUrl + chunk,
-        extinf: extinf,
+        extinf: {
+          originalExtinf: extinf,
+          sequence: m3u.mediaSequence + i,
+        },
       })
     }
+
+    // if (m3u.encryption) {
+    //   this._encryption = this._initEncryption(m3u.encryption)
+    // }
 
     this._lastProcessedChunk = unfetchedChunks[unfetchedChunks.length - 1]
     this._emptyFetches = 0
@@ -189,6 +199,7 @@
         var highestBandwidth = 0
         for (var i = 0; i < m3u.streaminfs.length; i++) {
           if (parseInt(m3u.streaminfs[i].BANDWIDTH, 10) > highestBandwidth) {
+            highestBandwidth = parseInt(m3u.streaminfs[i].BANDWIDTH, 10)
             streamUrl = m3u.chunklists[i]
             streaminf = m3u.streaminfs[i]
           }
@@ -210,6 +221,22 @@
     clearInterval(this._fetchChunksInterval)
   }
 
+  // HLSPlaylist.prototype._initEncryption = function(encryption) {
+  //   if (!('crypto' in window) ||
+  //       !('subtle' in window.crypto)) {
+  //     throw new Error('Cryptography not supported but required')
+  //   }
+  //
+  //   return fetch(encryption.URI)
+  //     .then(function(r) { return r.arrayBuffer() })
+  //     .then(function(ab) {
+  //       return {
+  //         method: encryption.METHOD,
+  //         keyArrayBuffer: ab,
+  //       }
+  //     })
+  // }
+
   HLSPlaylist.prototype._chunkPipeline = function(chunks) {
     var self = this
 
@@ -221,19 +248,41 @@
     var fetches = chunks.map(function(c) { return self._fetchChunk(c) })
     for (var i = 0; i < chunks.length; i++) {
       self._lastProcessedChunk = chunks[i]
-      _lastPromise = _lastPromise.then(function(fetch) {
-        return fetch.then(function(b) { return self._appendChunk(b) })
-      }.bind(null, fetches[i]))
+      _lastPromise = _lastPromise.then(function(fetch, chunk) {
+        return fetch.then(function(b) {
+          // if (self._encryption) {
+          //   return self._decryptChunk(b, chunk.extinf.sequence)
+          //     .then(function(b) { return self._appendChunk(b) })
+          // } else {
+            return self._appendChunk(b)
+          // }
+        })
+      }.bind(null, fetches[i], chunks[i]))
     }
     return _lastPromise
   }
 
   HLSPlaylist.prototype._fetchChunk = function(chunk) {
-    var self = this
-
-    return (fetch(chunk.chunkUrl)
-      .then(function(r) { return r.arrayBuffer() }))
+    return fetch(chunk.chunkUrl).then(function(r) { return r.arrayBuffer() })
   }
+
+  // HLSPlaylist.prototype._decryptChunk = function(buffer, sequence) {
+  //   var self = this
+  //   var crypto = window.crypto
+  //
+  //   var algo = {
+  //     name: 'AES-CBC',
+  //     length: 128,
+  //     iv: new Uint32Array([0, 0, 0, sequence]),
+  //   }
+  //
+  //
+  //   return this._encryption.then(function(e) {
+  //     return crypto.subtle.importKey('raw', e.keyArrayBuffer, algo, true, ['decrypt'])
+  //   }).then(function(key) {
+  //     return crypto.subtle.decrypt(algo, key, buffer)
+  //   })
+  // }
 
   HLSPlaylist.prototype._appendChunk = function(buffer) {
     var self = this
@@ -260,6 +309,10 @@
       for (var i = 0; i < m3u.chunks.length; i++) {
         var chunk = m3u.chunks[i]
         var url = U.isAbsoluteUrl(chunk) ? chunk : self._baseUrl + chunk
+        var extinf = {
+          originalExtinf: m3u.extinfs[i],
+          sequence: m3u.mediaSequence + i,
+        }
 
         if (url === self._lastProcessedChunk.chunkUrl) {
           seenLastChunk = true
