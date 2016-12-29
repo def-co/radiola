@@ -191,6 +191,14 @@ class GenericDelegate extends EventEmitter {
       .then(() => this._lastState.program)
     }
   }
+
+  findStateOnce() {
+    if (this._cacheStillValid) {
+      return Promise.resolve(this._lastState)
+    } else {
+      return this.refreshState()
+    }
+  }
 }
 
 module.exports = GenericDelegate

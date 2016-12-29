@@ -24,18 +24,15 @@ exports.register = (S, opts, next) => {
 
   S.route({
     method: 'GET',
-    path: '/discover/now_playing/{station}',
+    path: '/discover/now/{station}',
     handler: (request, reply) => {
       if (D.canFindSong(request.params.station)) {
-        D.findSongOnce(request.params.station)
-        .then((data) => {
-          reply({
-            ok: true,
-            data
-          })
+        D.findStateOnce(request.params.station)
+        .then((state) => {
+          reply({ ok: true, data: state })
         })
         .catch((e) => {
-          L.error('/discover/now_playing/%s:', request.params.station, e)
+          L.error('/discover/now/%s:', request.params.station, e)
           reply({
             ok: false,
             error: 'server_error'
@@ -46,35 +43,6 @@ exports.register = (S, opts, next) => {
           ok: false,
           error: 'cannot_find_song',
           error_text: 'This station does not support song finding.',
-        }).code(400)
-      }
-    }
-  })
-
-  S.route({
-    method: 'GET',
-    path: '/discover/current_program/{station}',
-    handler: (request, reply) => {
-      if (D.canFindProgram(request.params.station)) {
-        D.findProgramOnce(request.params.station)
-        .then((data) => {
-          reply({
-            ok: true,
-            data
-          })
-        })
-        .catch((e) => {
-          L.error('/discover/current_program/%s:', request.params.station, e)
-          reply({
-            ok: false,
-            error: 'server_error',
-          }).code(500)
-        })
-      } else {
-        reply({
-          ok: false,
-          error: 'cannot_find_program',
-          error_text: 'This station does not support program finding.',
         }).code(400)
       }
     }
