@@ -26,8 +26,8 @@ exports.register = (S, opts, next) => {
     method: 'GET',
     path: '/discover/now/{station}',
     handler: (request, reply) => {
-      if (D.canFindSong(request.params.station)) {
-        D.findStateOnce(request.params.station)
+      if (D.canDiscover(request.params.station)) {
+        D.discoverOnce(request.params.station)
         .then((state) => {
           reply({ ok: true, data: state })
         })

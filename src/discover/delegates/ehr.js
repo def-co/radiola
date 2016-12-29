@@ -14,8 +14,6 @@ class EHR extends GenericDelegate {
   constructor() {
     super()
 
-    this.canDiscover = ['song']
-
     this.msMinimum = 4000
     this.msDelta = 4000
 
@@ -45,5 +43,6 @@ class EHR extends GenericDelegate {
     }).then((song) => this.processState(song))
   }
 }
+EHR.prototype.canDiscover = ['song']
 
 module.exports = EHR

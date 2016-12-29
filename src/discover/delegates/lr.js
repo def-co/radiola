@@ -17,7 +17,6 @@ class LRGeneric extends GenericDelegate {
 
     this.name = 'LR.generic'
     this._channelIndex = null
-    this.canDiscover = ['program']
 
     this.L = Modulog.bound('delegates.lr_generic')
   }
@@ -37,6 +36,7 @@ class LRGeneric extends GenericDelegate {
     .then((state) => this.processState(state))
   }
 }
+LRGeneric.prototype.canDiscover = ['program']
 
 class LR1 extends LRGeneric {
   constructor() {

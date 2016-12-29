@@ -15,7 +15,6 @@ const SWH_URL = 'http://195.13.237.142:8080/swh_online.json',
 class SWH extends GenericDelegate {
   constructor() {
     super()
-    this.canDiscover = ['song', 'program']
 
     this.name = 'SWH'
     this.url = SWH_URL
@@ -42,22 +41,22 @@ class SWH extends GenericDelegate {
     .then((state) => this.processState(state))
   }
 }
+SWH.prototype.canDiscover = ['song', 'program']
 
 class SWHGold extends SWH {
   constructor() {
     super()
-    // program seems to be null all the time?
-    this.canDiscover = ['song']
 
     this.name = 'SWH Gold'
     this.url = SWH_GOLD_URL
   }
 }
+// program seems to be null all the time?
+SWHGold.prototype.canDiscover = ['song']
 
 class SWHRock extends SWH {
   constructor() {
     super()
-    this.canDiscover = ['song']
 
     this.name = 'SWH Rock'
     this.url = SWH_ROCK_URL
@@ -77,6 +76,6 @@ class SWHRock extends SWH {
     .then((state) => this.processState(state))
   }
 }
-
+SWHGold.prototype.canDiscover = ['song']
 
 module.exports = { SWH, SWHGold, SWHRock, }

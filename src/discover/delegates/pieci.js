@@ -237,5 +237,6 @@ class Pieci extends EventEmitter {
     return Promise.resolve(null)
   }
 }
+Pieci.prototype.canDiscover = ['song']
 
 module.exports = Pieci

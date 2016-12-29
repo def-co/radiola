@@ -15,8 +15,6 @@ class GenericDelegate extends EventEmitter {
     this._listeners = 0
     this._lastState = { program: null, song: null }
 
-    this.canDiscover = ['songs']
-
     this._cacheInvalidationTimeout = null
     this._cacheStillValid = false
 
@@ -166,33 +164,8 @@ class GenericDelegate extends EventEmitter {
     return state
   }
 
-  findSongOnce() {
-    if (!_.includes(this.canDiscover, 'song')) {
-      return Promise.resolve(null)
-    }
 
-    if (this._cacheStillValid) {
-      return Promise.resolve(this._lastState.song)
-    } else {
-      return this.refreshState()
-      .then(() => this._lastState.song)
-    }
-  }
-
-  findProgramOnce() {
-    if (!_.includes(this.canDiscover, 'program')) {
-      return Promise.resolve(null)
-    }
-
-    if (this._cacheStillValid) {
-      return Promise.resolve(this._lastState.program)
-    } else {
-      return this.refreshState()
-      .then(() => this._lastState.program)
-    }
-  }
-
-  findStateOnce() {
+  discoverOnce() {
     if (this._cacheStillValid) {
       return Promise.resolve(this._lastState)
     } else {

@@ -3,6 +3,8 @@
 const EventEmitter = require('events'),
       Stream = require('stream')
 
+const _ = require('lodash')
+
 const Delegates = require('./delegates')
 
 class DiscoveryManager extends EventEmitter {
@@ -13,20 +15,21 @@ class DiscoveryManager extends EventEmitter {
   }
 
   canFindSong(station) {
-    return DiscoveryManager.CAN_FIND_SONG.has(station)
+    var d = Delegates.findAppointedDelegate(station)
+    if (!d) { return false }
+    return _.includes(Delegates[d].prototype.canDiscover, 'song')
   }
   canFindProgram(station) {
-    return DiscoveryManager.CAN_FIND_PROGRAM.has(station)
+    var d = Delegates.findAppointedDelegate(station)
+    if (!d) { return false }
+    return _.includes(Delegates[d].prototype.canDiscover, 'program')
   }
   canDiscover(station) {
     return this.canFindSong(station) || this.canFindProgram(station)
   }
 
-  findSongOnce(station) {
-    return this.getDelegate(station).findSongOnce(station)
-  }
-  findProgramOnce(station) {
-    return this.getDelegate(station).findProgramOnce(station)
+  discoverOnce(station) {
+    return this.getDelegate(station).discoverOnce(station)
   }
 
   getDelegate(station) {
@@ -68,17 +71,5 @@ class DiscoveryManager extends EventEmitter {
     return stream
   }
 }
-
-DiscoveryManager.CAN_FIND_SONG = new Set([
-  'swh', 'swh_gold', 'swh_rock',
-
-  'pieci_koncerti', 'pieci_atklajumi', 'pieci_latviesi', 'pieci_hiti', 'pieci', 'pieci_ziemassvetki',
-
-  'ehr',
-])
-
-DiscoveryManager.CAN_FIND_PROGRAM = new Set([
-  'lr1', 'lr2', 'lr3', 'lr4', 'lr6',
-])
 
 module.exports = DiscoveryManager
