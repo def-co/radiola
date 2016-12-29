@@ -15,25 +15,40 @@ const SWH_URL = 'http://195.13.237.142:8080/swh_online.json',
 class SWH extends GenericDelegate {
   constructor() {
     super()
+    this.canDiscover = ['song', 'program']
+
     this.name = 'SWH'
     this.url = SWH_URL
     this.L = L
+
+    this.errorWarningThreshold = 0
+    this.errorInterruptThreshold = 5
   }
 
-  fetchCurrentlyPlaying() {
+  refreshState() {
     return request({
       url: this.url,
       json: true,
-    }).then((streams) => {
-      let { artist, title } = streams[0]
-      return { artist, title }
-    }).then((song) => this.optionallyDispatchUpdate(song))
+    })
+    .then((streams) => {
+      let { artist, title, sobrid_etera_title } = streams[0]
+      // sobrid_etera_title might be null which indicates that there is no
+      // ongoing program
+      return {
+        program: sobrid_etera_title,
+        song: { artist, title },
+      }
+    })
+    .then((state) => this.processState(state))
   }
 }
 
 class SWHGold extends SWH {
   constructor() {
     super()
+    // program seems to be null all the time?
+    this.canDiscover = ['song']
+
     this.name = 'SWH Gold'
     this.url = SWH_GOLD_URL
   }
@@ -42,17 +57,24 @@ class SWHGold extends SWH {
 class SWHRock extends SWH {
   constructor() {
     super()
+    this.canDiscover = ['song']
+
     this.name = 'SWH Rock'
     this.url = SWH_ROCK_URL
   }
 
-  fetchCurrentlyPlaying() {
+  refreshState() {
     return request({
       url: this.url,
-    }).then((text) => {
+    })
+    .then((text) => {
       let [artist, ...title] = text.split('-')
-      return { artist: artist.trim(), title: title.join('-').trim() }
-    }).then((song) => this.optionallyDispatchUpdate(song))
+      return {
+        program: null,
+        song: { artist: artist.trim(), title: title.join('-').trim(), },
+      }
+    })
+    .then((state) => this.processState(state))
   }
 }
 

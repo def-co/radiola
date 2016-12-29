@@ -33,8 +33,8 @@ class Pieci extends EventEmitter {
   constructor() {
     super()
 
-    this.nextTimeout = null
-    this.listeners = {
+    this._nextTimeout = null
+    this._listeners = {
       pieci_koncerti: 0,
       pieci_atklajumi: 0,
       pieci_latviesi: 0,
@@ -43,7 +43,7 @@ class Pieci extends EventEmitter {
       pieci_ziemassvetki: 0,
     }
 
-    this.lastSongs = {
+    this._lastSongs = {
       pieci_koncerti: null,
       pieci_atklajumi: null,
       pieci_latviesi: null,
@@ -52,102 +52,126 @@ class Pieci extends EventEmitter {
       pieci_ziemassvetki: null,
     }
 
-    this.cacheStillValid = false
-    this.cacheInvalidationTimeout = null
+    this._cacheStillValid = false
+    this._cacheInvalidationTimeout = null
   }
 
-  attachStream(stream, station) {
-    this.addToInterval(station)
+  get listeners() {
+    return _.reduce(this._listeners, (a, v) => a + v, 0)
+  }
 
-    const publishUpdate = (data) => {
+  subscribeStream(stream, station, events = [ ]) {
+    const publishUpdate = (event, data) => {
       stream.write([
-        'event: song',
+        `event: ${event}`,
         `data: ${JSON.stringify(data)}`,
         '',
         '',
       ].join('\n'))
     }
 
-    if (this.lastSongs[station] !== null) {
-      publishUpdate(this.lastSongs[station])
+    if (this._lastSongs[station] !== null) {
+      publishUpdate('song', this._lastSongs[station])
     }
 
-    this.addListener(`song.${station}`, publishUpdate)
+    let _handleSong = null
+    if (_.includes(events, 'songs')) {
+      _handleSong = publishUpdate.bind(this, 'song')
+      this.addListener(`change.song.${station}`, _handleSong)
+    }
+
+    let _handleErrorCountExceeded = () => {
+      publishUpdate('server_error', null)
+      setTimeout(() => stream.emit('close'))
+    }
+    this.addListener('errorCountExceeded', _handleErrorCountExceeded)
 
     let s = setInterval(() => {
       // prevents Hapi from closing the connection
-      stream.write([
-        'event: keepalive',
-        'data: null',
-        '',
-        '',
-      ].join('\n'))
+      publishUpdate('keepalive', null)
     }, 60000)
 
     stream.on('close', () => {
       clearInterval(s)
-      this.removeListener(`song.${station}`, publishUpdate)
-      this.removeFromInterval(station)
-    })
-  }
+      if (_handleSong !== null) {
+        this.removeListener(`song.${station}`, _handleSong)
+      }
 
-  addToInterval(station) {
-    this.listeners[station] += 1
-    if (this.nextTimeout === null) {
+      this.removeListener('errorCountExceeded', _handleErrorCountExceeded)
+
+      this._listeners[station] -= 1
+      if (this.listeners === 0 && this._nextTimeout !== null) {
+        clearTimeout(this.nextTimeout)
+        this.nextTimeout = null
+      }
+    })
+
+    this._listeners[station] += 1
+    if (this.listeners > 0 && this._nextTimeout === null) {
       this.startInterval()
     }
   }
 
-  removeFromInterval(station) {
-    this.listeners[station] -= 1
-    if (_.reduce(this.listeners, (a, v) => a + v, 0) === 0) {
-      clearTimeout(this.nextTimeout)
-      this.nextTimeout = null
+  computeNextPollTimeout(errorCount) {
+    const msMinimum = 9000, msDelta = 6000
+    const errorInterruptThreshold = 7, errorWarningThreshold = 2
+
+    let ms = msMinimum + Math.round(Math.random() * msDelta)
+    if (errorCount > errorInterruptThreshold) {
+      // L.error('Too many errors encountered while trying to fetch Pieci NP; ' +
+      // 'aborting!')
+      return null
+    } else if (errorCount > errorWarningThreshold) {
+      let addMs = 100 * Math.pow(2, errorCount - 3)
+      L.warning('Many errors encountered while fetching Pieci NP; ' +
+        'performing exponential backoff (currently at %d ms)', addMs)
+      return ms + addMs
+    } else {
+      return ms
     }
   }
 
   startInterval() {
     let errorCount = 0
     const performPoll = () => {
-      let ms = 9000 + Math.round(Math.random() * 6000)
-      if (errorCount > 15) {
-        L.error('Too many errors encountered while trying to fetch Pieci NP; ' +
-          'aborting!')
+      let ms = this.computeNextPollTimeout(errorCount)
+      if (ms) {
+        // L.debug('Scheduling next poll in %f.02 seconds', ms / 1000)
+        this.nextTimeout = setTimeout(performPoll, ms)
+      } else {
+        L.error('Error threshold exceeded! Aborting polling loop.')
         this.nextTimeout = null
         this.emit('errorCountExceeded')
         return
-      } else if (errorCount > 3) {
-        let addMs = 100 * Math.pow(2, errorCount - 3)
-        L.warning('Many errors encountered while fetching Pieci NP; ' +
-          'performing exponential backoff (currently at %d ms)', addMs)
-        ms += addMs
-      }
-      this.nextTimeout = setTimeout(performPoll, ms)
-
-      if (this.cacheStillValid) {
-        return // leftover requests
       }
 
-      this.fetchCurrentlyPlaying()
+      if (this._cacheStillValid) { return }
+
+      this.refreshState()
+      .then((s) => {
+        errorCount = 0
+        return s
+      })
       .catch((e) => {
-        L.warning('An error happened during fetching of Pieci NP:', e)
+        L.warning('An error happened during fetching of Pieci NP: %s', e)
+        L.debug('', e)
         errorCount++
       })
     }
     performPoll()
   }
 
-  fetchCurrentlyPlaying() {
+  refreshState() {
     let url
     {
       let listenedStations = [ ]
-      _.forEach(this.listeners, (listenerCount, name) => {
+      _.forEach(this._listeners, (listenerCount, name) => {
         if (listenerCount > 0) {
           listenedStations.push(name)
         }
       })
       if (listenedStations.length === 0) {
-        listenedStations = Object.keys(this.listeners)
+        listenedStations = Object.keys(this._listeners)
       }
       let station = _.shuffle(listenedStations).pop()
       url = URLS[station]
@@ -157,16 +181,16 @@ class Pieci extends EventEmitter {
       url: url,
       json: true,
     })
-    .then((streams) => this.optionallyDispatchUpdates(streams))
+    .then((state) => this.processState(state))
   }
 
-  optionallyDispatchUpdates(streams) {
-    clearTimeout(this.cacheInvalidationTimeout)
-    this.cacheInvalidationTimeout = setTimeout(() => {
-      this.cacheStillValid = false
-      this.cacheInvalidationTimeout = null
+  processState(streams) {
+    clearTimeout(this._cacheInvalidationTimeout)
+    this._cacheInvalidationTimeout = setTimeout(() => {
+      this._cacheStillValid = false
+      this._cacheInvalidationTimeout = null
     }, 8750)
-    this.cacheStillValid = true
+    this._cacheStillValid = true
 
     for (let stream of streams) {
       try {
@@ -179,10 +203,10 @@ class Pieci extends EventEmitter {
           song = { artist, title }
         }
 
-        if (_.isEqual(song, this.lastSongs[stationName])) {
+        if (_.isEqual(song, this._lastSongs[stationName])) {
           continue
         } else {
-          this.lastSongs[stationName] = song
+          this._lastSongs[stationName] = song
           this.emit(`song.${stationName}`, song)
         }
       } catch (e) {
@@ -201,12 +225,16 @@ class Pieci extends EventEmitter {
   }
 
   findSongOnce(station) {
-    if (this.cacheStillValid) {
-      return Promise.resolve(this.lastSongs[station])
+    if (this._cacheStillValid) {
+      return Promise.resolve(this._lastSongs[station])
     } else {
-      return this.fetchCurrentlyPlaying()
-      .then(() => this.lastSongs[station])
+      return this.refreshState()
+      .then(() => this._lastSongs[station])
     }
+  }
+
+  findProgramOnce(station) {
+    return Promise.resolve(null)
   }
 }
 

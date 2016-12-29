@@ -2,7 +2,8 @@
 
 const SWHDelegates = require('./swh'),
       Pieci = require('./pieci'),
-      EHR = require('./ehr')
+      EHR = require('./ehr'),
+      LRDelegates = require('./lr')
 
 let Delegates = module.exports = {
   SWH: SWHDelegates.SWH,
@@ -10,6 +11,12 @@ let Delegates = module.exports = {
   SWHRock: SWHDelegates.SWHRock,
 
   Pieci, EHR,
+
+  LR1: LRDelegates.LR1,
+  LR2: LRDelegates.LR2,
+  LR3: LRDelegates.LR3,
+  LR4: LRDelegates.LR4,
+  LR6: LRDelegates.LR6,
 
   findAppointedDelegate: (station) => {
     switch (station) {
@@ -32,6 +39,17 @@ let Delegates = module.exports = {
 
       case 'ehr':
         return 'EHR';
+
+      case 'lr1':
+        return 'LR1';
+      case 'lr2':
+        return 'LR2';
+      case 'lr3':
+        return 'LR3';
+      case 'lr4':
+        return 'LR4';
+      case 'lr_naba':
+        return 'LR6';
 
       default:
         return null;

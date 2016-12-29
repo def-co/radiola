@@ -11,12 +11,14 @@ class GenericDelegate extends EventEmitter {
 
     this.name = 'GenericDelegate'
 
-    this.nextTimeout = null
-    this.listeners = 0
-    this.lastSong = null
+    this._nextTimeout = null
+    this._listeners = 0
+    this._lastState = { program: null, song: null }
 
-    this.cacheInvalidationTimeout = null
-    this.cacheStillValid = false
+    this.canDiscover = ['songs']
+
+    this._cacheInvalidationTimeout = null
+    this._cacheStillValid = false
 
     this.msMinimum = 9000
     this.msDelta = 6000
@@ -27,53 +29,81 @@ class GenericDelegate extends EventEmitter {
     this.L = Modulog.bound('discover.generic_delegate')
   }
 
-  attachStream(stream, station) {
-    this.addToInterval()
+  get listeners() {
+    return this._listeners
+  }
+  set listeners(v) {
+    this._listeners = v
+    if (this._listeners > 0 && this._nextTimeout === null) {
+      this.startInterval()
+    } else if (this._listeners === 0 && this._nextTimeout !== null) {
+      clearTimeout(this.nextTimeout)
+      this.nextTimeout = null
+    }
+    return v
+  }
 
-    const publishUpdate = (data) => {
+  subscribeStream(stream, station, events = [ ]) {
+    const publishUpdate = (event, data) => {
       stream.write([
-        'event: song',
+        `event: ${event}`,
         `data: ${JSON.stringify(data)}`,
         '',
         '',
       ].join('\n'))
     }
 
-    if (this.lastSong !== null) {
-      publishUpdate(this.lastSong)
+    let _handleProgram = null, _handleSong = null
+
+    if (_.includes(events, 'programs') &&
+        _.includes(this.canDiscover, 'program')) {
+      if (this._lastState.program !== null) {
+        publishUpdate('program', this._lastState.program)
+      }
+      _handleProgram = publishUpdate.bind(this, 'program')
+      this.addListener('change.program', _handleProgram)
     }
 
-    this.addListener('song', publishUpdate)
+    if (_.includes(events, 'songs') && _.includes(this.canDiscover, 'song')) {
+      if (this._lastState.song !== null) {
+        publishUpdate('song', this._lastState.song)
+      }
+      _handleSong = publishUpdate.bind(this, 'song')
+      this.addListener('change.song', _handleSong)
+    }
 
     let s = setInterval(() => {
       // prevents Hapi from closing the connection
-      stream.write([
-        'event: keepalive',
-        'data: null',
-        '',
-        '',
-      ].join('\n'))
+      publishUpdate('keepalive', null)
     }, 60000)
 
     stream.on('close', () => {
       clearInterval(s)
-      this.removeListener('song', publishUpdate)
-      this.removeFromInterval()
+      if (_handleProgram !== null) {
+        this.removeListener('change.program', _handleProgram)
+      }
+      if (_handleSong !== null) {
+        this.removeListener('change.song', _handleSong)
+      }
+      this.listeners -= 1
     })
+
+    this.listeners += 1
   }
 
-  addToInterval() {
-    this.listeners++
-    if (this.nextTimeout === null) {
-      this.startInterval()
+  computeNextPollTimeout(errorCount) {
+    let ms = this.msMinimum + Math.round(Math.random() * this.msDelta)
+    if (errorCount > this.errorInterruptThreshold) {
+      // throw new Error('Interrupt')
+      return null
+    } else if (errorCount > this.errorWarningThreshold) {
+      let addSeconds = Math.pow(2, errorCount - this.errorWarningThreshold)
+      this.L.warning('Many errors encountered when fetch %s NP; ' +
+        'performing exponential backoff (currently at %d seconds)',
+          this.name, addSeconds)
+      ms += 1000 * addSeconds
     }
-  }
-
-  removeFromInterval() {
-    if (--this.listeners === 0) {
-      clearTimeout(this.nextTimeout)
-      this.nextTimeout = null
-    }
+    return ms
   }
 
   startInterval() {
@@ -81,27 +111,28 @@ class GenericDelegate extends EventEmitter {
 
     let errorCount = 0
     const performPoll = () => {
-      let ms = this.msMinimum + Math.round(Math.random() * this.msDelta)
-      if (errorCount > this.errorInterruptThreshold) {
-        L.error('Too many errors encountered while fetching %s NP; aborting!',
+      let ms = this.computeNextPollTimeout(errorCount)
+      if (ms) {
+        this.nextTimeout = setTimeout(performPoll, ms)
+      } else {
+        this.L.error('Error threshold exceeded for fetching %s NP; aborting!',
           this.name)
         this.nextTimeout = null
         this.emit('errorCountExceeded')
         return
-      } else if (errorCount > this.errorWarningThreshold) {
-        let addSeconds = Math.pow(2, errorCount - this.errorWarningThreshold)
-        L.warning('Many errors encountered when fetch %s NP; ' +
-          'performing exponential backoff (currently at %d seconds)',
-            this.name, addSeconds)
-        ms += 1000 * addSeconds
       }
-      this.nextTimeout = setTimeout(performPoll, ms)
 
-      if (this.cacheStillValid) { return }
+      if (this._cacheStillValid) { return }
 
-      this.fetchCurrentlyPlaying()
+      this.refreshState()
+      .then((s) => {
+        errorCount = 0
+        return s
+      })
       .catch((e) => {
-        L.warning('An error encountered during fetching %s NP:', this.name, e)
+        L.warning('An error encountered during fetching %s NP: %s',
+          this.name, e)
+        L.debug('', e)
         errorCount++
       })
     }
@@ -109,33 +140,55 @@ class GenericDelegate extends EventEmitter {
     performPoll()
   }
 
-  fetchCurrentlyPlaying() {
-    throw new Error(
-      'GenericDelegate#fetchCurrentlyPlaying should be overridden')
+  refreshState() {
+    throw new Error('GenericDelegate#refreshState should be overridden')
   }
 
-  optionallyDispatchUpdate(song) {
-    clearTimeout(this.cacheInvalidationTimeout)
-    this.cacheInvalidationTimeout = setTimeout(() => {
-      this.cacheStillValid = false
-      this.cacheInvalidationTimeout = null
+  processState(state) {
+    clearTimeout(this._cacheInvalidationTimeout)
+    this._cacheInvalidationTimeout = setTimeout(() => {
+      this._cacheStillValid = false
+      this._cacheInvalidationTimeout = null
     }, this.msMinimum - 250)
-    this.cacheStillValid = true
+    this._cacheStillValid = true
 
-    if (!_.isEqual(song, this.lastSong)) {
-      this.lastSong = song
-      this.emit('song', song)
+    if (!_.isEqual(state, this._lastState)) {
+      if (state.program !== this._lastState.program) {
+        this.emit('change.program', state.program, this._lastState.program)
+      }
+      if (!_.isEqual(state.song, this._lastState.song)) {
+        this.emit('change.song', state.song, this._lastState.song)
+      }
+      this.emit('change', state, this._lastState)
+      this._lastState = state
     }
 
-    return song
+    return state
   }
 
   findSongOnce() {
-    if (this.cacheStillValid) {
-      return Promise.resolve(this.lastSong)
+    if (!_.includes(this.canDiscover, 'song')) {
+      return Promise.resolve(null)
+    }
+
+    if (this._cacheStillValid) {
+      return Promise.resolve(this._lastState.song)
     } else {
-      return this.fetchCurrentlyPlaying()
-      .then(() => this.lastSong)
+      return this.refreshState()
+      .then(() => this._lastState.song)
+    }
+  }
+
+  findProgramOnce() {
+    if (!_.includes(this.canDiscover, 'program')) {
+      return Promise.resolve(null)
+    }
+
+    if (this._cacheStillValid) {
+      return Promise.resolve(this._lastState.program)
+    } else {
+      return this.refreshState()
+      .then(() => this._lastState.program)
     }
   }
 }
