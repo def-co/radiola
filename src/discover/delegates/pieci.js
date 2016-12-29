@@ -94,7 +94,7 @@ class Pieci extends EventEmitter {
     stream.on('close', () => {
       clearInterval(s)
       if (_handleSong !== null) {
-        this.removeListener(`song.${station}`, _handleSong)
+        this.removeListener(`change.song.${station}`, _handleSong)
       }
 
       this.removeListener('errorCountExceeded', _handleErrorCountExceeded)
@@ -207,7 +207,7 @@ class Pieci extends EventEmitter {
           continue
         } else {
           this._lastSongs[stationName] = song
-          this.emit(`song.${stationName}`, song)
+          this.emit(`change.song.${stationName}`, song)
         }
       } catch (e) {
         // Pieci often responds with malformed entries, undefined playlists and
@@ -224,17 +224,13 @@ class Pieci extends EventEmitter {
     return streams
   }
 
-  findSongOnce(station) {
+  discoverOnce(station) {
     if (this._cacheStillValid) {
-      return Promise.resolve(this._lastSongs[station])
+      return Promise.resolve({ program: null, song: this._lastSongs[station] })
     } else {
       return this.refreshState()
-      .then(() => this._lastSongs[station])
+      .then(() => ({ program: null, song: this._lastSongs[station] }))
     }
-  }
-
-  findProgramOnce(station) {
-    return Promise.resolve(null)
   }
 }
 Pieci.prototype.canDiscover = ['song']
