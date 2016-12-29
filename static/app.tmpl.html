@@ -6,19 +6,6 @@
   © 2016 paulsnar. All Rights Reserved.
 -->
 <div>
-  <div class="alert alert-warning" v-if="this.compatibility_issues">
-    <p>
-      <span class="glyphicon glyphicon-alert"></span>
-      Dažas stacijas nebūs iespējams atskaņot, jo jūsu pārlūks tās neatbalsta.
-      Varat <a href="#" v-on:click="hideUnplayableStations">slēpt nespēlējamās stacijas</a>
-      vai <a href="#" v-on:click="dismissCompatibilityAlert">aizvērt šo paziņojumu.</a>
-      <button class="close" v-on:click="dismissCompatibilityAlert">&times;</button>
-    </p>
-    <p class="text-muted" style="font-style: italic;">
-      Ja jūs slēpsit nespēlējamās stacijas, šī izvēle tiks saglabāta un tās vairs netiks
-      attēlotas šajā pārlūkā.
-    </p>
-  </div>
   <div class="alert alert-danger" v-if="this.loaded_error">
     <span class="glyphicon glyphicon-alert"></span>
     <strong>Ielāde neizdevās!</strong>

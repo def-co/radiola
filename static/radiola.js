@@ -16,28 +16,18 @@
 
   var PM = P22.Radiola.PlayManager
 
-  function filterIncompatibleStations(allStations) {
-    var compatibleStations = [ ]
-    for (var i = 0; i < allStations.length; i++) {
-      var station = allStations[i]
-      if (PM.SUPPORTS_OLD_SHOUTCAST && station.old_shoutcast) {
-        compatibleStations.push(station)
-      }
-      if (PM.SUPPORTS_HLS && station.hls) {
-        compatibleStations.push(station)
-      }
-      if (!station.old_shoutcast) {
-        compatibleStations.push(station)
-      }
+  function findStation(id, stations) {
+    var station = null
+    for (var i = 0; i < stations.length; i++) {
+      if (stations[i].id === id) { station = stations[i] }
     }
-    return compatibleStations
+    return station
   }
 
   var app = new Vue({
     el: '#js__app',
     template: _AppTemplate,
     data: {
-      compatibility_issues: false,
       buffering: false,
       buffering_error: false,
       loaded: false,
@@ -48,7 +38,12 @@
     },
     methods: {
       changeActiveStation: function(i) {
-        var station = PM.switchStation(i)
+        var station = findStation(i, this.stations)
+        if (station._incompatible) {
+          alert('Šo staciju nav iespējams atskaņot uz šīs ierīces.')
+          return false
+        }
+        station = PM.switchStation(i)
         this.$set(this, 'currently_playing', station)
         this.$set(this, 'buffering_error', false)
         this.$set(this, 'buffering', true)
@@ -60,15 +55,6 @@
       stop: function() {
         P22.Radiola.PlayManager.stop()
         this.$set(this, 'currently_playing', false)
-      },
-      dismissCompatibilityAlert: function() {
-        this.$set(this, 'compatibility_issues', false)
-      },
-      hideUnplayableStations: function() {
-        this.dismissCompatibilityAlert()
-        var stations = filterIncompatibleStations(this.stations)
-        this.$set(this, 'stations', stations)
-        localStorage.setItem('hideUnplayable', 'true')
       },
     },
     components: {
@@ -85,6 +71,7 @@
         template: [
           '<div',
               'class="thumbnail"',
+              ':class="{ \'station-incompatible\': station._incompatible }"',
               'v-on:click="handleClicked">',
             '<img :src="station.logo" alt="" />',
             '<p',
@@ -107,21 +94,18 @@
   })
   .then(function(json) {
     PM.init(json)
-    Vue.set(app, 'stations', json.stations)
-    Vue.set(app, 'loaded', true)
 
-    if ((window.safari || (window.chrome && window.chrome.runtime))) {
-      // Safari refuses to play SHOUTcast, since it interprets its weird ICY 200
-      // headers as HTTP/0.9, therefore refusing to load it as a resource.
-      // There's no real workaround, apart from rehosting the stream, which I'm
-      // not that keen on.
-      if (localStorage.getItem('hideUnplayable')) {
-        app.hideUnplayableStations()
-      } else {
-        Vue.set(app, 'compatibility_issues', true)
+    for (var i = 0; i < json.stations.length; i++) {
+      var station = json.stations[i]
+      if (station.old_shoutcast) {
+        if (PM.SUPPORTS_OLD_SHOUTCAST) { continue }
+        else if (station.hls && PM.SUPPORTS_HLS) { continue }
+        else { station._incompatible = true }
       }
     }
 
+    Vue.set(app, 'stations', json.stations)
+    Vue.set(app, 'loaded', true)
   })
 
   PM.addListener('song_renewed', function(data) {
