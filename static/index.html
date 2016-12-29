@@ -11,7 +11,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width" />
   <title>P22 Radiola</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.0/css/foundation-flex.min.css" />
   <style>
     .inline-loading {
       display: inline-block;
@@ -29,6 +29,16 @@
       opacity: 0.3;
       filter: grayscale(100%);
     }
+
+    body { margin: 0; width: 100%; }
+    .container {
+      top: 0;
+      width: 95%;
+      max-width: 960px;
+      margin-top: 0;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body>
@@ -39,7 +49,7 @@
       P22 Radiola
     </h1>
     <div id="js__app">
-      <div class="alert alert-info">
+      <div class="callout primary">
         <span class="inline-loading"></span>
         Notiek ielāde...
       </div>
