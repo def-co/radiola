@@ -75,7 +75,7 @@ class Pieci extends EventEmitter {
     }
 
     let _handleSong = null
-    if (_.includes(events, 'songs')) {
+    if (_.includes(events, 'song')) {
       _handleSong = publishUpdate.bind(this, 'song')
       this.addListener(`change.song.${station}`, _handleSong)
     }

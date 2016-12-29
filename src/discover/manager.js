@@ -44,29 +44,13 @@ class DiscoveryManager extends EventEmitter {
     }
   }
 
-  createSongStream(station) {
+  createStream(station, filter = [ ]) {
     let stream = new Stream.PassThrough()
 
-    let delegate = this.getDelegate(station)
-    delegate.subscribeStream(stream, station, ['songs'])
-
-    return stream
-  }
-
-  createProgramStream(station) {
-    let stream = new Stream.PassThrough()
+    if (filter.length === 0) { filter = ['song', 'program'] }
 
     let delegate = this.getDelegate(station)
-    delegate.subscribeStream(stream, station, ['programs'])
-
-    return stream
-  }
-
-  createHoseStream(station) {
-    let stream = new Stream.PassThrough()
-
-    let delegate = this.getDelegate(station)
-    delegate.subscribeStream(stream, station, ['songs', 'programs'])
+    delegate.subscribeStream(stream, station, filter)
 
     return stream
   }

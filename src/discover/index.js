@@ -1,6 +1,8 @@
 'use strict';
 
-const L = require('modulog').bound('discover')
+
+const L = require('modulog').bound('discover'),
+      _ = require('lodash')
 
 const DiscoveryManager = require('./manager')
 
@@ -9,10 +11,23 @@ exports.register = (S, opts, next) => {
 
   S.expose('discovery_manager', D)
 
+  const stationExists = (station) => {
+    let s = _.find(S.app.stations, (v) => v.id === station)
+    return typeof s !== 'undefined'
+  }
+
   S.route({
     method: 'GET',
     path: '/discover/{station}',
     handler: (request, reply) => {
+      if (!stationExists(request.params.station)) {
+        return reply({
+          ok: false,
+          error: 'not_found',
+          error_text: 'This station does not exist.',
+        }).code(404)
+      }
+
       reply({
         ok: true,
         station: request.params.station,
@@ -26,6 +41,14 @@ exports.register = (S, opts, next) => {
     method: 'GET',
     path: '/discover/now/{station}',
     handler: (request, reply) => {
+      if (!stationExists(request.params.station)) {
+        reply({
+          ok: false,
+          error: 'not_found',
+          error_text: 'This station does not exist.',
+        }).code(404)
+      }
+
       if (D.canDiscover(request.params.station)) {
         D.discoverOnce(request.params.station)
         .then((state) => {
@@ -50,76 +73,39 @@ exports.register = (S, opts, next) => {
 
   S.route({
     method: 'GET',
-    path: '/discover/songs/{station}',
-    handler: (request, reply) => {
-      if (D.canFindSong(request.params.station)) {
-        let stream = D.createSongStream(request.params.station)
-
-        request.once('disconnect', () => {
-          stream.emit('close')
-        })
-
-        reply.event(stream)
-      } else {
-        reply.event([
-          'event: stream_error',
-          'data: "Invalid station."',
-          '',
-          '',
-        ].join('\n'))
-          .code(400)
-          .header('Connection', 'close')
-      }
-    }
-  })
-
-  S.route({
-    method: 'GET',
-    path: '/discover/programs/{station}',
-    handler: (request, reply) => {
-      if (D.canFindProgram(request.params.station)) {
-        let stream = D.createProgramStream(request.params.station)
-
-        request.once('disconnect', () => {
-          stream.emit('close')
-        })
-
-        reply.event(stream)
-      } else {
-        reply.event([
-          'event: stream_error',
-          'data: "Invalid station."',
-          '',
-          '',
-        ].join('\n'))
-          .code(400)
-          .header('Connection', 'close')
-      }
-    }
-  })
-
-  S.route({
-    method: 'GET',
     path: '/discover/hose/{station}',
     handler: (request, reply) => {
-      if (D.canDiscover(request.params.station)) {
-        let stream = D.createHoseStream(request.params.station)
+      if (!stationExists(request.params.station)) {
+        return reply.event([
+          'event: stream_error',
+          'data: "Invalid station."',
+          '',
+          '',
+        ].join('\n'))
+          .code(404)
+          .header('Connection', 'close')
+      }
 
-        request.once('disconnect', () => {
-          stream.emit('close')
-        })
-
-        reply.event(stream)
-      } else {
+      if (!D.canDiscover(request.params.station)) {
         reply.event([
           'event: stream_error',
           'data: "Invalid station."',
           '',
           '',
         ].join('\n'))
-          .code(400)
-          .header('Connection', 'close')
+        .code(400)
+        .header('Connection', 'close')
       }
+
+      let filter = request.query.filter ? request.query.filter.split(',') : [ ]
+
+      let stream = D.createStream(request.params.station, filter)
+
+      request.once('disconnect', () => {
+        stream.emit('close')
+      })
+
+      reply.event(stream)
     }
   })
 

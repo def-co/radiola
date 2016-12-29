@@ -5,7 +5,7 @@ const fs = require('fs')
 const Hapi = require('hapi')
 const L = require('modulog').bound('radiola')
 
-let stations = require('./stations.json')
+let { stations } = require('./stations.json')
 // fs.watch('./stations.json', (e, name) => {
 //   fs.readFile('./stations.json', 'utf-8', (e, data) => {
 //     if (e) throw e

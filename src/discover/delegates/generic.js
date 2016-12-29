@@ -53,7 +53,7 @@ class GenericDelegate extends EventEmitter {
 
     let _handleProgram = null, _handleSong = null
 
-    if (_.includes(events, 'programs') &&
+    if (_.includes(events, 'program') &&
         _.includes(this.canDiscover, 'program')) {
       if (this._lastState.program !== null) {
         publishUpdate('program', this._lastState.program)
@@ -62,7 +62,7 @@ class GenericDelegate extends EventEmitter {
       this.addListener('change.program', _handleProgram)
     }
 
-    if (_.includes(events, 'songs') && _.includes(this.canDiscover, 'song')) {
+    if (_.includes(events, 'song') && _.includes(this.canDiscover, 'song')) {
       if (this._lastState.song !== null) {
         publishUpdate('song', this._lastState.song)
       }
@@ -96,7 +96,7 @@ class GenericDelegate extends EventEmitter {
       return null
     } else if (errorCount > this.errorWarningThreshold) {
       let addSeconds = Math.pow(2, errorCount - this.errorWarningThreshold)
-      this.L.warning('Many errors encountered when fetch %s NP; ' +
+      this.L.warning('Many errors encountered when fetching %s NP; ' +
         'performing exponential backoff (currently at %d seconds)',
           this.name, addSeconds)
       ms += 1000 * addSeconds

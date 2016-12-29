@@ -5,7 +5,7 @@ exports.register = (S, opts, next) => {
     method: 'GET',
     path: '/stations.json',
     handler: (request, reply) => {
-      reply(S.app.stations)
+      reply({ ok: true, stations: S.app.stations })
     }
   })
 
