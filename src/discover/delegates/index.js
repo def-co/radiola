@@ -3,20 +3,20 @@
 const SWHDelegates = require('./swh'),
       Pieci = require('./pieci'),
       EHR = require('./ehr'),
-      LRDelegates = require('./lr')
+      LRDelegates = require('./lr'),
+      Naba = require('./naba')
 
 let Delegates = module.exports = {
   SWH: SWHDelegates.SWH,
   SWHGold: SWHDelegates.SWHGold,
   SWHRock: SWHDelegates.SWHRock,
 
-  Pieci, EHR,
-
   LR1: LRDelegates.LR1,
   LR2: LRDelegates.LR2,
   LR3: LRDelegates.LR3,
   LR4: LRDelegates.LR4,
-  LR6: LRDelegates.LR6,
+
+  Pieci, EHR, Naba,
 
   findAppointedDelegate: (station) => {
     switch (station) {
@@ -48,8 +48,9 @@ let Delegates = module.exports = {
         return 'LR3';
       case 'lr4':
         return 'LR4';
+
       case 'lr_naba':
-        return 'LR6';
+        return 'Naba';
 
       default:
         return null;

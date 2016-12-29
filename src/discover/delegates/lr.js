@@ -74,13 +74,5 @@ class LR4 extends LRGeneric {
   }
 }
 
-class LR6 extends LRGeneric {
-  constructor() {
-    super()
-    this.name = 'LR6'
-    this.L = Modulog.bound('delegates.lr6')
-    this._channelIndex = 6
-  }
-}
 
-module.exports = { LR1, LR2, LR3, LR4, LR6 }
+module.exports = { LR1, LR2, LR3, LR4 }

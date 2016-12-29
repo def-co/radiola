@@ -70,6 +70,8 @@ class GenericDelegate extends EventEmitter {
       this.addListener('change.song', _handleSong)
     }
 
+    this.emit('_meta.stream.add', stream, station, events)
+
     let s = setInterval(() => {
       // prevents Hapi from closing the connection
       publishUpdate('keepalive', null)
@@ -83,6 +85,7 @@ class GenericDelegate extends EventEmitter {
       if (_handleSong !== null) {
         this.removeListener('change.song', _handleSong)
       }
+      this.emit('_meta.stream.close', stream, station, events)
       this.listeners -= 1
     })
 
