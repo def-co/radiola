@@ -23,7 +23,7 @@
           <div style="display: table-cell; vertical-align: middle">
             <span v-if="this.buffering">
               <span class="inline-loading" v-if="this.buffering"></span>
-              Tūliņ skanēs:
+              {{ this.choice(['Tūliņ', 'Tūdaļ', 'Tūlīt']) }} skanēs:
               <strong>{{ this.currently_playing.name }}</strong>
             </span>
             <span v-if="this.buffering_error">

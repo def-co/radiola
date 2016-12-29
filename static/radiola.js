@@ -37,6 +37,10 @@
       current_song: null,
     },
     methods: {
+      choice: function(p) {
+        var i = Math.floor(Math.random() * p.length)
+        return p[i]
+      },
       changeActiveStation: function(i) {
         var station = findStation(i, this.stations)
         if (station._incompatible) {
