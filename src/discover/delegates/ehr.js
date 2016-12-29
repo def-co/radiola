@@ -14,14 +14,19 @@ class EHR extends GenericDelegate {
   constructor() {
     super()
 
+    this.canDiscover = ['song']
+
     this.msMinimum = 4000
     this.msDelta = 4000
+
+    this.errorWarningThreshold = 0
+    this.errorInterruptThreshold = 3
 
     this.name = 'EHR'
     this.L = L
   }
 
-  fetchCurrentlyPlaying() {
+  refreshState() {
     return request({
       url: EHR_URL,
       json: true,
@@ -32,9 +37,12 @@ class EHR extends GenericDelegate {
         throw e
       } else {
         let { song_artist, song_name } = data.data.pop()
-        return { artist: song_artist, title: song_name }
+        return {
+          program: null,
+          song: { artist: song_artist, title: song_name },
+        }
       }
-    }).then((song) => this.optionallyDispatchUpdate(song))
+    }).then((song) => this.processState(song))
   }
 }
 
