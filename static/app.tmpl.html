@@ -34,12 +34,24 @@
             <span v-if="!(this.buffering || this.buffering_error)">
               <span class="glyphicon glyphicon-play"></span>
               <strong class="hidden-xs hidden-sm">Tagad skan:</strong>
-              <span v-if="this.current_song !== null">
+              <span v-if="this.current_song !== null &amp;&amp; this.current_program === null">
                 {{ this.current_song }}
                 ::
                 <strong>{{ this.currently_playing.name }}</strong>
               </span>
-              <span v-else>{{ this.currently_playing.name }}</span>
+              <span v-else-if="this.current_program !== null">
+                <span v-if="this.current_song !== null">
+                  {{ this.current_song }}
+                  ::
+                  <strong>{{ this.current_program }}</strong>
+                </span>
+                <span v-else>{{ this.current_program }}</span>
+                ::
+                <strong>{{ this.currently_playing.name }}</strong>
+              </span>
+              <span v-else>
+                {{ this.currently_playing.name }}
+              </span>
             </span>
           </div>
         </div>

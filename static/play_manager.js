@@ -128,20 +128,17 @@
     var station = this.stations[id]
     this.lastStation = id
 
-    SF.canFindSong(id)
+    SF.canDiscover(id)
     .then(function(canFindSong) {
       if (canFindSong) {
         return SF.canSubscribe(id)
         .then(function(canSubscribe) {
           if (canSubscribe) {
             SF.subscribe(id)
-            SF.eventbus.addListener('song.' + id, function(song) {
-              self.emit('song_renewed', song, station)
-            })
             self.subscribed = true
           } else {
             var _renewSong = function() {
-              SF.findSong(id)
+              SF.discover(id)
               .then(function(data) {
                 self.emit('song_renewed', data, station)
               })

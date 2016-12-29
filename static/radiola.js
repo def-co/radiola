@@ -14,7 +14,7 @@
 })(function(_AppTemplate) {
   'use strict';
 
-  var PM = P22.Radiola.PlayManager
+  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder
 
   function findStation(id, stations) {
     var station = null
@@ -35,6 +35,7 @@
       stations: [ ],
       currently_playing: false,
       current_song: null,
+      current_program: null,
     },
     methods: {
       choice: function(p) {
@@ -42,6 +43,8 @@
         return p[i]
       },
       changeActiveStation: function(i) {
+        var self = this
+
         var station = findStation(i, this.stations)
         if (station._incompatible) {
           alert('Šo staciju nav iespējams atskaņot uz šīs ierīces.')
@@ -51,10 +54,14 @@
         this.$set(this, 'currently_playing', station)
         this.$set(this, 'buffering_error', false)
         this.$set(this, 'buffering', true)
-      },
-      updateSongStatus: function(data) {
-        if (data === null) this.current_song = null
-        else this.current_song = data.artist + ' - ' + data.title
+
+        SF.eventbus.addListener('song.' + i, function(song) {
+          if (song === null) { self.current_song = null }
+          else { self.current_song = song.artist + ' – ' + song.title }
+        })
+        SF.eventbus.addListener('program.' + i, function(name) {
+          self.current_program = name
+        })
       },
       stop: function() {
         P22.Radiola.PlayManager.stop()
@@ -112,16 +119,13 @@
     Vue.set(app, 'loaded', true)
   })
 
-  PM.addListener('song_renewed', function(data) {
-    app.updateSongStatus(data)
-  })
-
   PM.addListener('playing', function() {
     Vue.set(app, 'buffering', false)
   })
 
   PM.addListener('stopped', function() {
-    app.updateSongStatus(null)
+    Vue.set(app, 'current_song', null)
+    Vue.set(app, 'current_program', null)
   })
 
   PM.addListener('playingError', function() {

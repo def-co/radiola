@@ -10,10 +10,14 @@
 
   var SONG_FINDABLE_CACHE = { },
       SUBSCRIPTIONS = { },
+      isDiscoverable = function(station) {
+        return SONG_FINDABLE_CACHE[station][0] ||
+          SONG_FINDABLE_CACHE[station][1]
+      },
       SongFinder = {
     eventbus: new EventEmitter(),
 
-    canFindSong: function(station) {
+    canDiscover: function(station) {
       if (station in SONG_FINDABLE_CACHE) {
         return Promise.resolve(SONG_FINDABLE_CACHE[station])
       } else {
@@ -21,28 +25,29 @@
         .then(function(r) { return r.json() })
         .then(function(resp) {
           // console.log('[SongFinder] %O', resp)
-          SONG_FINDABLE_CACHE[station] = resp.can_find_song
-          return resp.can_find_song
+          SONG_FINDABLE_CACHE[station] =
+            [resp.can_find_song, resp.can_find_program]
+          return resp.can_find_song || resp.can_find_program
         })
       }
     },
 
-    findSong: function(station) {
+    discover: function(station) {
       if (!(station in SONG_FINDABLE_CACHE)) {
         return SongFinder.canFindSong(station)
         .then(function(s) {
           if (!s) {
             return Promise.reject(
-              new Error('Station does not support song discovery'))
+              new Error('Station does not support discovery'))
           } else {
             return SongFinder.findSong(station)
           }
         })
-      } else if (SONG_FINDABLE_CACHE[station] !== true) {
+      } else if (!isDiscoverable(station)) {
         return Promise.reject(
-          new Error('Station does not support song discovery'))
+          new Error('Station does not support discovery'))
       }
-      return fetch('/discover/now_playing/' + station)
+      return fetch('/discover/now/' + station)
       .then(function(r) { return r.json() })
       .then(function(resp) {
         if (resp.ok) {
@@ -55,7 +60,7 @@
 
     canSubscribe: function(station) {
       if (!(station in SONG_FINDABLE_CACHE)) {
-        return SongFinder.canFindSong(station)
+        return SongFinder.canDiscover(station)
         .then(function(s) {
           if (!s) {
             return false
@@ -63,7 +68,7 @@
             return SongFinder.canSubscribe(station)
           }
         })
-      } else if (SONG_FINDABLE_CACHE[station] !== true) {
+      } else if (!isDiscoverable(station)) {
         return Promise.resolve(false)
       } else if (!('EventSource' in window)) {
         return Promise.resolve(false)
@@ -74,18 +79,18 @@
 
     subscribe: function(station) {
       if (!(station in SONG_FINDABLE_CACHE)) {
-        return SongFinder.canFindSong(station)
+        return SongFinder.canDiscover(station)
         .then(function(s) {
           if (!s) {
             return Promise.reject(
-              new Error('Station does not support song discovery'))
+              new Error('Station does not support discovery'))
           } else {
             return SongFinder.subscribe(station)
           }
         })
-      } else if (SONG_FINDABLE_CACHE[station] !== true) {
+      } else if (!isDiscoverable(station)) {
         return Promise.reject(
-          new Error('Station does not support song discovery'))
+          new Error('Station does not support discovery'))
       }
 
       if (!('EventSource' in window)) {
@@ -95,9 +100,9 @@
 
       if (station in SUBSCRIPTIONS) { return SUBSCRIPTIONS[station] }
 
-      var lastSong = null
+      var lastSong = null, lastProgram = null
 
-      var es = new EventSource('/discover/songs/' + station)
+      var es = new EventSource('/discover/hose/' + station)
       es.addEventListener('song', function(e) {
         var data = JSON.parse(e.data)
         if (lastSong === null ||
@@ -105,8 +110,14 @@
           lastSong.title !== data.title)) {
           lastSong = data
           SongFinder.eventbus.emit('song.' + station, data)
-        } else {
-          // console.log('[SongFinder] stream restart artifact (same song emitted)')
+        // } else {
+        //   console.log('[SongFinder] stream restart artifact (same song emitted)')
+        }
+      })
+      es.addEventListener('program', function(e) {
+        var data = JSON.parse(e.data)
+        if (lastProgram !== data) {
+          SongFinder.eventbus.emit('program.' + station, data)
         }
       })
       es.addEventListener('stream_error', function(e) {
@@ -125,6 +136,7 @@
       delete SUBSCRIPTIONS[station]
 
       SongFinder.eventbus.removeEvent('song.' + station)
+      SongFinder.eventbus.removeEvent('program.' + station)
       SongFinder.eventbus.removeEvent('stream_error.' + station)
 
       return true
