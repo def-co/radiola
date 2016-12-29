@@ -29,6 +29,7 @@
     template: _AppTemplate,
     data: {
       buffering: false,
+      buffering_stalled: false,
       buffering_error: false,
       loaded: false,
       loaded_error: false,
@@ -54,6 +55,7 @@
         this.$set(this, 'currently_playing', station)
         this.$set(this, 'buffering_error', false)
         this.$set(this, 'buffering', true)
+        this.$set(this, 'buffering_stalled', true)
 
         SF.eventbus.addListener('song.' + i, function(song) {
           if (song === null) { self.current_song = null }
@@ -121,6 +123,13 @@
 
   PM.addListener('playing', function() {
     Vue.set(app, 'buffering', false)
+    Vue.set(app, 'buffering_stalled', false)
+  })
+
+  PM.addListener('stalled', function() {
+    if (!app.buffering_stalled) {
+      Vue.set(app, 'buffering_stalled', true)
+    }
   })
 
   PM.addListener('stopped', function() {

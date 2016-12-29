@@ -18,6 +18,10 @@
     this.el.preload = 'none'
     this.el.volume = 1.0
 
+    this.el.addEventListener('stalled', function(e) {
+      self.emit('stalled')
+    })
+
     this.stations = null
 
     this.playing = false
