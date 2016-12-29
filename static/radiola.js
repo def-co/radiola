@@ -127,6 +127,10 @@
   })
 
   PM.addListener('stalled', function() {
+    // HLS will show the source as stalled *way* too often, so we just ignore
+    // that
+    if (PM._hlsPlaylist) return
+
     if (!app.buffering_stalled) {
       Vue.set(app, 'buffering_stalled', true)
     }
