@@ -32,41 +32,63 @@
       playingState: 'STOPPED',
       stations: [ ],
       current_station: null,
+      current_station_id: null,
       current_song: null,
       current_program: null,
+      _subscribed: false,
     },
     methods: {
       choice: function(p) {
         var i = Math.floor(Math.random() * p.length)
         return p[i]
       },
-      changeActiveStation: function(i) {
+      changeActiveStation: function(stationId) {
         var self = this
 
-        var station = findStation(i, this.stations)
+        var station = findStation(stationId, this.stations)
         if (station._incompatible) {
-          alert('Šo staciju nav iespējams atskaņot uz šīs ierīces.')
+          alert(station.name + ' nav iespējams atskaņot uz šīs ierīces.')
           return false
         }
 
-        SF.unsubscribe(this.current_station)
+        if (this.playingState !== 'STOPPED') {
+          this.stop()
+        }
+
         this.current_song = null
         this.current_program = null
 
-        PM.switchStation(i)
+        PM.switchStation(stationId)
+        this.current_station_id = stationId
         this.current_station = station.name
         this.playingState = 'BUFFERING'
 
-        SF.eventbus.addListener('song.' + i, function(song) {
-          if (song === null) { self.current_song = null }
-          else { self.current_song = song.artist + ' – ' + song.title }
-        })
-        SF.eventbus.addListener('program.' + i, function(name) {
-          self.current_program = name
+        SF.canSubscribe(stationId)
+        .then(function(canSubscribe) {
+          if (canSubscribe) {
+            self._subscribed = true
+            SF.eventbus.addListener('song.' + stationId, function(song) {
+              if (song === null) { self.current_song = null }
+              else { self.current_song = song.artist + ' – ' + song.title }
+            })
+            SF.eventbus.addListener('program.' + stationId, function(name) {
+              self.current_program = name
+            })
+            SF.subscribe(stationId)
+          }
         })
       },
       stop: function() {
         P22.Radiola.PlayManager.stop()
+        if (this._subscribed) {
+          SF.unsubscribe(this.current_station_id)
+          this._subscribed = false
+        }
+
+        this.current_station = null
+        this.current_station_id = null
+        this.current_song = null
+        this.current_program = null
       },
     },
     components: {

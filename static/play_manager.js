@@ -82,8 +82,6 @@
   PlayManager.prototype.switchStation = function(id) {
     var self = this
 
-    if (this.playing) { this.stop() }
-
     if (!id in this.stations) { return false }
 
     var station = this.stations[id]

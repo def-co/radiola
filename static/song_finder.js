@@ -70,8 +70,6 @@
         })
       } else if (!isDiscoverable(station)) {
         return Promise.resolve(false)
-      } else if (!('EventSource' in window)) {
-        return Promise.resolve(false)
       } else {
         return Promise.resolve(true)
       }
@@ -93,12 +91,11 @@
           new Error('Station does not support discovery'))
       }
 
-      if (!('EventSource' in window)) {
-        return Promise.reject(
-          new TypeError('EventSource not supported'))
-      }
-
       if (station in SUBSCRIPTIONS) { return SUBSCRIPTIONS[station] }
+
+      if (!('EventSource' in window)) {
+        return SongFinder._startPollingFallback(station)
+      }
 
       var lastSong = null, lastProgram = null
 
@@ -124,15 +121,22 @@
         var data = JSON.parse(e.data)
         SongFinder.eventbus.emit('stream_error.' + station, data)
       })
-      SUBSCRIPTIONS[station] = es
+      SUBSCRIPTIONS[station] = { type: 'eventsource', es: es }
 
-      return Promise.resolve(true)
+      return Promise.resolve(SUBSCRIPTIONS[station])
     },
 
     unsubscribe: function(station) {
       if (!(station in SUBSCRIPTIONS)) return false
 
-      SUBSCRIPTIONS[station].close()
+      var sub = SUBSCRIPTIONS[station]
+
+      if (sub.type === 'eventsource') {
+        sub.es.close()
+      } else if (sub.type === 'polling') {
+        clearTimeout(sub.timeout)
+      }
+
       delete SUBSCRIPTIONS[station]
 
       SongFinder.eventbus.removeEvent('song.' + station)
@@ -141,6 +145,46 @@
 
       return true
     },
+
+    _startPollingFallback: function(station) {
+      var _lastSong = null, _lastProgram = null
+
+      var POLLER_TIMEOUT = 8250
+
+      SUBSCRIPTIONS[station] = {
+        type: 'polling',
+        timeout: null,
+      }
+
+      var poller = function poller() {
+        return SongFinder.discover(station)
+        .then(function(data) {
+          if (data.program !== _lastProgram) {
+            _lastProgram = data.program
+            SongFinder.eventbus.emit('program.' + station, data.program)
+          }
+          if (_lastSong === null ||
+            (data.song.artist !== _lastSong.artist ||
+              data.song.title !== _lastSong.title)) {
+            _lastSong = data.song
+            SongFinder.eventbus.emit('song.' + station, data.song)
+          }
+
+          if (station in SUBSCRIPTIONS) {
+            SUBSCRIPTIONS[station].timeout = setTimeout(poller, POLLER_TIMEOUT)
+          }
+        })
+      }
+
+      poller()
+
+      return poller()
+      .then(function() {
+        return SUBSCRIPTIONS[station]
+      })
+    },
+
+    _SUBS: SUBSCRIPTIONS
   }
 
   window.P22.Radiola.SongFinder = SongFinder
