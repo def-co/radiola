@@ -5,7 +5,7 @@ const fs = require('fs')
 const Hapi = require('hapi')
 const L = require('modulog').bound('radiola')
 
-let { stations } = require('./stations.json')
+let stations = require('./stations.json')
 let _disabledStations = [ ]
 {
   // filter disabled stations
