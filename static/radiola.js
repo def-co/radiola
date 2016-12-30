@@ -48,6 +48,7 @@
 
         this.$set(this, 'current_song', null)
         this.$set(this, 'current_program', null)
+        SF.unsubscribe(this.currently_playing.id)
 
         var station = findStation(i, this.stations)
         if (station._incompatible) {
