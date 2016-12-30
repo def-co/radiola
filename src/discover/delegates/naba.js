@@ -82,8 +82,14 @@ class Naba extends GenericDelegate {
             this._programCacheStillValid = true
 
             let $ = cheerio.load(body)
-            let s = $('a').eq(0).text()
-            return s.trim()
+            let s = $('a').eq(0).text().trim()
+            if (s === '') {
+              s = body.trim()
+            }
+            if (s === 'Mūzika') {
+              s = null
+            }
+            return s
           })
           // .catch((e) => {
           //   L.warning('', e)
