@@ -3,7 +3,7 @@
  *
  * @version 1.1.0 (Simfonija)
  * @author paulsnar <paulsnar@paulsnar.lv>
- * @license © 2016 paulsnar. All Rights Reserved.
+ * @license © 2016-2017 paulsnar. All Rights Reserved.
  */
 (function() {
   'use strict';
