@@ -46,6 +46,9 @@
       changeActiveStation: function(i) {
         var self = this
 
+        this.$set(this, 'current_song', null)
+        this.$set(this, 'current_program', null)
+
         var station = findStation(i, this.stations)
         if (station._incompatible) {
           alert('Šo staciju nav iespējams atskaņot uz šīs ierīces.')
@@ -68,6 +71,8 @@
       stop: function() {
         P22.Radiola.PlayManager.stop()
         this.$set(this, 'currently_playing', false)
+        this.$set(this, 'current_song', null)
+        this.$set(this, 'current_program', null)
       },
     },
     components: {
