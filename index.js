@@ -6,17 +6,26 @@ const Hapi = require('hapi')
 const L = require('modulog').bound('radiola')
 
 let { stations } = require('./stations.json')
-// fs.watch('./stations.json', (e, name) => {
-//   fs.readFile('./stations.json', 'utf-8', (e, data) => {
-//     if (e) throw e
-//     stations = JSON.parse(data)
-//   })
-// })
+let _disabledStations = [ ]
+{
+  // filter disabled stations
+  let remove = [ ]
+  for (let i = 0; i < stations.length; i++) {
+    let station = stations[i]
+    if (station.disabled) { remove.push(i) }
+  }
+  // reverse iteration to not affect later indexes
+  for (let i = remove.length - 1; i >= 0; i--) {
+    _disabledStations = _disabledStations.concat(
+      stations.splice(remove[i], 1))
+  }
+}
 
 const S = new Hapi.Server()
 S.connection({ port: 8080 })
 
 S.app.stations = stations
+S.app.disabledStations = stations
 
 S.decorate('reply', 'event', function(stream) {
   return this.response(stream)
