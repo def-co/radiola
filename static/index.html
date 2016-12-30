@@ -48,7 +48,15 @@
       <span>&#x266B;</span>
       P22 Radiola
     </h1>
-    <div id="js__app">
+    <noscript>
+      <div class="callout alert">
+        <span style="font-weight: bold">
+          Šīs lapas funkcionalitātei nepieciešams JavaScript.
+        </span>
+        Lūdzu iespējojiet JavaScript, ja vēlaties izmantot P22 Radiolu.
+      </div>
+    </noscript>
+    <div id="js__app" class="hide">
       <div class="callout primary">
         <span class="inline-loading"></span>
         Notiek ielāde...
@@ -61,6 +69,7 @@
       </p>
     </footer>
   </div>
+  <script> document.getElementById('js__app').className = '' </script>
   <script>
     // conditionally polyfill promise for really old browsers
     (function() {
