@@ -8,7 +8,7 @@
 (function() {
   'use strict';
 
-  var SF = P22.Radiola.SongFinder, HLS = P22.Radiola.HLS
+  var HLS = P22.Radiola.HLS
 
   function PlayManager() {
     this.el = document.createElement('audio')
@@ -41,15 +41,6 @@
     this.el.addEventListener('playing', function() {
       self._notBuffering = true
       self.emit('playing')
-      self._renderTitle()
-    })
-
-    this.addListener('song_renewed', function(song, currentStation) {
-      // console.log('[PlayManager] Changing song on %s: %O',
-      //   currentStation.name, song)
-      self._currentSong = song
-      self._currentStation = currentStation
-      self._renderTitle()
     })
   }
   PlayManager.prototype = Object.create(EventEmitter.prototype)
@@ -58,33 +49,6 @@
   PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST =
     !(window.safari || (window.chrome && window.chrome.runtime))
   PlayManager.prototype.SUPPORTS_HLS = HLS.supportsHLS
-
-  PlayManager.prototype._renderTitle = function() {
-    let title_el = document.getElementsByTagName('title')[0]
-
-    let title = ''
-    if (this.playing && this._notBuffering) {
-      title += '▶ '
-    } else if (this.playing && !this._notBuffering) {
-      title += '… '
-    }
-
-    if (this._currentSong !== null) {
-      title += this._currentSong.artist
-      title += ' - '
-      title += this._currentSong.title
-      title += ' :: '
-    }
-
-    if (this._currentStation !== null) {
-      title += this._currentStation.name
-      title += ' :: '
-    }
-
-    title += 'P22 Radiola'
-
-    title_el.textContent = title
-  }
 
   PlayManager.prototype.init = function(json) {
     this.stations = { }
@@ -96,8 +60,8 @@
   }
 
   PlayManager.prototype.stop = function() {
-    this.el.pause()
     this.el.src = ''
+    this.el.pause()
     this.emit('stopped')
 
     this._currentSong = null
@@ -112,13 +76,6 @@
       this._hlsPlaylist.destroy()
       this._hlsPlaylist = null
     }
-
-    if (this.subscribed) {
-      SF.unsubscribe(this.lastStation)
-      this.subscribed = false
-    }
-
-    this._renderTitle()
   }
 
 
@@ -131,31 +88,6 @@
 
     var station = this.stations[id]
     this.lastStation = id
-
-    SF.canDiscover(id)
-    .then(function(canFindSong) {
-      if (canFindSong) {
-        return SF.canSubscribe(id)
-        .then(function(canSubscribe) {
-          if (canSubscribe) {
-            SF.subscribe(id)
-            self.subscribed = true
-          } else {
-            var _renewSong = function() {
-              SF.discover(id)
-              .then(function(data) {
-                self.emit('song_renewed', data, station)
-              })
-            }
-            self.renewSongInterval = window.setInterval(_renewSong, 15000)
-            _renewSong()
-          }
-        })
-      } else {
-        self.renewSongInterval = null
-      }
-    })
-    this._renderTitle()
 
     var _useHLS = function() {
       HLS.HLSPlaylist.fromStreamlist(station.hls)

@@ -117,6 +117,52 @@
     app.outsideDataState = 'LOADED'
   })
 
+  var _titleEl = document.getElementsByTagName('title')[0]
+  app.$watch(function() {
+    var title = ''
+
+    console.log(this.playingState)
+    switch (this.playingState) {
+      case 'BUFFERING':
+      case 'STALLED':
+        title += '… '
+        break
+
+      case 'PLAYING':
+        console.log('before: %s', title)
+        title += '▶ '
+        console.log('after: %s', title)
+        break
+    }
+
+    console.log('before next step: %s', title)
+    if (this.current_song) {
+      title += this.current_song
+    }
+    if (this.current_song && this.current_program) {
+      title += ' :: '
+    }
+    if (this.current_program) {
+      title += this.current_program
+    }
+    console.log('after next step: %s', title)
+
+    if ((this.current_song || this.current_program) && this.current_station) {
+      title += ' :: '
+    }
+
+    if (this.current_station) {
+      title += this.current_station
+      title += ' :: '
+    }
+
+    title += 'P22 Radiola'
+    return title
+  }, function(newTitle) {
+    _titleEl.textContent = newTitle
+  }, { immediate: true })
+
+
   PM.addListener('playing', function() {
     app.playingState = 'PLAYING'
   })
