@@ -28,13 +28,10 @@
     el: '#js__app',
     template: _AppTemplate,
     data: {
-      buffering: false,
-      buffering_stalled: false,
-      buffering_error: false,
-      loaded: false,
-      loaded_error: false,
+      outsideDataState: 'WAITING',
+      playingState: 'STOPPED',
       stations: [ ],
-      currently_playing: false,
+      current_station: null,
       current_song: null,
       current_program: null,
     },
@@ -46,20 +43,19 @@
       changeActiveStation: function(i) {
         var self = this
 
-        this.$set(this, 'current_song', null)
-        this.$set(this, 'current_program', null)
-        SF.unsubscribe(this.currently_playing.id)
-
         var station = findStation(i, this.stations)
         if (station._incompatible) {
           alert('Šo staciju nav iespējams atskaņot uz šīs ierīces.')
           return false
         }
-        station = PM.switchStation(i)
-        this.$set(this, 'currently_playing', station)
-        this.$set(this, 'buffering_error', false)
-        this.$set(this, 'buffering', true)
-        this.$set(this, 'buffering_stalled', true)
+
+        SF.unsubscribe(this.current_station)
+        this.current_song = null
+        this.current_program = null
+
+        PM.switchStation(i)
+        this.current_station = station.name
+        this.playingState = 'BUFFERING'
 
         SF.eventbus.addListener('song.' + i, function(song) {
           if (song === null) { self.current_song = null }
@@ -71,9 +67,6 @@
       },
       stop: function() {
         P22.Radiola.PlayManager.stop()
-        this.$set(this, 'currently_playing', false)
-        this.$set(this, 'current_song', null)
-        this.$set(this, 'current_program', null)
       },
     },
     components: {
@@ -105,8 +98,7 @@
   fetch('/stations.json')
   .then(function(resp) { return resp.json() })
   .catch(function(e) {
-    Vue.set(app, 'loaded', true)
-    Vue.set(app, 'loaded_error', true)
+    app.outsideDataState = 'ERROR'
     throw e
   })
   .then(function(json) {
@@ -121,13 +113,12 @@
       }
     }
 
-    Vue.set(app, 'stations', json.stations)
-    Vue.set(app, 'loaded', true)
+    app.stations = json.stations
+    app.outsideDataState = 'LOADED'
   })
 
   PM.addListener('playing', function() {
-    Vue.set(app, 'buffering', false)
-    Vue.set(app, 'buffering_stalled', false)
+    app.playingState = 'PLAYING'
   })
 
   PM.addListener('stalled', function() {
@@ -136,18 +127,18 @@
     if (PM._hlsPlaylist) return
 
     if (!app.buffering_stalled) {
-      Vue.set(app, 'buffering_stalled', true)
+      app.playingState = 'STALLED'
     }
   })
 
   PM.addListener('stopped', function() {
-    Vue.set(app, 'current_song', null)
-    Vue.set(app, 'current_program', null)
+    app.playingState = 'STOPPED'
+    app.current_song = null
+    app.current_program = null
   })
 
   PM.addListener('playingError', function() {
-    Vue.set(app, 'buffering', false)
-    Vue.set(app, 'buffering_error', true)
+    app.playingState = 'ERROR'
   })
 
   window.P22.Radiola.App = app

@@ -6,30 +6,34 @@
   © 2016-2017 paulsnar. All Rights Reserved.
 -->
 <div>
-  <div class="callout alert" v-if="this.loaded_error">
+  <div class="callout alert" v-if="this.outsideDataState === 'ERROR'">
     <span class="glyphicon glyphicon-alert"></span>
     <strong>Ielāde neizdevās!</strong>
     Mēģiniet atsvaidzināt lapu.
   </div>
-  <div class="callout primary" v-if="!this.loaded">
+  <div class="callout primary" v-if="this.outsideDataState === 'WAITING'">
     <span class="inline-loading"></span>
     Joprojām notiek ielāde...
   </div>
-  <div v-if="this.loaded">
-    <div class="callout" v-if="this.currently_playing !== false"
+  <div v-if="this.outsideDataState === 'LOADED'">
+    <div class="callout" v-if="this.playingState !== 'STOPPED'"
         :class="{ warning: this.buffering_error }">
       <div class="row align-middle">
         <div class="columns">
-          <span v-if="this.buffering_error">
+          <span v-if="this.playingState === 'ERROR'">
             <span style="font-weight: bold">Neizdevās atskaņot:</span>
-            {{ this.currently_playing.name }}
+            {{ this.current_station }}
           </span>
-          <span v-if="!this.buffering_error">
-            <span class="inline-loading" v-if="this.buffering || this.buffering_stalled"></span>
+          <span v-if="this.playingState !== 'ERROR'">
+            <span class="inline-loading"
+              v-if="this.playingState === 'BUFFERING' || this.playingState === 'STALLED'">
+            </span>
             <span v-else>&#x25B6;<!-- BLACK RIGHT-POINTING TRIANGLE --></span>
             <span class="show-for-medium"
               :style="{ fontWeight: (this.current_song || this.current_program) ? 'bold' : 'inherit' }">
-              <span v-if="this.buffering">{{ this.choice(['Tūliņ', 'Tūdaļ', 'Tūlīt']) }} skanēs:</span>
+              <span v-if="this.playingState === 'BUFFERING'">
+                {{ this.choice(['Tūliņ', 'Tūdaļ', 'Tūlīt']) }} skanēs:
+              </span>
               <span v-else>Tagad skan:</span>
             </span>
             <span v-if="this.current_song">
@@ -44,12 +48,12 @@
             </span>
             <span v-if="!this.current_song &amp;&amp; !this.current_program"
                 style="font-weight: bold">
-              {{ this.currently_playing.name }}
+              {{ this.current_station }}
             </span>
           </span>
         </div>
         <div class="shrink columns" style="font-weight: bold" v-if="this.current_song || this.current_program">
-          {{ this.currently_playing.name }}
+          {{ this.current_station }}
         </div>
         <div class="shrink columns">
           <button class="button expanded" v-on:click="stop"
