@@ -13,20 +13,22 @@ const PATH = 'shared/cache/current_all.json',
         pieci_latviesi: `https://latviesi.pieci.lv/${PATH}`,
         pieci_hiti: `https://hiti.pieci.lv/${PATH}`,
         pieci: `https://fm.pieci.lv/${PATH}`,
-        pieci_ziemassvetki: `https://ziemassvetki.pieci.lv/${PATH}`,
       }
 
 const STREAM_NAME_MAP = {
   1: 'pieci_koncerti',
   5: 'pieci_atklajumi',
   7: 'pieci_latviesi',
-  // 11: 'pieci_riti', // does not provide NP info
+  // does not (seem to) provide NP info since it's a repeated program
+  // 11: 'pieci_riti', // all day long
   17: 'pieci_hiti',
   19: 'pieci',
 
-  // contemporary stations below
-  9: 'pieci_ziemassvetki',
-  // 26: 'pieci_100', // currently off air? or so it seems
+  // current popups:
+
+  // past popups:
+  // 9: 'pieci_ziemassvetki',
+  // 26: 'pieci_100',
 }
 
 class Pieci extends EventEmitter {

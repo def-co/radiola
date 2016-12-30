@@ -34,7 +34,8 @@ let Delegates = module.exports = {
       case 'pieci_latviesi':
       case 'pieci_hiti':
       case 'pieci':
-      case 'pieci_ziemassvetki':
+      // case 'pieci_100':
+      // case 'pieci_ziemassvetki':
         return 'Pieci';
 
       case 'ehr':
