@@ -36,23 +36,14 @@ class Pieci extends EventEmitter {
     super()
 
     this._nextTimeout = null
-    this._listeners = {
-      pieci_koncerti: 0,
-      pieci_atklajumi: 0,
-      pieci_latviesi: 0,
-      pieci_hiti: 0,
-      pieci: 0,
-      pieci_ziemassvetki: 0,
-    }
 
-    this._lastSongs = {
-      pieci_koncerti: null,
-      pieci_atklajumi: null,
-      pieci_latviesi: null,
-      pieci_hiti: null,
-      pieci: null,
-      pieci_ziemassvetki: null,
-    }
+    this._listeners = { }
+    this._lastSongs = { }
+
+    _.forEach(STREAM_NAME_MAP, (name) => {
+      this._listeners[name] = 0
+      this._lastSongs[name] = null
+    })
 
     this._cacheStillValid = false
     this._cacheInvalidationTimeout = null
