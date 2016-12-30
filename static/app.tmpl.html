@@ -17,47 +17,44 @@
   </div>
   <div v-if="this.loaded">
     <div class="callout" v-if="this.currently_playing !== false"
-      :class="{ warning: this.buffering_error }">
+        :class="{ warning: this.buffering_error }">
       <div class="row align-middle">
         <div class="columns">
-          <span v-if="this.buffering">
-            <span class="inline-loading" v-if="this.buffering"></span>
-            <span class="show-for-medium">{{ this.choice(['Tūliņ', 'Tūdaļ', 'Tūlīt']) }} skanēs:</span>
-            <strong>{{ this.currently_playing.name }}</strong>
-          </span>
           <span v-if="this.buffering_error">
-            <span class="glyphicon glyphicon-exclamation-sign"></span>
-            <strong>Neizdevās atskaņot:</strong>
-            <span>{{ this.currently_playing.name }}</span>
+            <span style="font-weight: bold">Neizdevās atskaņot:</span>
+            {{ this.currently_playing.name }}
           </span>
-          <span v-if="!(this.buffering || this.buffering_error)">
-            <span class="inline-loading" v-if="this.buffering_stalled"></span>
-            <span v-else>&#x25B6;</span>
-            <strong class="show-for-medium">Tagad skan:</strong>
-            <span v-if="this.current_song !== null &amp;&amp; this.current_program === null">
+          <span v-if="!this.buffering_error">
+            <span class="inline-loading" v-if="this.buffering || this.buffering_stalled"></span>
+            <span v-else>&#x25B6;<!-- BLACK RIGHT-POINTING TRIANGLE --></span>
+            <span class="show-for-medium"
+              :style="{ fontWeight: (this.current_song || this.current_program) ? 'bold' : 'inherit' }">
+              <span v-if="this.buffering">{{ this.choice(['Tūliņ', 'Tūdaļ', 'Tūlīt']) }} skanēs:</span>
+              <span v-else>Tagad skan:</span>
+            </span>
+            <span v-if="this.current_song">
               {{ this.current_song }}
-              ::
-              <strong>{{ this.currently_playing.name }}</strong>
             </span>
-            <span v-else-if="this.current_program !== null">
-              <span v-if="this.current_song !== null">
-                {{ this.current_song }}
-                ::
-                <strong>{{ this.current_program }}</strong>
-              </span>
-              <span v-else>{{ this.current_program }}</span>
+            <span v-if="this.current_song &amp;&amp; this.current_program"
+              style="font-weight: bold">
               ::
-              <strong>{{ this.currently_playing.name }}</strong>
             </span>
-            <span v-else>
+            <span v-if="this.current_program">
+              {{ this.current_program }}
+            </span>
+            <span v-if="!this.current_song &amp;&amp; !this.current_program"
+                style="font-weight: bold">
               {{ this.currently_playing.name }}
             </span>
           </span>
         </div>
+        <div class="shrink columns" style="font-weight: bold" v-if="this.current_song || this.current_program">
+          {{ this.currently_playing.name }}
+        </div>
         <div class="shrink columns">
           <button class="button expanded" v-on:click="stop"
               style="margin-bottom: 0;">
-            <span>&#x25FC;</span>
+            <span>&#x25FC;<!-- BLACK MEDIUM SQUARE --></span>
             <span class="show-for-medium">Apturēt</span>
           </button>
         </div>
