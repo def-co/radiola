@@ -121,7 +121,6 @@
   app.$watch(function() {
     var title = ''
 
-    console.log(this.playingState)
     switch (this.playingState) {
       case 'BUFFERING':
       case 'STALLED':
@@ -129,13 +128,10 @@
         break
 
       case 'PLAYING':
-        console.log('before: %s', title)
         title += '▶ '
-        console.log('after: %s', title)
         break
     }
 
-    console.log('before next step: %s', title)
     if (this.current_song) {
       title += this.current_song
     }
@@ -145,7 +141,6 @@
     if (this.current_program) {
       title += this.current_program
     }
-    console.log('after next step: %s', title)
 
     if ((this.current_song || this.current_program) && this.current_station) {
       title += ' :: '
