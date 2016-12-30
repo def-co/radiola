@@ -8,7 +8,7 @@
 (function() {
   'use strict';
 
-  var HLS = P22.Radiola.HLS
+  var HLS = P22.Radiola.HLS, T = P22.Radiola.Telemetry
 
   function PlayManager() {
     this.el = document.createElement('audio')
@@ -41,6 +41,7 @@
     this.el.addEventListener('playing', function() {
       self._notBuffering = true
       self.emit('playing')
+      T.station.playing(self.lastStation)
     })
   }
   PlayManager.prototype = Object.create(EventEmitter.prototype)
@@ -76,6 +77,8 @@
       this._hlsPlaylist.destroy()
       this._hlsPlaylist = null
     }
+
+    this.lastStation = null
   }
 
 
@@ -96,6 +99,8 @@
         })
       return station
     }
+
+    T.station.start(id)
 
     if (window.safari && station.old_shoutcast) {
       // For some goddamn reason Safari decides that the tab is open as a frame

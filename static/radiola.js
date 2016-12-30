@@ -125,6 +125,7 @@
   })
   .then(function(json) {
     PM.init(json)
+    P22.Radiola.Telemetry.init()
 
     for (var i = 0; i < json.stations.length; i++) {
       var station = json.stations[i]
