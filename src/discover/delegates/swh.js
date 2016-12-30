@@ -32,6 +32,12 @@ class SWH extends GenericDelegate {
     })
     .then((streams) => {
       let { artist, title, sobrid_etera_title } = streams[0]
+      let $ = cheerio.load('<div></div>'), p = $('<p>')
+      if (artist !== null) { artist = p.html(artist).text() }
+      if (title !== null) { title = p.html(title).text() }
+      if (sobrid_etera_title) {
+        sobrid_etera_title = p.html(sobrid_etera_title).text()
+      }
       // sobrid_etera_title might be null which indicates that there is no
       // ongoing program
       return {
