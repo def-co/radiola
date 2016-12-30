@@ -4,6 +4,7 @@ const EventEmitter = require('events')
 
 const request = require('request-promise-native'),
       _ = require('lodash'),
+      cheerio = require('cheerio'),
       L = require('modulog').bound('discover.swh')
 
 const GenericDelegate = require('./generic')
@@ -67,7 +68,9 @@ class SWHRock extends SWH {
       url: this.url,
     })
     .then((text) => {
-      let [artist, ...title] = text.split('-')
+      let $ = cheerio.load('<div></div>'),
+          s = $('<p>').html(text).text()
+      let [artist, ...title] = s.split('-')
       return {
         program: null,
         song: { artist: artist.trim(), title: title.join('-').trim(), },
