@@ -90,7 +90,7 @@
           data: {
             eventsource: 'EventSource' in window,
             old_shoutcast: P22.Radiola.PlayManager.SUPPORTS_OLD_SHOUTCAST,
-            hls: supportsHLS
+            hls: supportsHLS,
             beacon: 'sendBeacon' in navigator,
           },
         })
@@ -146,7 +146,7 @@
     },
 
     error: function(e) {
-      if (Telemetry.OPTOUT) return false
+      if (Telemetry.OPTOUT) return null
 
       var data = {
         sq: 4,
@@ -170,7 +170,7 @@
     },
 
     sendError: function(e) {
-      if (Telemetry.OPTOUT) return false
+      if (Telemetry.OPTOUT) return null
 
       var data = {
         sq: 5,
