@@ -4,3 +4,5 @@ stations.json
 
 # assets
 static/logos/
+
+telemetry.db
