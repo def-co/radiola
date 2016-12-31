@@ -11,8 +11,12 @@ exports.register = (S, opts, next) => {
     handler: (request, reply) => {
       try {
         let data = JSON.parse(request.payload)
-        // L.debug('Beacon: %j', data)
-        P.writeRecord(request.info.remoteAddress, data)
+        let ip = request.info.remoteAddress
+        if (request.info.remoteAddress.split('.')[0] === '127' &&
+            'x-forwarded-for' in request.headers) {
+          ip = request.headers['x-forwarded-for'].split(',')[0].trim()
+        }
+        P.writeRecord(ip, data)
         .then(() => reply({ v: 14, s: 'ok' }))
       } catch (e) {
         return reply({ v: 14, s: 'no' })
