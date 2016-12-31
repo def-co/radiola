@@ -14,7 +14,7 @@ let _disabledStations = [ ]
     let station = stations[i]
     if (station.disabled) { remove.push(i) }
   }
-  // reverse iteration to not affect later indexes
+  // reverse iteration to not affect later indices
   for (let i = remove.length - 1; i >= 0; i--) {
     _disabledStations = _disabledStations.concat(
       stations.splice(remove[i], 1))
