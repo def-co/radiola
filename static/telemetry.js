@@ -33,7 +33,10 @@
       problems. It disables sending of usage stats and performance reports.
       Only the stack trace and error message of an exception will be sent. That
       might include information about which station you were listening to.
-    - OPTOUT disables all telemetry, including error reports.
+      Also information about the initial load time and feature support will be
+      sent as well.
+    - OPTOUT disables (almost) all telemetry, including error reports. It will
+      still send initial load times and feature support.
 
     If you are worried about your IP address, use Tor if you still don't.
   */
@@ -47,6 +50,8 @@
 
   var _pendingEvents = { }, _stations = { }, _sessionStart = null,
       _uniqueStations = { }
+
+  var sessionId = '' + Math.floor(Math.random() * /* Number.MAX_SAFE_INTEGER */ 9007199254740991)
 
   function noop() { /* noop */ }
 
@@ -68,6 +73,7 @@
 
       Telemetry.beacon({
         sq: 0,
+        s: sessionId,
         type: 'loadperf',
         data: [
           now - _initialData.scriptLoad,
@@ -75,18 +81,20 @@
         ],
       })
 
-      setTimeout(function() {
+      P22.Radiola.PlayManager.SUPPORTS_HLS
+      .then(function(supportsHLS) {
         Telemetry.beacon({
           sq: 1,
+          s: sessionId,
           type: 'features',
           data: {
             eventsource: 'EventSource' in window,
             old_shoutcast: P22.Radiola.PlayManager.SUPPORTS_OLD_SHOUTCAST,
-            hls: P22.Radiola.PlayManager.SUPPORTS_HLS,
+            hls: supportsHLS
             beacon: 'sendBeacon' in navigator,
           },
         })
-      }, 0)
+      })
     },
 
     beacon: function(data, force) {
@@ -115,6 +123,7 @@
         if (!(Telemetry.OPTOUT || Telemetry.MINIMAL)) {
           Telemetry.beacon({
             sq: 7,
+            s: sessionId,
             type: 'fmstinit',
             data: [id, stattime],
           })
@@ -130,6 +139,7 @@
       var _sessionTime = _perftime() - _sessionStart
       Telemetry.beacon({
         sq: 12,
+        s: sessionId,
         type: 'session$',
         data: [_sessionTime, Object.keys(_uniqueStations).length],
       })
@@ -140,6 +150,7 @@
 
       var data = {
         sq: 4,
+        s: sessionId,
         type: 'error_$n',
         data: {
           str: e.toString ? e.toString() : null,
@@ -163,6 +174,7 @@
 
       var data = {
         sq: 5,
+        s: sessionId,
         type: 'uncaught',
         data: {
           stack: e.error.stack,
