@@ -8,7 +8,7 @@
 (function() {
   'use strict';
 
-  var HLS = P22.Radiola.HLS, T = P22.Radiola.Telemetry
+  var HLS = P22.Radiola.HLS, T = P22.Radiola.Telemetry, U = P22.Radiola.Utils
 
   function PlayManager() {
     this.el = document.createElement('audio')
@@ -47,9 +47,11 @@
   PlayManager.prototype = Object.create(EventEmitter.prototype)
   PlayManager.prototype.constructor = PlayManager
 
-  PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST =
-    !(window.safari || (window.chrome && window.chrome.runtime))
-  PlayManager.prototype.SUPPORTS_HLS = HLS.supportsHLS
+  PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST = U.browsers.firefox
+    // TODO: check whether Edge supports ^ old_shoutcast as well
+  PlayManager.prototype.SUPPORTS_HLS =
+    Promise.all([HLS.supportsHLS, HLS.supportsNativeHLS])
+      .then(function(q) { return q[0] || q[1] })
 
   PlayManager.prototype.init = function(json) {
     this.stations = { }
@@ -91,18 +93,32 @@
     this.lastStation = id
 
     var _useHLS = function() {
-      HLS.HLSPlaylist.fromStreamlist(station.hls)
-        .then(function(p) {
-          self._hlsPlaylist = p
-          self.el.src = p.src
+      HLS.supportsNativeHLS
+      .then(function(sup) {
+        if (sup) {
+          self.el.src = station.hls
           self.el.play()
-        })
+          return null
+        } else {
+          return HLS.supportsHLS
+        }
+      })
+      .then(function(sup) {
+        if (sup) {
+          HLS.HLSPlaylist.fromStreamlist(station.hls)
+          .then(function(p) {
+            self._hlsPlaylist = p
+            self.el.src = p.src
+            self.el.play()
+          })
+        }
+      })
       return station
     }
 
     T.station.start(id)
 
-    if (window.safari && station.old_shoutcast) {
+    if (U.browser.safari && station.old_shoutcast) {
       // For some goddamn reason Safari decides that the tab is open as a frame
       // and completely breaks it if the stream is coming from an non-HTTP/1.1
       // server (i.e. old_shoutcast) So we default to HLS immediately and not
@@ -134,6 +150,7 @@
             ('hls' in station) && !self._hlsPlaylist) {
           return _useHLS()
         }
+        T.error(e)
         self.emit('playingError', e.name, e)
         console.error('[PlayManager] Playing failed: (%s)', e.name, e)
       })

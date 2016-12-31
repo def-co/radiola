@@ -177,13 +177,18 @@
 
   }
 
-  try {
-    HLSPlaylist.supportsHLS =
-      canMSEType(MIMETYPE_AACAUDIO) || canMSEType(MIMETYPE_MP4AUDIO)
-  } catch (e) {
-    // MediaSource not available
-    HLSPlaylist.supportsHLS = false
-  }
+  HLSPlaylist.supportsHLS = fetch('http://nottps.p22.co/204.php')
+  .then(function(q) {
+    // if this succeeds then unsecure requests are not prohibited
+    // which is unlikely but whatever
+    return canMSEType(MIMETYPE_AACAUDIO) || canMSEType(MIMETYPE_MP4AUDIO)
+  }, function(e) {
+    // unsecure requests are not allowed, which most likely breaks HLS since
+    // too many stations do it over HTTP instead of HTTPS :/
+    return false
+  })
+  HLSPlaylist.supportsNativeHLS =
+    Promise.resolve(U.browser.edge || U.browser.safari)
 
   HLSPlaylist.fromStreamlist = function(streamlistUrl) {
     return fetch(streamlistUrl)
@@ -337,6 +342,7 @@
   window.P22.Radiola.HLS = {
     HLSPlaylist: HLSPlaylist,
     supportsHLS: HLSPlaylist.supportsHLS,
+    supportsNativeHLS: HLSPlaylist.supportsNativeHLS,
   }
 })()
 // vim: set ts=2 sts=2 et sw=2:

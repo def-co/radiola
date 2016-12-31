@@ -14,7 +14,8 @@
 })(function(_AppTemplate) {
   'use strict';
 
-  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder
+  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder,
+    T = P22.Radiola.Telemetry
 
   function findStation(id, stations) {
     var station = null
@@ -117,13 +118,15 @@
     }
   })
 
-  fetch('/stations.json')
-  .then(function(resp) { return resp.json() })
-  .catch(function(e) {
-    app.outsideDataState = 'ERROR'
-    throw e
-  })
-  .then(function(json) {
+  Promise.all([
+    fetch('/stations.json')
+      .then(function(resp) { return resp.json() }),
+    P22.Radiola.HLS.supportsHLS,
+    P22.Radiola.HLS.supportsNativeHLS,
+  ])
+  .then(function(all) {
+    var json = all[0], supportsHLS = all[1] || all[2]
+
     PM.init(json)
     P22.Radiola.Telemetry.init()
 
@@ -131,13 +134,16 @@
       var station = json.stations[i]
       if (station.old_shoutcast) {
         if (PM.SUPPORTS_OLD_SHOUTCAST) { continue }
-        else if (station.hls && PM.SUPPORTS_HLS) { continue }
+        else if (station.hls && supportsHLS) { continue }
         else { station._incompatible = true }
       }
     }
 
     app.stations = json.stations
     app.outsideDataState = 'LOADED'
+  }, function(e) {
+    app.outsideDataState = 'ERROR'
+    T.error(e)
   })
 
   var _titleEl = document.getElementsByTagName('title')[0]

@@ -112,17 +112,21 @@
         var stattime = _perftime() - _stations[id]
         delete _stations[id]
 
-        Telemetry.beacon({
-          sq: 7,
-          type: 'fmstinit',
-          data: [id, stattime],
-        })
+        if (!(Telemetry.OPTOUT || Telemetry.MINIMAL)) {
+          Telemetry.beacon({
+            sq: 7,
+            type: 'fmstinit',
+            data: [id, stattime],
+          })
+        }
       },
       stalled: noop,
       stop: noop,
     },
 
     sendFinal: function() {
+      if (Telemetry.OPTOUT || Telemetry.MINIMAL) return null
+
       var _sessionTime = _perftime() - _sessionStart
       Telemetry.beacon({
         sq: 12,
@@ -131,7 +135,32 @@
       })
     },
 
+    error: function(e) {
+      if (Telemetry.OPTOUT) return false
+
+      var data = {
+        sq: 4,
+        type: 'error_$n',
+        data: {
+          str: e.toString ? e.toString() : null,
+          stack: e.stack ? e.stack : null,
+          msg: e.message ? e.message : null,
+        }
+      }
+
+      if ('sendBeacon' in navigator) {
+        navigator.sendBeacon(ERROR_URL, JSON.stringify(data))
+      } else {
+        fetch(ERROR_URL, {
+          method: 'POST',
+          body: JSON.stringify(data)
+        })
+      }
+    },
+
     sendError: function(e) {
+      if (Telemetry.OPTOUT) return false
+
       var data = {
         sq: 5,
         type: 'uncaught',

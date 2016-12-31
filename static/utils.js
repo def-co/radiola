@@ -9,6 +9,14 @@
   'use strict';
 
   var Utils = {
+    browser: {
+      // adapted from http://stackoverflow.com/a/9851769
+      edge: !(/*@cc_on!@*/false || !!document.documentMode) && !!window.StyleMedia,
+      safari: Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification),
+      firefox: typeof InstallTrigger !== 'undefined',
+      chrome: !!window.chrome && !!window.chrome.webstore,
+    },
+
     stripQuotes: function(str) {
       if (str.indexOf('"') === 0) {
         str = str.substring(1)
