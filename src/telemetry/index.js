@@ -17,7 +17,7 @@ exports.register = (S, opts, next) => {
           ip = request.headers['x-forwarded-for'].split(',')[0].trim()
         }
         P.writeRecord(ip, data)
-        .then(() => reply({ v: 14, s: 'ok' }))
+        .then(() => reply({ v: 14, s: 'ok' }), () => reply({ v: 14, s: 'no' }))
       } catch (e) {
         return reply({ v: 14, s: 'no' })
       }
@@ -30,8 +30,13 @@ exports.register = (S, opts, next) => {
     handler: (request, reply) => {
       try {
         let data = JSON.parse(request.payload)
-        L.debug('Error: %j', data)
-        return reply({ v: 14, s: 'ok' })
+        let ip = requrest.info.remoteAddress
+        if (request.info.remoteAddress.split('.')[0] === '127' &&
+            'x-forwarded-for' in request.headers) {
+          ip = request.headers['x-forwarded-for'].split(',')[0].trim()
+        }
+        P.writeError(ip, data)
+        .then(() => reply({ v: 14, s: 'ok' }), () => reply({ v: 14, s: 'no' }))
       } catch (e) {
         return reply({ v: 14, s: 'no' })
       }
