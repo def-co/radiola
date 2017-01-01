@@ -79,6 +79,19 @@
           }
         })
       },
+      showDebugInfo: function() {
+        var msg = [
+          'P22 Radiola v1.1.0',
+          'SessionID: ' + T.getSessionId(),
+        ]
+        if (T.OPTOUT) {
+          msg.push('Telemetry: disabled (OPTOUT)')
+        } else if (T.MINIMAL) {
+          msg.push('Telemetry: reduced (MINIMAL)')
+        }
+
+        alert(msg.join('\n'))
+      },
       stop: function() {
         P22.Radiola.PlayManager.stop()
         if (this._subscribed) {

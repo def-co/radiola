@@ -97,6 +97,10 @@
       })
     },
 
+    getSessionId: function() {
+      return sessionId
+    },
+
     beacon: function(data, force) {
       if (Telemetry.OPTOUT || Telemetry.MINIMAL) return null
 
