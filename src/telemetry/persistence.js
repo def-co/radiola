@@ -33,7 +33,7 @@ const _writeToTable = (table, ip, incoming) => {
     let failed = false
     db.run(
       `INSERT INTO ${table} VALUES (?, ?, ?, ?, ?)`,
-      now, ip, incoming.type, incoming.s, JSON.stringify(incoming.data),
+      now, ip, incoming.s, incoming.type, JSON.stringify(incoming.data),
       (e) => {
         // When there's an error, the callback is called twice --
         // once within the error context, and once after the execution :/
