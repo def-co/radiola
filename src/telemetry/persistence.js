@@ -39,6 +39,7 @@ const _writeToTable = (table, ip, incoming) => {
         // once within the error context, and once after the execution :/
         if (e) {
           failed = true
+          L.warning('Telemetry persistence failed: %s', e)
           rej(e)
         } else {
           if (!failed) res(true)
