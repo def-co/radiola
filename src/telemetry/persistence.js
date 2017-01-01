@@ -12,6 +12,7 @@ db.exec(`
   (
     received_time TEXT,
     received_ip TEXT,
+    session_id TEXT,
     received_type TEXT,
     received_data TEXT
   );
@@ -20,6 +21,7 @@ db.exec(`
   (
     received_time TEXT,
     received_ip TEXT,
+    session_id TEXT,
     received_type TEXT,
     received_data TEXT
   );
@@ -30,8 +32,8 @@ const _writeToTable = (table, ip, incoming) => {
     let now = new Date().toISOString()
     let failed = false
     db.run(
-      `INSERT INTO ${table} VALUES (?, ?, ?, ?)`,
-      now, ip, incoming.type, JSON.stringify(incoming.data),
+      `INSERT INTO ${table} VALUES (?, ?, ?, ?, ?)`,
+      now, ip, incoming.type, incoming.s, JSON.stringify(incoming.data),
       (e) => {
         // When there's an error, the callback is called twice --
         // once within the error context, and once after the execution :/
