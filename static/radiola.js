@@ -156,7 +156,7 @@
     app.outsideDataState = 'LOADED'
   }, function(e) {
     app.outsideDataState = 'ERROR'
-    T.error(e)
+    T.exception(e)
   })
 
   var _titleEl = document.getElementsByTagName('title')[0]

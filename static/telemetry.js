@@ -101,15 +101,22 @@
       return sessionId
     },
 
-    beacon: function(data, force) {
+    beacon: function(sq, type, data) {
       if (Telemetry.OPTOUT || Telemetry.MINIMAL) return null
 
+      var payload = {
+        sq: sq,
+        type: type,
+        s: sessionId,
+        data: data
+      }
+
       if ('sendBeacon' in navigator) {
-        return navigator.sendBeacon(BEACON_URL, JSON.stringify(data))
+        return navigator.sendBeacon(BEACON_URL, JSON.stringify(payload))
       } else {
         fetch(BEACON_URL, {
           method: 'POST',
-          body: JSON.stringify(data)
+          body: JSON.stringify(payload)
         })
         return false
       }
@@ -125,12 +132,7 @@
         delete _stations[id]
 
         if (!(Telemetry.OPTOUT || Telemetry.MINIMAL)) {
-          Telemetry.beacon({
-            sq: 7,
-            s: sessionId,
-            type: 'fmstinit',
-            data: [id, stattime],
-          })
+          Telemetry.beacon(7, 'fmstinit', [id, stattime])
         }
       },
       stalled: noop,
@@ -141,61 +143,37 @@
       if (Telemetry.OPTOUT || Telemetry.MINIMAL) return null
 
       var _sessionTime = _perftime() - _sessionStart
-      Telemetry.beacon({
-        sq: 12,
+      Telemetry.beacon(12, 'session$',
+        [_sessionTime, Object.keys(_uniqueStations).length])
+    },
+
+    sendError: function(sq, type, data) {
+      if (Telemetry.OPTOUT) return null
+
+      var payload = {
+        sq: sq,
+        type: type,
         s: sessionId,
-        type: 'session$',
-        data: [_sessionTime, Object.keys(_uniqueStations).length],
+        data: data
+      }
+
+      if ('sendBeacon' in navigator) {
+        navigator.sendBeacon(ERROR_URL, JSON.stringify(payload))
+      } else {
+        fetch(ERROR_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+      }
+    },
+
+    exception: function(e) {
+      return Telemetry.sendError(4, 'error_$n', {
+        str: e.toString ? e.toString() : null,
+        stack: e.stack ? e.stack : null,
+        msg: e.message ? e.message : null,
       })
     },
-
-    error: function(e) {
-      if (Telemetry.OPTOUT) return null
-
-      var data = {
-        sq: 4,
-        s: sessionId,
-        type: 'error_$n',
-        data: {
-          str: e.toString ? e.toString() : null,
-          stack: e.stack ? e.stack : null,
-          msg: e.message ? e.message : null,
-        }
-      }
-
-      if ('sendBeacon' in navigator) {
-        navigator.sendBeacon(ERROR_URL, JSON.stringify(data))
-      } else {
-        fetch(ERROR_URL, {
-          method: 'POST',
-          body: JSON.stringify(data)
-        })
-      }
-    },
-
-    sendError: function(e) {
-      if (Telemetry.OPTOUT) return null
-
-      var data = {
-        sq: 5,
-        s: sessionId,
-        type: 'uncaught',
-        data: {
-          stack: e.error.stack,
-          str: e.message,
-          file: e.filename,
-          loc: e.lineno + ':' + e.colno,
-        }
-      }
-      if ('sendBeacon' in navigator) {
-        navigator.sendBeacon(ERROR_URL, JSON.stringify(data))
-      } else {
-        fetch(ERROR_URL, {
-          method: 'POST',
-          body: JSON.stringify(data),
-        })
-      }
-    }
   }
 
   window.addEventListener('unload', function() {
@@ -203,7 +181,14 @@
   })
 
   window.addEventListener('error', function(e) {
-    Telemetry.sendError(e)
+    if (Telemetry.OPTOUT) return null
+
+    Telemetry.sendError(5, 'uncaught', {
+      stack: e.error.stack ? e.error.stack : null,
+      str: e.message,
+      file: e.filename,
+      loc: e.lineno + ':' + e.colno,
+    })
   })
 
   window.P22.Radiola.Telemetry = Telemetry

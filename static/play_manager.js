@@ -150,7 +150,7 @@
             ('hls' in station) && !self._hlsPlaylist) {
           return _useHLS()
         }
-        T.error(e)
+        T.exception(e)
         self.emit('playingError', e.name, e)
         console.error('[PlayManager] Playing failed: (%s)', e.name, e)
       })
