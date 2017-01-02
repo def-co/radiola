@@ -18,10 +18,6 @@
     this.el.preload = 'none'
     this.el.volume = 1.0
 
-    this.el.addEventListener('stalled', function(e) {
-      self.emit('stalled')
-    })
-
     this.stations = null
 
     this.playing = false
@@ -42,6 +38,10 @@
       self._notBuffering = true
       self.emit('playing')
       T.station.playing(self.lastStation)
+    })
+
+    this.el.addEventListener('stalled', function(e) {
+      self.emit('stalled')
     })
   }
   PlayManager.prototype = Object.create(EventEmitter.prototype)
