@@ -135,10 +135,9 @@
     fetch('/stations.json')
       .then(function(resp) { return resp.json() }),
     P22.Radiola.HLS.supportsHLS,
-    P22.Radiola.HLS.supportsNativeHLS,
   ])
   .then(function(all) {
-    var json = all[0], supportsHLS = all[1] || all[2]
+    var json = all[0], supportsHLS = all[1]
 
     PM.init(json)
     P22.Radiola.Telemetry.init()

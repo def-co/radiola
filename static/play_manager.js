@@ -18,6 +18,9 @@
     this.el.preload = 'none'
     this.el.volume = 1.0
 
+    this._srcEl = document.createElement('source')
+    this.el.appendChild(this._srcEl)
+
     this.stations = null
 
     this.playing = false
@@ -49,9 +52,7 @@
 
   PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST = U.browser.firefox
     // TODO: check whether Edge supports ^ old_shoutcast as well
-  PlayManager.prototype.SUPPORTS_HLS =
-    Promise.all([HLS.supportsHLS, HLS.supportsNativeHLS])
-      .then(function(q) { return q[0] || q[1] })
+  PlayManager.prototype.SUPPORTS_HLS = HLS.supportsHLS
 
   PlayManager.prototype.init = function(json) {
     this.stations = { }
@@ -93,24 +94,19 @@
     this.lastStation = id
 
     var _useHLS = function() {
-      HLS.supportsNativeHLS
-      .then(function(sup) {
-        if (sup) {
-          self.el.src = station.hls
-          self.el.play()
-          return null
-        } else {
-          return HLS.supportsHLS
-        }
-      })
+      HLS.supportsHLS
       .then(function(sup) {
         if (sup) {
           HLS.HLSPlaylist.fromStreamlist(station.hls)
           .then(function(p) {
             self._hlsPlaylist = p
+            self._srcEl.src = p.src
+            self._srcEl.type = p.mimetype
             self.el.src = p.src
             self.el.play()
           })
+        } else {
+          console.warning('Triggered HLS playing when HLS is not supported')
         }
       })
       return station
@@ -131,6 +127,7 @@
       }
     }
 
+    this._srcEl.src = station.stream_mp3
     this.el.src = station.stream_mp3
 
     window.setTimeout(function() {

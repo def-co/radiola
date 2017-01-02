@@ -144,11 +144,11 @@
     this._emptyFetches = 0
     this.finished = false
 
-    var mimetype = null
+    this.mimetype = null
     if (canMSEType(MIMETYPE_AACAUDIO)) {
-      mimetype = MIMETYPE_AACAUDIO
+      this.mimetype = MIMETYPE_AACAUDIO
     } else if (canMSEType(MIMETYPE_MP4AUDIO + '; codecs="' + codecs + '"')) {
-      mimetype = MIMETYPE_MP4AUDIO + '; codecs="' + codecs + '"'
+      this.mimetype = MIMETYPE_MP4AUDIO + '; codecs="' + codecs + '"'
     } else {
       throw new Error('Cannot find audio type that can be used with MSE')
     }
@@ -158,7 +158,7 @@
     this._mediaSourceOpenPromise = new Promise(function(res) {
       self._mediaSource.addEventListener('sourceopen', function a() {
         self._mediaSource.removeEventListener('sourceopen', a)
-        self._sourceBuffer = self._mediaSource.addSourceBuffer(mimetype)
+        self._sourceBuffer = self._mediaSource.addSourceBuffer(self.mimetype)
         res(true)
       })
     })
@@ -187,8 +187,6 @@
     // too many stations do it over HTTP instead of HTTPS :/
     return false
   })
-  HLSPlaylist.supportsNativeHLS =
-    Promise.resolve(U.browser.edge || U.browser.safari)
 
   HLSPlaylist.fromStreamlist = function(streamlistUrl) {
     return fetch(streamlistUrl)
@@ -342,7 +340,6 @@
   window.P22.Radiola.HLS = {
     HLSPlaylist: HLSPlaylist,
     supportsHLS: HLSPlaylist.supportsHLS,
-    supportsNativeHLS: HLSPlaylist.supportsNativeHLS,
   }
 })()
 // vim: set ts=2 sts=2 et sw=2:
