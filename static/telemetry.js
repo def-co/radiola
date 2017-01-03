@@ -71,28 +71,18 @@
 
       var now = _sessionStart = _perftime()
 
-      Telemetry.beacon({
-        sq: 0,
-        s: sessionId,
-        type: 'loadperf',
-        data: [
-          now - _initialData.scriptLoad,
-          _initialData.scriptLoad - _initialData.pageLoadStart,
-        ],
-      })
+      Telemetry.beacon(0, 'loadperf', [
+        now - _initialData.scriptLoad,
+        _initialData.scriptLoad - _initialData.pageLoadStart,
+      ])
 
       P22.Radiola.PlayManager.SUPPORTS_HLS
       .then(function(supportsHLS) {
-        Telemetry.beacon({
-          sq: 1,
-          s: sessionId,
-          type: 'features',
-          data: {
-            eventsource: 'EventSource' in window,
-            old_shoutcast: P22.Radiola.PlayManager.SUPPORTS_OLD_SHOUTCAST,
-            hls: supportsHLS,
-            beacon: 'sendBeacon' in navigator,
-          },
+        Telemetry.beacon(1, 'features', {
+          eventsource: 'EventSource' in window,
+          old_shoutcast: P22.Radiola.PlayManager.SUPPORTS_OLD_SHOUTCAST,
+          hls: supportsHLS,
+          beacon: 'sendBeacon' in navigator,
         })
       })
     },
