@@ -1,7 +1,7 @@
 /*
  * P22 Radiola
  *
- * @version 1.1.0 (Simfonija)
+ * @version 1.1.1 (Simfonija)
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016 paulsnar. All Rights Reserved.
  */
@@ -79,6 +79,7 @@
       P22.Radiola.PlayManager.SUPPORTS_HLS
       .then(function(supportsHLS) {
         Telemetry.beacon(1, 'features', {
+          __Radiola_v: '1.1.1',
           eventsource: 'EventSource' in window,
           old_shoutcast: P22.Radiola.PlayManager.SUPPORTS_OLD_SHOUTCAST,
           hls: supportsHLS,
