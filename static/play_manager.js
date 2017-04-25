@@ -8,7 +8,7 @@
 (function() {
   'use strict';
 
-  var HLS = P22.Radiola.HLS, T = P22.Radiola.Telemetry, U = P22.Radiola.Utils
+  var HLS = P22.Radiola.HLS, U = P22.Radiola.Utils
 
   function PlayManager() {
     this.el = document.createElement('audio')
@@ -40,7 +40,6 @@
     this.el.addEventListener('playing', function() {
       self._notBuffering = true
       self.emit('playing')
-      T.station.playing(self.lastStation)
     })
 
     this.el.addEventListener('stalled', function(e) {
@@ -112,8 +111,6 @@
       return station
     }
 
-    T.station.start(id)
-
     if (U.browser.safari && station.old_shoutcast) {
       // For some goddamn reason Safari decides that the tab is open as a frame
       // and completely breaks it if the stream is coming from an non-HTTP/1.1
@@ -147,7 +144,6 @@
             ('hls' in station) && !self._hlsPlaylist) {
           return _useHLS()
         }
-        T.exception(e)
         self.emit('playingError', e.name, e)
         console.error('[PlayManager] Playing failed: (%s)', e.name, e)
       })

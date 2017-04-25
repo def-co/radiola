@@ -37,7 +37,6 @@ S.decorate('reply', 'event', function(stream) {
 })
 
 S.register(require('inert'))
-.then(() => S.register(require('./src/telemetry')))
 .then(() => S.register(require('./src/discover')))
 .then(() => S.register(require('./src/routes')))
 .then(() => S.start())

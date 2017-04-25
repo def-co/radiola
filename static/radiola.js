@@ -14,8 +14,7 @@
 })(function(_AppTemplate) {
   'use strict';
 
-  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder,
-    T = P22.Radiola.Telemetry
+  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder
 
   function findStation(id, stations) {
     var station = null
@@ -82,13 +81,8 @@
       showDebugInfo: function() {
         var msg = [
           'P22 Radiola v1.1.1',
-          'SessionID: ' + T.getSessionId(),
+          'Telemetryless'
         ]
-        if (T.OPTOUT) {
-          msg.push('Telemetry: disabled (OPTOUT)')
-        } else if (T.MINIMAL) {
-          msg.push('Telemetry: reduced (MINIMAL)')
-        }
 
         alert(msg.join('\n'))
       },
@@ -140,7 +134,6 @@
     var json = all[0], supportsHLS = all[1]
 
     PM.init(json)
-    P22.Radiola.Telemetry.init()
 
     for (var i = 0; i < json.stations.length; i++) {
       var station = json.stations[i]
@@ -155,7 +148,6 @@
     app.outsideDataState = 'LOADED'
   }, function(e) {
     app.outsideDataState = 'ERROR'
-    T.exception(e)
   })
 
   var _titleEl = document.getElementsByTagName('title')[0]
