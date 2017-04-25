@@ -1,7 +1,7 @@
 /*
  * P22 Radiola
  *
- * @version 1.1.1 (Simfonija)
+ * @version 1.1.2 (Simfonija)
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016-2017 paulsnar. All Rights Reserved.
  */
@@ -80,7 +80,7 @@
       },
       showDebugInfo: function() {
         var msg = [
-          'P22 Radiola v1.1.1',
+          'P22 Radiola v1.1.2',
           'Telemetryless'
         ]
 
