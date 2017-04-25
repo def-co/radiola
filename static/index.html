@@ -53,20 +53,20 @@
 </head>
 <body>
   <div class="container">
+    <noscript>
+      <div class="callout alert">
+        <span style="font-weight: bold">
+          Šīs lapas funkcionalitātei nepieciešams JavaScript.
+        </span>
+        Lūdzu iespējojiet JavaScript, ja vēlaties izmantot P22 Radiolu.
+      </div>
+    </noscript>
     <div id="js__app" class="hide">
       <h1 class="text-center">
         <!-- <span>&#x1F3B5;&#xFE0E;</span> -->
         <span>&#x266B;</span>
         P22 Radiola
       </h1>
-      <noscript>
-        <div class="callout alert">
-          <span style="font-weight: bold">
-            Šīs lapas funkcionalitātei nepieciešams JavaScript.
-          </span>
-          Lūdzu iespējojiet JavaScript, ja vēlaties izmantot P22 Radiolu.
-        </div>
-      </noscript>
       <div class="callout primary">
         <span class="inline-loading"></span>
         Notiek ielāde...
@@ -79,7 +79,10 @@
       </footer>
     </div>
   </div>
-  <script> document.getElementById('js__app').className = '' </script>
+  <script>
+    document.getElementById('js__app').className = ''
+    document.getElementsByTagName('noscript').className = 'hide'
+  </script>
   <script>
     // conditionally polyfill promise for really old browsers
     (function() {
