@@ -2,7 +2,7 @@
 
 const SWHDelegates = require('./swh'),
       Pieci = require('./pieci'),
-      EHR = require('./ehr'),
+      EHRDelegates = require('./ehr'),
       LRDelegates = require('./lr'),
       Naba = require('./naba')
 
@@ -16,7 +16,19 @@ let Delegates = module.exports = {
   LR3: LRDelegates.LR3,
   LR4: LRDelegates.LR4,
 
-  Pieci, EHR, Naba,
+  Pieci, Naba,
+
+  EHR: EHRDelegates.EHR,
+  EHRSuperhits: EHRDelegates.EHRSuperhits,
+  EHRKH: EHRDelegates.EHRKH,
+  EHRFresh: EHRDelegates.EHRFresh,
+  EHRLatvHiti: EHRDelegates.EHRLatvHiti,
+  EHRTop40: EHRDelegates.EHRTop40,
+  EHRLove: EHRDelegates.EHRLove,
+  EHRDarbam: EHRDelegates.EHRDarbam,
+  EHRDance: EHRDelegates.EHRDance,
+  EHRAcoustic: EHRDelegates.EHRAcoustic,
+
 
   findAppointedDelegate: (station) => {
     switch (station) {
@@ -40,6 +52,24 @@ let Delegates = module.exports = {
 
       case 'ehr':
         return 'EHR';
+      case 'ehr_superhits':
+        return 'EHRSuperhits';
+      case 'ehr_kh':
+        return 'EHRKH';
+      case 'ehr_fresh':
+        return 'EHRFresh';
+      case 'ehr_latv_hiti':
+        return 'EHRLatvHiti';
+      case 'ehr_top_40':
+        return 'EHRTop40';
+      case 'ehr_love':
+        return 'EHRLove';
+      case 'ehr_darbam':
+        return 'EHRDarbam';
+      case 'ehr_dance':
+        return 'EHRDance';
+      case 'ehr_acoustic':
+        return 'EHRAcoustic';
 
       case 'lr1':
         return 'LR1';

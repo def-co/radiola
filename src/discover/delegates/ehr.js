@@ -8,9 +8,9 @@ const request = require('request-promise-native'),
 
 const GenericDelegate = require('./generic')
 
-const EHR_URL = 'https://www.ehrmedijugrupa.lv/api/channel/now_playing?stream_id=1'
+const EHR_URL = 'https://www.ehrmedijugrupa.lv/api/channel/now_playing?stream_id='
 
-class EHR extends GenericDelegate {
+class GenericEHR extends GenericDelegate {
   constructor() {
     super()
 
@@ -26,7 +26,7 @@ class EHR extends GenericDelegate {
 
   refreshState() {
     return request({
-      url: EHR_URL,
+      url: EHR_URL + this.streamId,
       json: true,
     }).then((data) => {
       if (data.status !== 'ok') {
@@ -43,6 +43,68 @@ class EHR extends GenericDelegate {
     }).then((song) => this.processState(song))
   }
 }
-EHR.prototype.canDiscover = ['song']
+GenericEHR.prototype.canDiscover = ['song']
 
-module.exports = EHR
+class EHR extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 1
+  }
+}
+class EHRSuperhits extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 11
+  }
+}
+class EHRKH extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 3
+  }
+}
+class EHRFresh extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 13
+  }
+}
+class EHRLatvHiti extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 10
+  }
+}
+class EHRTop40 extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 12
+  }
+}
+class EHRLove extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 26
+  }
+}
+class EHRDarbam extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 25
+  }
+}
+class EHRDance extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 16
+  }
+}
+class EHRAcoustic extends GenericEHR {
+  constructor() {
+    super()
+    this.streamId = 18
+  }
+}
+
+module.exports = { EHR, EHRSuperhits, EHRKH, EHRFresh, EHRLatvHiti, EHRTop40,
+  EHRLove, EHRDarbam, EHRDance, EHRAcoustic }
