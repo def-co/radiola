@@ -114,5 +114,5 @@ exports.register = (S, opts, next) => {
 
 exports.register.attributes = {
   name: 'radiola.discover',
-  version: '1.1.0',
+  version: '1.1.3',
 }
