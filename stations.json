@@ -137,5 +137,59 @@
     "stream_mp3": "http://live.pieci.lv/live9-hq.mp3",
     "logo": "logos/pieci_ziemassvetki.png",
     "disabled": true
+  },
+  {
+    "id": "ehr_superhits",
+    "name": "EHR Superhits",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_21.mp3",
+    "logo": "logos/ehr_superhits.png"
+  },
+  {
+    "id": "ehr_kr",
+    "name": "EHR KR",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/khr.mp3",
+    "logo": "logos/ehr_kr.png"
+  },
+  {
+    "id": "ehr_fresh",
+    "name": "EHR Fresh",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_25.mp3",
+    "logo": "logos/ehr_fresh.png"
+  },
+  {
+    "id": "ehr_latv_hiti",
+    "name": "EHR Latviešu Hīti",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_22.mp3",
+    "logo": "logos/ehr_latv_hiti.png"
+  },
+  {
+    "id": "ehr_top_40",
+    "name": "EHR Top 40",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_27.mp3",
+    "logo": "logos/ehr_top_40.png"
+  },
+  {
+    "id": "ehr_love",
+    "name": "EHR Love",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_28.mp3",
+    "logo": "logos/ehr_love.png"
+  },
+  {
+    "id": "ehr_darbam",
+    "name": "EHR Darbam",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_23.mp3",
+    "logo": "logos/ehr_darbam.png"
+  },
+  {
+    "id": "ehr_dance",
+    "name": "EHR Dance",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_24.mp3",
+    "logo": "logos/ehr_dance.png"
+  },
+  {
+    "id": "ehr_acoustic",
+    "name": "EHR Acoustic",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_26.mp3",
+    "logo": "logos/ehr_acoustic.png"
   }
 ]
