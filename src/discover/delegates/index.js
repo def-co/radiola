@@ -20,7 +20,7 @@ let Delegates = module.exports = {
 
   EHR: EHRDelegates.EHR,
   EHRSuperhits: EHRDelegates.EHRSuperhits,
-  EHRKH: EHRDelegates.EHRKH,
+  // EHRKH: EHRDelegates.EHRKH,
   EHRFresh: EHRDelegates.EHRFresh,
   EHRLatvHiti: EHRDelegates.EHRLatvHiti,
   EHRTop40: EHRDelegates.EHRTop40,
@@ -54,8 +54,8 @@ let Delegates = module.exports = {
         return 'EHR';
       case 'ehr_superhits':
         return 'EHRSuperhits';
-      case 'ehr_kh':
-        return 'EHRKH';
+      // case 'ehr_kh':
+      //   return 'EHRKH';
       case 'ehr_fresh':
         return 'EHRFresh';
       case 'ehr_latv_hiti':
