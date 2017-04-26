@@ -43,7 +43,6 @@ class GenericEHR extends GenericDelegate {
     }).then((song) => this.processState(song))
   }
 }
-GenericEHR.prototype.canDiscover = ['song']
 
 class EHR extends GenericEHR {
   constructor() {
@@ -51,60 +50,79 @@ class EHR extends GenericEHR {
     this.streamId = 1
   }
 }
+EHR.prototype.canDiscover = ['song']
+
 class EHRSuperhits extends GenericEHR {
   constructor() {
     super()
     this.streamId = 11
   }
 }
+EHRSuperhits.prototype.canDiscover = ['song']
+
 class EHRKH extends GenericEHR {
   constructor() {
     super()
     this.streamId = 3
   }
 }
+EHRKH.prototype.canDiscover = ['song']
+
 class EHRFresh extends GenericEHR {
   constructor() {
     super()
     this.streamId = 13
   }
 }
+EHRFresh.prototype.canDiscover = ['song']
+
 class EHRLatvHiti extends GenericEHR {
   constructor() {
     super()
     this.streamId = 10
   }
 }
+EHRLatvHiti.prototype.canDiscover = ['song']
+
 class EHRTop40 extends GenericEHR {
   constructor() {
     super()
     this.streamId = 12
   }
 }
+EHRTop40.prototype.canDiscover = ['song']
+
 class EHRLove extends GenericEHR {
   constructor() {
     super()
     this.streamId = 26
   }
 }
+EHRLove.prototype.canDiscover = ['song']
+
 class EHRDarbam extends GenericEHR {
   constructor() {
     super()
     this.streamId = 25
   }
 }
+EHRDarbam.prototype.canDiscover = ['song']
+
 class EHRDance extends GenericEHR {
   constructor() {
     super()
     this.streamId = 16
   }
 }
+EHRDance.prototype.canDiscover = ['song']
+
 class EHRAcoustic extends GenericEHR {
   constructor() {
     super()
     this.streamId = 18
   }
 }
+EHRAcoustic.prototype.canDiscover = ['song']
 
 module.exports = { EHR, EHRSuperhits, EHRKH, EHRFresh, EHRLatvHiti, EHRTop40,
   EHRLove, EHRDarbam, EHRDance, EHRAcoustic }
