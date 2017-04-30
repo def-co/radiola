@@ -38,14 +38,6 @@
     "logo": "/logos/ehr.png"
   },
   {
-    "id": "starfm",
-    "name": "Star FM",
-    "hls": "http://starfm.live.advailo.com/audio/live/playlist.m3u8",
-    "logo": "/logos/starfm.png",
-    "disabled": true
-  },
-
-  {
     "id": "lr1",
     "name": "LR1",
     "stream_mp3": "http://lr1mp1.latvijasradio.lv:8012/;",
