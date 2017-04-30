@@ -3,45 +3,45 @@
     "id": "swh",
     "name": "SWH",
     "stream_mp3": "http://80.232.162.149:8000/swh96mp3",
-    "logo": "logos/swh.png"
+    "logo": "/logos/swh.png"
   },
   {
     "id": "swh_rock",
     "name": "SWH Rock",
     "stream_mp3": "http://80.232.162.149:8000/rock96mp3",
-    "logo": "logos/swh_rock.png"
+    "logo": "/logos/swh_rock.png"
   },
   {
     "id": "swh_gold",
     "name": "SWH Gold",
     "stream_mp3": "http://80.232.162.149:8000/swhgold",
-    "logo": "logos/swh_gold.png"
+    "logo": "/logos/swh_gold.png"
   },
 
   {
     "id": "skonto",
     "name": "Radio Skonto",
     "stream_mp3": "http://skonto.ls.lv:8002/mp3",
-    "logo": "logos/skonto.png"
+    "logo": "/logos/skonto.png"
   },
   {
     "id": "capital",
     "name": "CAPITAL FM",
     "stream_mp3": "http://radio2.capitalfm.lv:8000/;",
     "old_shoutcast": true,
-    "logo": "logos/capitalfm.png"
+    "logo": "/logos/capitalfm.png"
   },
   {
     "id": "ehr",
     "name": "EHR",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
-    "logo": "logos/ehr.png"
+    "logo": "/logos/ehr.png"
   },
   {
     "id": "starfm",
     "name": "Star FM",
     "hls": "http://starfm.live.advailo.com/audio/live/playlist.m3u8",
-    "logo": "logos/starfm.png",
+    "logo": "/logos/starfm.png",
     "disabled": true
   },
 
@@ -51,7 +51,7 @@
     "stream_mp3": "http://lr1mp1.latvijasradio.lv:8012/;",
     "old_shoutcast": true,
     "hls": "http://muste.radio.org.lv/shoutcast/mp4:lr1a.stream/playlist.m3u8",
-    "logo": "logos/lr1.png"
+    "logo": "/logos/lr1.png"
   },
   {
     "id": "lr2",
@@ -59,7 +59,7 @@
     "stream_mp3": "http://lr2mp1.latvijasradio.lv:8002/;",
     "old_shoutcast": true,
     "hls": "http://muste.radio.org.lv/shoutcast/mp4:lr2a.stream/playlist.m3u8",
-    "logo": "logos/lr2.png"
+    "logo": "/logos/lr2.png"
   },
   {
     "id": "lr3",
@@ -67,7 +67,7 @@
     "stream_mp3": "http://lr3mp0.latvijasradio.lv:8004/;",
     "old_shoutcast": true,
     "hls": "http://muste.radio.org.lv/shoutcast/mp4:lr3a.stream/playlist.m3u8",
-    "logo": "logos/lr3.png"
+    "logo": "/logos/lr3.png"
   },
   {
     "id": "lr4",
@@ -75,14 +75,14 @@
     "stream_mp3": "http://lr4mp1.latvijasradio.lv:8020/;",
     "old_shoutcast": true,
     "hls": "http://muste.radio.org.lv/shoutcast/mp4:lr4a.stream/playlist.m3u8",
-    "logo": "logos/lr4.png"
+    "logo": "/logos/lr4.png"
   },
 
   {
     "id": "pieci",
     "name": "LR5",
     "stream_mp3": "http://live.pieci.lv/live19-hq.mp3",
-    "logo": "logos/pieci.png"
+    "logo": "/logos/pieci.png"
   },
   {
     "id": "lr_naba",
@@ -90,91 +90,91 @@
     "stream_mp3": "http://nabamp0.latvijasradio.lv:8016/;",
     "old_shoutcast": true,
     "hls": "http://muste.radio.org.lv/shoutcast/mp4:naba.stream/playlist.m3u8",
-    "logo": "logos/naba.png"
+    "logo": "/logos/naba.png"
   },
 
   {
     "id": "pieci_hiti",
     "name": "Pieci Hīti",
     "stream_mp3": "http://live.pieci.lv/live17-hq.mp3",
-    "logo": "logos/pieci_hiti.png"
+    "logo": "/logos/pieci_hiti.png"
   },
   {
     "id": "pieci_riti",
     "name": "Pieci Rīti",
     "stream_mp3": "http://live.pieci.lv/live11-hq.mp3",
-    "logo": "logos/pieci_riti.png"
+    "logo": "/logos/pieci_riti.png"
   },
   {
     "id": "pieci_latviesi",
     "name": "Pieci Latvieši",
     "stream_mp3": "http://live.pieci.lv/live7-hq.mp3",
-    "logo": "logos/pieci_latviesi.png"
+    "logo": "/logos/pieci_latviesi.png"
   },
   {
     "id": "pieci_koncerti",
     "name": "Pieci Koncerti",
     "stream_mp3": "http://live.pieci.lv/live1-hq.mp3",
-    "logo": "logos/pieci_koncerti.png"
+    "logo": "/logos/pieci_koncerti.png"
   },
   {
     "id": "pieci_atklajumi",
     "name": "Pieci Atklājumi",
     "stream_mp3": "http://live.pieci.lv/live5-hq.mp3",
-    "logo": "logos/pieci_atklajumi.png"
+    "logo": "/logos/pieci_atklajumi.png"
   },
   {
     "id": "ehr_superhits",
     "name": "EHR Superhits",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_21.mp3",
-    "logo": "logos/ehr_superhits.png"
+    "logo": "/logos/ehr_superhits.png"
   },
   {
     "id": "ehr_kr",
     "name": "EHR KR",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/khr.mp3",
-    "logo": "logos/ehr_kr.png"
+    "logo": "/logos/ehr_kr.png"
   },
   {
     "id": "ehr_fresh",
     "name": "EHR Fresh",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_25.mp3",
-    "logo": "logos/ehr_fresh.png"
+    "logo": "/logos/ehr_fresh.png"
   },
   {
     "id": "ehr_latv_hiti",
     "name": "EHR Latviešu Hīti",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_22.mp3",
-    "logo": "logos/ehr_latv_hiti.png"
+    "logo": "/logos/ehr_latv_hiti.png"
   },
   {
     "id": "ehr_top_40",
     "name": "EHR Top 40",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_27.mp3",
-    "logo": "logos/ehr_top_40.png"
+    "logo": "/logos/ehr_top_40.png"
   },
   {
     "id": "ehr_love",
     "name": "EHR Love",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_28.mp3",
-    "logo": "logos/ehr_love.png"
+    "logo": "/logos/ehr_love.png"
   },
   {
     "id": "ehr_darbam",
     "name": "EHR Darbam",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_23.mp3",
-    "logo": "logos/ehr_darbam.png"
+    "logo": "/logos/ehr_darbam.png"
   },
   {
     "id": "ehr_dance",
     "name": "EHR Dance",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_24.mp3",
-    "logo": "logos/ehr_dance.png"
+    "logo": "/logos/ehr_dance.png"
   },
   {
     "id": "ehr_acoustic",
     "name": "EHR Acoustic",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_26.mp3",
-    "logo": "logos/ehr_acoustic.png"
+    "logo": "/logos/ehr_acoustic.png"
   }
 ]
