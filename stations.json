@@ -104,12 +104,6 @@
     "logo": "/logos/pieci_latviesi.png"
   },
   {
-    "id": "pieci_koncerti",
-    "name": "Pieci Koncerti",
-    "stream_mp3": "http://live.pieci.lv/live1-hq.mp3",
-    "logo": "/logos/pieci_koncerti.png"
-  },
-  {
     "id": "pieci_atklajumi",
     "name": "Pieci Atklājumi",
     "stream_mp3": "http://live.pieci.lv/live5-hq.mp3",
