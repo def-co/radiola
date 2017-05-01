@@ -4,7 +4,8 @@ const SWHDelegates = require('./swh'),
       Pieci = require('./pieci'),
       EHRDelegates = require('./ehr'),
       LRDelegates = require('./lr'),
-      Naba = require('./naba')
+      Naba = require('./naba'),
+      StarFM = require('./starfm')
 
 let Delegates = module.exports = {
   SWH: SWHDelegates.SWH,
@@ -29,6 +30,7 @@ let Delegates = module.exports = {
   EHRDance: EHRDelegates.EHRDance,
   EHRAcoustic: EHRDelegates.EHRAcoustic,
 
+  StarFM,
 
   findAppointedDelegate: (station) => {
     switch (station) {
@@ -82,6 +84,9 @@ let Delegates = module.exports = {
 
       case 'lr_naba':
         return 'Naba';
+
+      case 'star_fm':
+        return 'StarFM';
 
       default:
         return null;

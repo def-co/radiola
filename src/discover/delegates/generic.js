@@ -128,7 +128,7 @@ class GenericDelegate extends EventEmitter {
       this.refreshState()
       .then((s) => {
         errorCount = 0
-        return s
+        return this.processState(s)
       })
       .catch((e) => {
         L.warning('An error encountered during fetching %s NP: %s',
