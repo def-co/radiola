@@ -17,7 +17,12 @@
     "stream_mp3": "http://80.232.162.149:8000/swhgold",
     "logo": "/logos/swh_gold.png"
   },
-
+  {
+    "id": "star_fm",
+    "name": "Star FM",
+    "stream_mp3": "http://starfm.live.advailo.com/audio/mp3/icecast.audio",
+    "logo": "/logos/star_fm.png"
+  },
   {
     "id": "skonto",
     "name": "Radio Skonto",
@@ -31,12 +36,7 @@
     "old_shoutcast": true,
     "logo": "/logos/capitalfm.png"
   },
-  {
-    "id": "ehr",
-    "name": "EHR",
-    "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
-    "logo": "/logos/ehr.png"
-  },
+
   {
     "id": "lr1",
     "name": "LR1",
@@ -114,6 +114,12 @@
     "name": "Pieci Atklājumi",
     "stream_mp3": "http://live.pieci.lv/live5-hq.mp3",
     "logo": "/logos/pieci_atklajumi.png"
+  },
+  {
+    "id": "ehr",
+    "name": "EHR",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
+    "logo": "/logos/ehr.png"
   },
   {
     "id": "ehr_superhits",
