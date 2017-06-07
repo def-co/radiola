@@ -1,7 +1,7 @@
 /*
  * P22 Radiola
  *
- * @version 1.1.4 (Simfonija)
+ * @version 1.1.4b (Simfonija)
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016-2017 paulsnar. All Rights Reserved.
  */
