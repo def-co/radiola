@@ -110,6 +110,12 @@
     "logo": "/logos/pieci_atklajumi.png"
   },
   {
+    "id": "pieci_latgaliesi",
+    "name": "Pieci Latgalieši",
+    "stream_mp3": "http://live.pieci.lv/live22-hq.mp3",
+    "logo": "/logos/pieci_latgaliesi.png"
+  },
+  {
     "id": "ehr",
     "name": "EHR",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
