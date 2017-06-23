@@ -146,6 +146,13 @@
 
     app.stations = json.stations
     app.outsideDataState = 'LOADED'
+
+    if (window.location.hash !== '') {
+      var st = window.location.hash.replace('#', '')
+      if (findStation(st, json.stations) !== null) {
+        app.changeActiveStation(st)
+      }
+    }
   }, function(e) {
     app.outsideDataState = 'ERROR'
   })
