@@ -49,7 +49,7 @@
   PlayManager.prototype = Object.create(EventEmitter.prototype)
   PlayManager.prototype.constructor = PlayManager
 
-  PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST = U.browser.firefox
+  PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST = !U.browser.safari
     // TODO: check whether Edge supports ^ old_shoutcast as well
   PlayManager.prototype.SUPPORTS_HLS = HLS.supportsHLS
 
