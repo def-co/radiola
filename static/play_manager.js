@@ -1,7 +1,7 @@
 /*
  * P22 Radiola
  *
- * @version 1.1.5 (Simfonija)
+ * @version 1.1.5b (Simfonija)
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016-2017 paulsnar. All Rights Reserved.
  */
@@ -111,7 +111,7 @@
       return station
     }
 
-    if (U.browser.safari && station.old_shoutcast) {
+    if (station.old_shoutcast && !PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST) {
       // For some goddamn reason Safari decides that the tab is open as a frame
       // and completely breaks it if the stream is coming from an non-HTTP/1.1
       // server (i.e. old_shoutcast) So we default to HLS immediately and not
