@@ -1,7 +1,7 @@
 /*
  * P22 Radiola
  *
- * @version 1.1.5 (Simfonija)
+ * @version 1.1.5b (Simfonija)
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016-2017 paulsnar. All Rights Reserved.
  */
@@ -177,7 +177,7 @@
 
   }
 
-  HLSPlaylist.supportsHLS = fetch('http://nottps.p22.co/204.php')
+  HLSPlaylist.supportsHLS = fetch('http://callisto.p22.co/internal/204')
   .then(function(q) {
     // if this succeeds then unsecure requests are not prohibited
     // which is unlikely but whatever
