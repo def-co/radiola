@@ -133,7 +133,7 @@
   .then(function(all) {
     var stations = all[0], supportsHLS = all[1]
 
-    PM.init(json)
+    PM.init(stations)
 
     for (var i = 0; i < stations.length; i++) {
       var station = stations[i]
