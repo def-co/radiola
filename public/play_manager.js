@@ -53,9 +53,9 @@
     // TODO: check whether Edge supports ^ old_shoutcast as well
   PlayManager.prototype.SUPPORTS_HLS = HLS.supportsHLS
 
-  PlayManager.prototype.init = function(json) {
+  PlayManager.prototype.init = function(stations) {
     this.stations = { }
-    json.stations.forEach(function(station) {
+    stations.forEach(function(station) {
       this.stations[station.id] = station
     }.bind(this))
 
