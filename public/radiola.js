@@ -131,12 +131,12 @@
     P22.Radiola.HLS.supportsHLS,
   ])
   .then(function(all) {
-    var json = all[0], supportsHLS = all[1]
+    var stations = all[0], supportsHLS = all[1]
 
     PM.init(json)
 
-    for (var i = 0; i < json.stations.length; i++) {
-      var station = json.stations[i]
+    for (var i = 0; i < stations.length; i++) {
+      var station = stations[i]
       if (station.old_shoutcast) {
         if (PM.SUPPORTS_OLD_SHOUTCAST) { continue }
         else if (station.hls && supportsHLS) { continue }
@@ -144,7 +144,7 @@
       }
     }
 
-    app.stations = json.stations
+    app.stations = stations
     app.outsideDataState = 'LOADED'
 
     if (window.location.hash !== '') {
