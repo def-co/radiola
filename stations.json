@@ -73,7 +73,7 @@
   {
     "id": "pieci",
     "name": "LR5",
-    "stream_mp3": "http://live.pieci.lv/live19-hq.mp3",
+    "stream_mp3": "https://live.pieci.lv/live19-hq.mp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci.png"
   },
   {
@@ -87,33 +87,39 @@
 
   {
     "id": "pieci_hiti",
-    "name": "Pieci Hīti",
-    "stream_mp3": "http://live.pieci.lv/live17-hq.mp3",
+    "name": "Pieci Hiti",
+    "stream_mp3": "https://live.pieci.lv/live17-hq.mp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_hiti.png"
   },
   {
     "id": "pieci_riti",
     "name": "Pieci Rīti",
-    "stream_mp3": "http://live.pieci.lv/live11-hq.mp3",
+    "stream_mp3": "https://live.pieci.lv/live11-hq.mp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_riti.png"
   },
   {
     "id": "pieci_latviesi",
     "name": "Pieci Latvieši",
-    "stream_mp3": "http://live.pieci.lv/live7-hq.mp3",
+    "stream_mp3": "https://live.pieci.lv/live7-hq.mp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_latviesi.png"
   },
   {
     "id": "pieci_atklajumi",
     "name": "Pieci Atklājumi",
-    "stream_mp3": "http://live.pieci.lv/live5-hq.mp3",
+    "stream_mp3": "https://live.pieci.lv/live5-hq.mp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_atklajumi.png"
   },
   {
     "id": "pieci_latgaliesi",
     "name": "Pieci Latgalieši",
-    "stream_mp3": "http://live.pieci.lv/live22-hq.mp3",
+    "stream_mp3": "https://live.pieci.lv/live22-hq.mp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_latgaliesi.png"
+  },
+  {
+    "id": "pieci_jazz",
+    "name": "Pieci Riga Jazz",
+    "stream_mp3": "https://live.pieci.lv/live20-hq.mp3",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_jazz.png"
   },
   {
     "id": "ehr",
