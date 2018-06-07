@@ -116,12 +116,6 @@
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_latgaliesi.png"
   },
   {
-    "id": "pieci_jazz",
-    "name": "Pieci Riga Jazz",
-    "stream_mp3": "https://live.pieci.lv/live20-hq.mp3",
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_jazz.png"
-  },
-  {
     "id": "ehr",
     "name": "EHR",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
