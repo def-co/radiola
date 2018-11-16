@@ -32,7 +32,7 @@
   {
     "id": "capital",
     "name": "CAPITAL FM",
-    "stream_mp3": "http://radio2.capitalfm.lv:8000/;",
+    "stream_mp3": "http://185.8.60.9:8000/;stream",
     "old_shoutcast": true,
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/capitalfm.png"
   },
