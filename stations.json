@@ -2,25 +2,26 @@
   {
     "id": "swh",
     "name": "SWH",
-    "stream_mp3": "http://80.232.162.149:8000/swh96mp3",
+    "stream_mp3": "http://87.110.219.34:8000/swhmp3"
+    },
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/swh.png"
   },
   {
     "id": "swh_rock",
     "name": "SWH Rock",
-    "stream_mp3": "http://80.232.162.149:8000/rock96mp3",
+    "stream_mp3": "http://87.110.219.34:8000/rockmp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/swh_rock.png"
   },
   {
     "id": "swh_gold",
     "name": "SWH Gold",
-    "stream_mp3": "http://80.232.162.149:8000/swhgold",
+    "stream_mp3": "http://87.110.219.34:8000/swhgold",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/swh_gold.png"
   },
   {
     "id": "star_fm",
     "name": "Star FM",
-    "stream_mp3": "http://starfm.live.advailo.com/audio/mp3/icecast.audio",
+    "stream_mp3": "https://live.advailo.com/audio/mp3/icecast.audio",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/star_fm.png"
   },
   {
@@ -41,7 +42,7 @@
     "name": "LR1",
     "stream_mp3": "http://lr1mp1.latvijasradio.lv:8012/;",
     "old_shoutcast": true,
-    "hls": "http://muste.radio.org.lv/shoutcast/mp4:lr1a.stream/playlist.m3u8",
+    "hls": "http://muste.radio.org.lv:1935/shoutcast/lr1a.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/lr1.png"
   },
   {
@@ -49,7 +50,7 @@
     "name": "LR2",
     "stream_mp3": "http://lr2mp1.latvijasradio.lv:8002/;",
     "old_shoutcast": true,
-    "hls": "http://muste.radio.org.lv/shoutcast/mp4:lr2a.stream/playlist.m3u8",
+    "hls": "http://muste.radio.org.lv:1935/shoutcast/lr2a.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/lr2.png"
   },
   {
@@ -57,7 +58,7 @@
     "name": "LR3",
     "stream_mp3": "http://lr3mp0.latvijasradio.lv:8004/;",
     "old_shoutcast": true,
-    "hls": "http://muste.radio.org.lv/shoutcast/mp4:lr3a.stream/playlist.m3u8",
+    "hls": "http://muste.radio.org.lv:1935/shoutcast/lr3a.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/lr3.png"
   },
   {
@@ -65,7 +66,7 @@
     "name": "LR4",
     "stream_mp3": "http://lr4mp1.latvijasradio.lv:8020/;",
     "old_shoutcast": true,
-    "hls": "http://muste.radio.org.lv/shoutcast/mp4:lr4a.stream/playlist.m3u8",
+    "hls": "http://muste.radio.org.lv:1935/shoutcast/lr4a.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/lr4.png"
   },
 
@@ -80,7 +81,7 @@
     "name": "Radio NABA",
     "stream_mp3": "http://nabamp0.latvijasradio.lv:8016/;",
     "old_shoutcast": true,
-    "hls": "http://muste.radio.org.lv/shoutcast/mp4:naba.stream/playlist.m3u8",
+    "hls": "http://muste.radio.org.lv:1935/shoutcast/naba.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/naba.png"
   },
 
