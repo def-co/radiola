@@ -30,11 +30,10 @@
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/skonto.png"
   },
   {
-    "id": "capital",
-    "name": "CAPITAL FM",
-    "stream_mp3": "http://185.8.60.9:8000/;stream",
-    "old_shoutcast": true,
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/capitalfm.png"
+    "id": "ehr",
+    "name": "EHR",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr.png"
   },
 
   {
@@ -114,12 +113,6 @@
     "name": "Pieci Latgalieši",
     "stream_mp3": "https://live.pieci.lv/live22-hq.mp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/pieci_latgaliesi.png"
-  },
-  {
-    "id": "ehr",
-    "name": "EHR",
-    "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr.png"
   },
   {
     "id": "ehr_superhits",
