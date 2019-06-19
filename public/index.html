@@ -1,110 +1,172 @@
 <!DOCTYPE html>
 <html lang="lv">
-<head>
-  <!--
-    P22 Radiola
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<!--
+  P22 Radiola
 
-    v1.1.7 (Simfonija)
-    paulsnar <paulsnar@paulsnar.lv>
-    © 2016-2018 paulsnar. All Rights Reserved.
-  -->
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width" />
-  <title>P22 Radiola</title>
-  <script>
-    function _perftime() {
-      return performance.now ? Math.round(performance.now()) : Date.now()
-    }
-    window.P22 = {
-      Radiola: {
-        _s: { pageLoadStart: _perftime() }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.0/css/foundation-flex.min.css" />
-  <style>
-    .inline-loading {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      background-image: url(loading_alt.png);
-      animation: inline-loader 0.4s steps(8) infinite;
-    }
-    @keyframes inline-loader {
-      from { background-position: 0px; }
-      to { background-position: -128px; }
-    }
+  v1.1.7 (Simfonija)
+  paulsnar <paulsnar@paulsnar.lv>
+  © 2016-2018 paulsnar. All Rights Reserved.
+-->
+<title>P22 Radiola</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.0/css/foundation-flex.min.css" />
+<style>
+  .inline-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url(loading_alt.png);
+    animation: inline-loader 0.4s steps(8) infinite;
+  }
+  @keyframes inline-loader {
+    from { background-position: 0px; }
+    to { background-position: -128px; }
+  }
 
-    .station-incompatible {
-      opacity: 0.3;
-      filter: grayscale(100%);
-    }
+  .station-incompatible {
+    opacity: 0.3;
+    filter: grayscale(100%);
+  }
 
-    body { margin: 0; width: 100%; }
-    .container {
-      top: 0;
-      width: 95%;
-      max-width: 960px;
-      margin-top: 0;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <noscript>
-      <div class="callout alert">
-        <span style="font-weight: bold">
-          Šīs lapas funkcionalitātei nepieciešams JavaScript.
-        </span>
-        Lūdzu iespējojiet JavaScript, ja vēlaties izmantot P22 Radiolu.
-      </div>
-    </noscript>
-    <div id="js__app" class="hide">
-      <h1 class="text-center">
-        <!-- <span>&#x1F3B5;&#xFE0E;</span> -->
-        <span>&#x266B;</span>
-        P22 Radiola
-      </h1>
-      <div class="callout primary">
-        <span class="inline-loading"></span>
-        Notiek ielāde...
-      </div>
-      <hr />
-      <footer>
-        <p>
-          <small>v1.1.7 &middot; <a href="about.txt">Par</a> &middot; © 2016-2018 P22 Corp.</small>
-        </p>
-      </footer>
+  body { margin: 0; width: 100%; }
+  .container {
+    top: 0;
+    width: 95%;
+    max-width: 960px;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer-text {
+    font-size: 87.5%;
+    color: #444;
+  }
+</style>
+
+<div class="container">
+  <noscript>
+    <div class="callout alert">
+      <span style="font-weight: bold">
+        Šīs lapas funkcionalitātei nepieciešams JavaScript.
+      </span>
+      Lūdzu iespējojiet JavaScript, ja vēlaties izmantot P22 Radiolu.
     </div>
+  </noscript>
+  <div id="js__app" class="hide">
+    <h1 class="text-center">
+      <span>&#x266B;</span>
+      P22 Radiola
+    </h1>
+    <div class="callout primary">
+      <span class="inline-loading"></span>
+      Notiek ielāde...
+    </div>
+    <hr />
+    <footer>
+      <p class="footer-text">
+        v1.1.7
+        &middot;
+        <a href="about.txt">Par</a>
+        &middot;
+        © 2016-2019 P22 Corp.
+      </p>
+    </footer>
   </div>
-  <script>
-    document.getElementById('js__app').className = ''
-    document.getElementsByTagName('noscript').className = 'hide'
-  </script>
-  <script>
-    // conditionally polyfill promise for really old browsers
-    (function() {
-      if (!window.Promise) {
-        document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"><' + '/script>')
-      }
-    })()
-  </script>
-  <script>
-    // conditionally polyfill fetch for older browsers
-    (function(){
-      if (!window.fetch) {
-        document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"><' + '/script>')
-      }
-    })()
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/EventEmitter/5.1.0/EventEmitter.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.3/vue.min.js"></script>
-  <script src="utils.js"></script>
-  <script src="song_finder.js"></script>
-  <script src="play_manager.js"></script>
-  <script src="radiola.js"></script>
-</body>
-<!-- vim: set ts=2 sts=2 et sw=2 : -->
+</div>
+<script>
+  document.getElementById('js__app').className = ''
+  document.getElementsByTagName('noscript').className = 'hide'
+</script>
+<script type="text/template" id="app-template">
+  <div>
+    <h1 class="text-center"><span>&#x266B;</span> P22 Radiola</h1>
+    <div class="callout alert" v-if="this.loadError">
+      <strong>Ielāde neizdevās!</strong>
+      Mēģiniet atsvaidzināt lapu.
+    </div>
+    <div v-else>
+      <section class="callout" v-if="this.playingState !== 'STOPPED'"
+          :class="{ warning: this.bufferingError }">
+        <div class="row align-middle">
+          <div class="columns">
+            <span v-if="this.playingState === 'ERROR'">
+              <span style="font-weight: bold">Neizdevās atskaņot:</span>
+              {{ this.currentStation.name }}
+            </span>
+            <span v-else>
+              <span v-if="this.playingState === 'PLAYING'">&#x25B6;</span>
+              <span class="inline-loading" v-else></span>
+              <span class="show-for-medium"
+                :style="{ fontWeight: (this.currentSong || this.currentProgram) ? 'bold' : 'inherit' }">
+                <span v-if="this.playingState === 'BUFFERING'">
+                  {{ this.choice([ 'Tūliņ', 'Tūdaļ', 'Tūlīt' ]) }} skanēs:
+                </span>
+                <span v-else>Tagad skan:</span>
+              </span>
+              <span v-if="this.currentSong">
+                {{ this.currentSong.artist }} &ndash; {{ this.currentSong.title }}
+              </span>
+              <span v-if="this.currentSong &amp;&amp; this.currentProgram"
+                style="font-weight: bold">
+                ::
+              </span>
+              <span v-if="this.currentProgram">{{ this.currentProgram }}</span>
+              <span v-if=" ! this.currentSong &amp;&amp; ! this.currentProgram"
+                style="font-weight: bold">
+                {{ this.currentStation.name }}
+              </span>
+            </span>
+          </div>
+          <div class="shrink columns">
+            <button class="button expanded" v-on:click="stop"
+              style="margin-bottom: 0">
+              <span>&#x25FC;</span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <section class="row">
+        <div class="small-4 medium-3 large-2 columns" v-for="station in stations">
+          <radiola-station :station="station"
+            v-on:clicked="changeActiveStation(station.id)"></radiola-station>
+        </div>
+      </section>
+    </div>
+    <hr />
+    <footer>
+      <p class="footer-text">
+        <span>{{ version }}</span>
+        &middot;
+        <a href="about.txt">Par</a>
+        &middot;
+        &copy; 2016-2019 P22 Corp.
+      </p>
+    </footer>
+  </div>
+</script>
+<script>
+  // conditionally polyfill promise for really old browsers
+  (function() {
+    if (!window.Promise) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.min.js"><' + '/script>')
+    }
+  })()
+</script>
+<script>
+  // conditionally polyfill fetch for older browsers
+  (function(){
+    if (!window.fetch) {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.1/fetch.min.js"><' + '/script>')
+    }
+  })()
+</script>
+<script>window.P22 = { Radiola: { VERSION: '1.2.0', } };</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/EventEmitter/5.1.0/EventEmitter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.3/vue.min.js"></script>
+<script src="utils.js"></script>
+<script src="song_finder.js"></script>
+<script src="play_manager.js"></script>
+<script src="radiola.js"></script>
 </html>

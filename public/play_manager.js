@@ -120,8 +120,14 @@
       }
     }
 
-    $srcEl.src = station.stream_mp3;
-    $el.src = station.stream_mp3;
+    var url = station.stream_mp3;
+    // attempt to prevent caching by adding a query string
+    // This is mostly for Firefox, which occasionally plays a weird garbled
+    // stream consisting of both stale (cached) data and livestreamed fragments
+    url += (url.indexOf('?') === -1 ? '?' : '&') + 'nonce=' + Math.random();
+
+    $srcEl.src = url;
+    $el.src = url;
 
     window.setTimeout(function() {
       PlayManager.playing = true;

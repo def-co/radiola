@@ -8,13 +8,15 @@
 (function(cont) {
   'use strict';
 
-  fetch('app.tmpl.html')
-  .then(function(resp) { return resp.text(); })
+  fetch('/stations.json')
+  .then(function(resp) { return resp.json(); })
   .then(cont);
-})(function(_AppTemplate) {
+})(function(stations) {
   'use strict';
 
   var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder;
+
+  var template = document.getElementById('app-template').textContent;
 
   function findStation(id, stations) {
     var station = null;
@@ -26,16 +28,16 @@
 
   var app = new Vue({
     el: '#js__app',
-    template: _AppTemplate,
+    template: template,
     data: {
-      outsideDataState: 'WAITING',
+      version: P22.Radiola.VERSION,
+      loadError: false,
       playingState: 'STOPPED',
-      stations: [ ],
-      current_station: null,
-      current_station_id: null,
-      current_song: null,
-      current_program: null,
-      _subscribed: false,
+      bufferingError: false,
+      stations: stations,
+      currentStation: null,
+      currentSong: null,
+      currentProgram: null,
     },
     methods: {
       choice: function(p) {
@@ -55,49 +57,39 @@
           this.stop();
         }
 
-        this.current_song = null;
-        this.current_program = null;
+        this.currentSong = null;
+        this.currentProgram = null;
 
-        PM.switchStation(stationId);
-        this.current_station_id = stationId;
-        this.current_station = station.name;
+        this.currentStation = station;
         this.playingState = 'BUFFERING';
 
         if (SF.canSubscribe(stationId)) {
           this._subscribed = true;
           SF.eventbus.on('song.' + stationId, function(song) {
-            if (song === null) { self.current_song = null; }
-            else { self.current_song = song.artist + ' – ' + song.title; }
+            self.currentSong = song;
           })
           SF.eventbus.on('program.' + stationId, function(name) {
-            self.current_program = name;
+            self.currentProgram = name;
           })
           SF.subscribe(stationId);
         }
-      },
-      showDebugInfo: function() {
-        var msg = [
-          'P22 Radiola v1.1.7',
-          'Telemetryless'
-        ];
 
-        alert(msg.join('\n'));
+        PM.switchStation(stationId);
       },
       stop: function() {
         P22.Radiola.PlayManager.stop();
         if (this._subscribed) {
-          SF.unsubscribe(this.current_station_id);
+          SF.unsubscribe(this.currentStation.id);
           this._subscribed = false;
         }
 
-        this.current_station = null;
-        this.current_station_id = null;
-        this.current_song = null;
-        this.current_program = null;
+        this.currentStation = null;
+        this.currentSong = null;
+        this.currentProgram = null;
       },
     },
     components: {
-      'pr-station': {
+      'radiola-station': {
         props: ['station'],
         data: function() {
           return { station: this.station };
@@ -122,10 +114,10 @@
     },
   })
 
-  fetch('/stations.json')
-  .then(function(resp) { return resp.json(); })
-  .then(function(stations) {
-    PM.init(stations);
+  // fetch('/stations.json')
+  // .then(function(resp) { return resp.json(); })
+  // .then(function(stations) {
+  //   PM.init(stations);
 
     for (var i = 0; i < stations.length; i++) {
       var station = stations[i];
@@ -136,18 +128,21 @@
       }
     }
 
-    app.stations = stations;
-    app.outsideDataState = 'LOADED';
+  //   app.stations = stations;
+  //   app.outsideDataState = 'LOADED';
 
-    if (window.location.hash !== '') {
-      var st = window.location.hash.replace('#', '');
-      if (findStation(st, json.stations) !== null) {
-        app.changeActiveStation(st);
-      }
-    }
-  }, function(e) {
-    app.outsideDataState = 'ERROR';
-  });
+  //   if (window.location.hash !== '') {
+  //     var st = window.location.hash.replace('#', '');
+  //     if (findStation(st, json.stations) !== null) {
+  //       app.changeActiveStation(st);
+  //     }
+  //   }
+  // }, function(e) {
+  //   app.outsideDataState = 'ERROR';
+  // });
+
+  PM.init(stations);
+
 
   var _titleEl = document.getElementsByTagName('title')[0];
   app.$watch(function() {

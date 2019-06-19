@@ -10,7 +10,7 @@
 
   var DISCOVERABLE_STATIONS = {
     swh: true, swh_gold: true, swh_rock: true,
-    starfm: true,
+    star_fm: true,
     lr1: true, lr2: true, lr3: true, lr4: true,
     lr_naba: true,
     ehr: true, ehr_superhits: true, ehr_kh: true, ehr_fresh: true,
