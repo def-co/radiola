@@ -5,9 +5,9 @@
 <!--
   P22 Radiola
 
-  v1.1.7 (Simfonija)
+  v1.2.0 (Akords)
   paulsnar <paulsnar@paulsnar.lv>
-  © 2016-2018 paulsnar. All Rights Reserved.
+  © 2016-2019 paulsnar. All Rights Reserved.
 -->
 <title>P22 Radiola</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.0/css/foundation-flex.min.css" />
@@ -43,6 +43,15 @@
     font-size: 87.5%;
     color: #444;
   }
+
+  .card {
+    transition: border-color 0.125s ease-in-out, box-shadow 0.25s ease-in-out;
+  }
+
+  .card.active {
+    border-color: #2c9be5;
+    box-shadow: 0 0 0.375em #9dd1f3;
+  }
 </style>
 
 <div class="container">
@@ -66,7 +75,7 @@
     <hr />
     <footer>
       <p class="footer-text">
-        v1.1.7
+        v1.2.0
         &middot;
         <a href="about.txt">Par</a>
         &middot;
@@ -82,13 +91,12 @@
 <script type="text/template" id="app-template">
   <div>
     <h1 class="text-center"><span>&#x266B;</span> P22 Radiola</h1>
-    <div class="callout alert" v-if="this.loadError">
+    <div class="callout alert" v-if="this.stations === null">
       <strong>Ielāde neizdevās!</strong>
       Mēģiniet atsvaidzināt lapu.
     </div>
     <div v-else>
-      <section class="callout" v-if="this.playingState !== 'STOPPED'"
-          :class="{ warning: this.bufferingError }">
+      <section class="callout" v-if="this.playingState !== 'STOPPED'">
         <div class="row align-middle">
           <div class="columns">
             <span v-if="this.playingState === 'ERROR'">
@@ -122,14 +130,14 @@
           <div class="shrink columns">
             <button class="button expanded" v-on:click="stop"
               style="margin-bottom: 0">
-              <span>&#x25FC;</span>
+              <span style="font-size: 1.5em">&#x25FC;</span>
             </button>
           </div>
         </div>
       </section>
       <section class="row">
         <div class="small-4 medium-3 large-2 columns" v-for="station in stations">
-          <radiola-station :station="station"
+          <radiola-station :station="station" :active="currentStation.id === station.id"
             v-on:clicked="changeActiveStation(station.id)"></radiola-station>
         </div>
       </section>

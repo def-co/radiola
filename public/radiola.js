@@ -1,7 +1,7 @@
 /*
  * P22 Radiola
  *
- * @version 1.1.7 (Simfonija)
+ * @version 1.2.0 (Akords)
  * @author paulsnar <paulsnar@paulsnar.lv>
  * @license © 2016-2018 paulsnar. All Rights Reserved.
  */
@@ -10,13 +10,34 @@
 
   fetch('/stations.json')
   .then(function(resp) { return resp.json(); })
-  .then(cont);
+  .then(function(stations) {
+    cont(stations);
+  }, function(err) {
+    console.error('Loading failed:', err);
+    cont(null);
+  });
 })(function(stations) {
   'use strict';
 
   var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder;
 
-  var template = document.getElementById('app-template').textContent;
+  stations = stations.map(function(station) {
+    if (station.old_shoutcast) {
+      if ( ! PM.supportsOldShoutcast &&
+           ! (station.hls && PM.supportsNativeHLS)) {
+        station._incompatible = true;
+      }
+    }
+    return station;
+  });
+
+  var PlayingState = {
+    PLAYING: 'PLAYING',
+    BUFFERING: 'BUFFERING',
+    STALLED: 'STALLED',
+    STOPPED: 'STOPPED',
+    ERROR: 'ERROR',
+  };
 
   function findStation(id, stations) {
     var station = null;
@@ -28,14 +49,12 @@
 
   var app = new Vue({
     el: '#js__app',
-    template: template,
+    template: document.getElementById('app-template').textContent,
     data: {
       version: P22.Radiola.VERSION,
-      loadError: false,
-      playingState: 'STOPPED',
-      bufferingError: false,
+      playingState: PlayingState.STOPPED,
       stations: stations,
-      currentStation: null,
+      currentStation: { id: null },
       currentSong: null,
       currentProgram: null,
     },
@@ -53,7 +72,7 @@
           return false;
         }
 
-        if (this.playingState !== 'STOPPED') {
+        if (this.playingState !== PlayingState.STOPPED) {
           this.stop();
         }
 
@@ -61,10 +80,9 @@
         this.currentProgram = null;
 
         this.currentStation = station;
-        this.playingState = 'BUFFERING';
+        this.playingState = PlayingState.BUFFERING;
 
         if (SF.canSubscribe(stationId)) {
-          this._subscribed = true;
           SF.eventbus.on('song.' + stationId, function(song) {
             self.currentSong = song;
           })
@@ -72,27 +90,28 @@
             self.currentProgram = name;
           })
           SF.subscribe(stationId);
+          this._subscribed = true;
         }
 
-        PM.switchStation(stationId);
+        PM.switchStation(station);
       },
       stop: function() {
-        P22.Radiola.PlayManager.stop();
+        PM.stop();
         if (this._subscribed) {
           SF.unsubscribe(this.currentStation.id);
           this._subscribed = false;
         }
 
-        this.currentStation = null;
+        this.currentStation = { id: null };
         this.currentSong = null;
         this.currentProgram = null;
       },
     },
     components: {
       'radiola-station': {
-        props: ['station'],
+        props: ['station', 'active'],
         data: function() {
-          return { station: this.station };
+          return { station: this.station, active: this.active };
         },
         methods: {
           handleClicked: function() {
@@ -102,7 +121,7 @@
         template: [
           '<div',
               'class="card"',
-              ':class="{ \'station-incompatible\': station._incompatible }"',
+              ':class="{ \'station-incompatible\': station._incompatible, active: active }"',
               'v-on:click="handleClicked">',
             '<img :src="station.logo" alt="" />',
             '<p class="text-center">',
@@ -112,97 +131,57 @@
         ].join(' '),
       },
     },
-  })
+  });
 
-  // fetch('/stations.json')
-  // .then(function(resp) { return resp.json(); })
-  // .then(function(stations) {
-  //   PM.init(stations);
-
-    for (var i = 0; i < stations.length; i++) {
-      var station = stations[i];
-      if (station.old_shoutcast) {
-        if (PM.SUPPORTS_OLD_SHOUTCAST) { continue; }
-        else if (station.hls && PM.supportsNativeHLS) { continue; }
-        else { station._incompatible = true; }
-      }
-    }
-
-  //   app.stations = stations;
-  //   app.outsideDataState = 'LOADED';
-
-  //   if (window.location.hash !== '') {
-  //     var st = window.location.hash.replace('#', '');
-  //     if (findStation(st, json.stations) !== null) {
-  //       app.changeActiveStation(st);
-  //     }
-  //   }
-  // }, function(e) {
-  //   app.outsideDataState = 'ERROR';
-  // });
-
-  PM.init(stations);
-
-
-  var _titleEl = document.getElementsByTagName('title')[0];
+  var $title = document.getElementsByTagName('title')[0];
   app.$watch(function() {
     var title = '';
 
     switch (this.playingState) {
-      case 'BUFFERING':
-      case 'STALLED':
+      case PlayingState.BUFFERING:
+      case PlayingState.STALLED:
         title += '… ';
         break;
 
-      case 'PLAYING':
+      case PlayingState.PLAYING:
         title += '▶ ';
         break;
     }
 
-    if (this.current_song) {
-      title += this.current_song;
-    }
-    if (this.current_song && this.current_program) {
-      title += ' :: ';
-    }
-    if (this.current_program) {
-      title += this.current_program;
+    if (this.currentSong) {
+      title += this.currentSong.artist + ' - ' +
+        this.currentSong.title + ' :: ';
     }
 
-    if ((this.current_song || this.current_program) && this.current_station) {
-      title += ' :: ';
-    }
-
-    if (this.current_station) {
-      title += this.current_station;
+    if (this.currentStation.id !== null) {
+      title += this.currentStation.name;
       title += ' :: ';
     }
 
     title += 'P22 Radiola';
     return title;
   }, function(newTitle) {
-    _titleEl.textContent = newTitle;
+    $title.textContent = newTitle;
   }, { immediate: true });
 
 
-  PM.addListener('playing', function() {
-    app.playingState = 'PLAYING';
+  PM.addEventListener('playing', function() {
+    app.playingState = PlayingState.PLAYING;
   });
 
-  PM.addListener('stalled', function() {
-    if (!app.buffering_stalled) {
-      app.playingState = 'STALLED';
+  PM.addEventListener('stalled', function() {
+    if (PM.mode === 'HLS') {
+      return;
     }
+    app.playingState = PlayingState.STALLED;
   });
 
-  PM.addListener('stopped', function() {
-    app.playingState = 'STOPPED';
-    app.current_song = null;
-    app.current_program = null;
+  PM.addEventListener('stopped', function() {
+    app.playingState = PlayingState.STOPPED;
   });
 
-  PM.addListener('playingError', function() {
-    app.playingState = 'ERROR';
+  PM.addEventListener('error', function() {
+    app.playingState = PlayingState.ERROR;
   });
 
   window.P22.Radiola.App = app;
