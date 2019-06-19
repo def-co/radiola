@@ -34,6 +34,9 @@
     "id": "ehr",
     "name": "EHR",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/ehr.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/ehr.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_00_LV_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr.png"
   },
 
@@ -119,54 +122,153 @@
     "id": "ehr_superhits",
     "name": "EHR Superhits",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_21.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_21.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_21.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_21_SH_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_superhits.png"
   },
   {
     "id": "ehr_kh",
     "name": "EHR KH",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/khr.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/khr.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/khr.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_00_RR_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_kr.png"
+  },
+  {
+    "id": "ehr_summer",
+    "name": "EHR Summer Hits",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_34.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_34.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_34.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_34_ES_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_summer.png"
+  },
+  {
+    "id": "ehr_eurotop",
+    "name": "EHR EuroTop",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_31.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_31.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_31.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_31_ET_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_eurotop.png"
   },
   {
     "id": "ehr_fresh",
     "name": "EHR Fresh",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_25.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_25.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_25.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_25_EF_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_fresh.png"
   },
   {
     "id": "ehr_latv_hiti",
     "name": "EHR Latviešu Hīti",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_22.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_22.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_22.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_22_LH_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_latv_hiti.png"
   },
   {
     "id": "ehr_top_40",
     "name": "EHR Top 40",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_27.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_27.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_27.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_27_E4_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_top_40.png"
-  },
-  {
-    "id": "ehr_love",
-    "name": "EHR Love",
-    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_28.mp3",
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_love.png"
   },
   {
     "id": "ehr_darbam",
     "name": "EHR Darbam",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_23.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_23.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_23.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_23_EW_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_darbam.png"
   },
   {
-    "id": "ehr_dance",
-    "name": "EHR Dance",
-    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_24.mp3",
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_dance.png"
+    "id": "ehr_ritam",
+    "name": "EHR Rītam",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_36.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_36.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_36.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_36_EM_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_ritam.png"
+  },
+  {
+    "id": "ehr_fitness",
+    "name": "EHR Fitness",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_14.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_14.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_14.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_14_FT_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_fitness.png"
+  },
+  {
+    "id": "ehr_party_service",
+    "name": "EHR Party Service",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_12.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_12.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_12.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_12_EP_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_party_service.png"
   },
   {
     "id": "ehr_acoustic",
     "name": "EHR Acoustic",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_26.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_26.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_26.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_26_EA_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_acoustic.png"
+  },
+  {
+    "id": "ehr_alternative",
+    "name": "EHR Alternative",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_37.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_37.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_37.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_37_ER_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_alternative.png"
+  },
+  {
+    "id": "ehr_dance",
+    "name": "EHR Dance",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_24.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_24.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_24.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_24_ED_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_dance.png"
+  },
+  {
+    "id": "ehr_remix",
+    "name": "EHR Remix",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_32.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_32.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_32.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_32_EX_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_remix.png"
+  },
+  {
+    "id": "ehr_urban",
+    "name": "EHR Urban",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_11.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_11.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_11.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_11_EN_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_urban.png"
+  },
+  {
+    "id": "ehr_love",
+    "name": "EHR Love",
+    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_28.mp3",
+    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_28.aac",
+    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_28.ogg",
+    "hls": "http://stream.europeanhitradio.com/hls/Stream_28_EL_multi.m3u8",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_love.png"
   }
 ]
