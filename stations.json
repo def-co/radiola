@@ -2,8 +2,7 @@
   {
     "id": "swh",
     "name": "SWH",
-    "stream_mp3": "http://87.110.219.34:8000/swhmp3"
-    },
+    "stream_mp3": "http://87.110.219.34:8000/swhmp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/swh.png"
   },
   {
