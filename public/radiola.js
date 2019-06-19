@@ -9,19 +9,19 @@
   'use strict';
 
   fetch('app.tmpl.html')
-  .then(function(resp) { return resp.text() })
-  .then(cont)
+  .then(function(resp) { return resp.text(); })
+  .then(cont);
 })(function(_AppTemplate) {
   'use strict';
 
-  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder
+  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder;
 
   function findStation(id, stations) {
-    var station = null
+    var station = null;
     for (var i = 0; i < stations.length; i++) {
-      if (stations[i].id === id) { station = stations[i] }
+      if (stations[i].id === id) { station = stations[i]; }
     }
-    return station
+    return station;
   }
 
   var app = new Vue({
@@ -39,72 +39,72 @@
     },
     methods: {
       choice: function(p) {
-        var i = Math.floor(Math.random() * p.length)
-        return p[i]
+        var i = Math.floor(Math.random() * p.length);
+        return p[i];
       },
       changeActiveStation: function(stationId) {
-        var self = this
+        var self = this;
 
-        var station = findStation(stationId, this.stations)
+        var station = findStation(stationId, this.stations);
         if (station._incompatible) {
-          alert(station.name + ' nav iespējams atskaņot uz šīs ierīces.')
-          return false
+          alert(station.name + ' nav iespējams atskaņot uz šīs ierīces.');
+          return false;
         }
 
         if (this.playingState !== 'STOPPED') {
-          this.stop()
+          this.stop();
         }
 
-        this.current_song = null
-        this.current_program = null
+        this.current_song = null;
+        this.current_program = null;
 
-        PM.switchStation(stationId)
-        this.current_station_id = stationId
-        this.current_station = station.name
-        this.playingState = 'BUFFERING'
+        PM.switchStation(stationId);
+        this.current_station_id = stationId;
+        this.current_station = station.name;
+        this.playingState = 'BUFFERING';
 
         if (SF.canSubscribe(stationId)) {
-          this._subscribed = true
+          this._subscribed = true;
           SF.eventbus.on('song.' + stationId, function(song) {
-            if (song === null) { self.current_song = null }
-            else { self.current_song = song.artist + ' – ' + song.title }
+            if (song === null) { self.current_song = null; }
+            else { self.current_song = song.artist + ' – ' + song.title; }
           })
           SF.eventbus.on('program.' + stationId, function(name) {
-            self.current_program = name
+            self.current_program = name;
           })
-          SF.subscribe(stationId)
+          SF.subscribe(stationId);
         }
       },
       showDebugInfo: function() {
         var msg = [
           'P22 Radiola v1.1.7',
           'Telemetryless'
-        ]
+        ];
 
-        alert(msg.join('\n'))
+        alert(msg.join('\n'));
       },
       stop: function() {
-        P22.Radiola.PlayManager.stop()
+        P22.Radiola.PlayManager.stop();
         if (this._subscribed) {
-          SF.unsubscribe(this.current_station_id)
-          this._subscribed = false
+          SF.unsubscribe(this.current_station_id);
+          this._subscribed = false;
         }
 
-        this.current_station = null
-        this.current_station_id = null
-        this.current_song = null
-        this.current_program = null
+        this.current_station = null;
+        this.current_station_id = null;
+        this.current_song = null;
+        this.current_program = null;
       },
     },
     components: {
       'pr-station': {
         props: ['station'],
         data: function() {
-          return { station: this.station }
+          return { station: this.station };
         },
         methods: {
           handleClicked: function() {
-            this.$emit('clicked')
+            this.$emit('clicked');
           }
         },
         template: [
@@ -117,99 +117,99 @@
               '{{ station.name }}',
             '</p>',
           '</div>',
-        ].join(' ')
-      }
-    }
+        ].join(' '),
+      },
+    },
   })
 
   fetch('/stations.json')
-  .then(function(resp) { return resp.json() })
+  .then(function(resp) { return resp.json(); })
   .then(function(stations) {
-    PM.init(stations)
+    PM.init(stations);
 
     for (var i = 0; i < stations.length; i++) {
-      var station = stations[i]
+      var station = stations[i];
       if (station.old_shoutcast) {
-        if (PM.SUPPORTS_OLD_SHOUTCAST) { continue }
-        else if (station.hls && PM.supportsNativeHLS) { continue }
-        else { station._incompatible = true }
+        if (PM.SUPPORTS_OLD_SHOUTCAST) { continue; }
+        else if (station.hls && PM.supportsNativeHLS) { continue; }
+        else { station._incompatible = true; }
       }
     }
 
-    app.stations = stations
-    app.outsideDataState = 'LOADED'
+    app.stations = stations;
+    app.outsideDataState = 'LOADED';
 
     if (window.location.hash !== '') {
-      var st = window.location.hash.replace('#', '')
+      var st = window.location.hash.replace('#', '');
       if (findStation(st, json.stations) !== null) {
-        app.changeActiveStation(st)
+        app.changeActiveStation(st);
       }
     }
   }, function(e) {
-    app.outsideDataState = 'ERROR'
-  })
+    app.outsideDataState = 'ERROR';
+  });
 
-  var _titleEl = document.getElementsByTagName('title')[0]
+  var _titleEl = document.getElementsByTagName('title')[0];
   app.$watch(function() {
-    var title = ''
+    var title = '';
 
     switch (this.playingState) {
       case 'BUFFERING':
       case 'STALLED':
-        title += '… '
-        break
+        title += '… ';
+        break;
 
       case 'PLAYING':
-        title += '▶ '
-        break
+        title += '▶ ';
+        break;
     }
 
     if (this.current_song) {
-      title += this.current_song
+      title += this.current_song;
     }
     if (this.current_song && this.current_program) {
-      title += ' :: '
+      title += ' :: ';
     }
     if (this.current_program) {
-      title += this.current_program
+      title += this.current_program;
     }
 
     if ((this.current_song || this.current_program) && this.current_station) {
-      title += ' :: '
+      title += ' :: ';
     }
 
     if (this.current_station) {
-      title += this.current_station
-      title += ' :: '
+      title += this.current_station;
+      title += ' :: ';
     }
 
-    title += 'P22 Radiola'
-    return title
+    title += 'P22 Radiola';
+    return title;
   }, function(newTitle) {
-    _titleEl.textContent = newTitle
-  }, { immediate: true })
+    _titleEl.textContent = newTitle;
+  }, { immediate: true });
 
 
   PM.addListener('playing', function() {
-    app.playingState = 'PLAYING'
-  })
+    app.playingState = 'PLAYING';
+  });
 
   PM.addListener('stalled', function() {
     if (!app.buffering_stalled) {
-      app.playingState = 'STALLED'
+      app.playingState = 'STALLED';
     }
-  })
+  });
 
   PM.addListener('stopped', function() {
-    app.playingState = 'STOPPED'
-    app.current_song = null
-    app.current_program = null
-  })
+    app.playingState = 'STOPPED';
+    app.current_song = null;
+    app.current_program = null;
+  });
 
   PM.addListener('playingError', function() {
-    app.playingState = 'ERROR'
-  })
+    app.playingState = 'ERROR';
+  });
 
-  window.P22.Radiola.App = app
+  window.P22.Radiola.App = app;
 })
 // vim: set ts=2 sts=2 et sw=2:

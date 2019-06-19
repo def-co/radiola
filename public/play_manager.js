@@ -11,79 +11,79 @@
   var U = P22.Radiola.Utils;
 
   function PlayManager() {
-    this.el = document.createElement('audio')
-    document.body.appendChild(this.el)
-    this.el.style.display = 'none'
-    this.el.autoplay = false
-    this.el.preload = 'none'
-    this.el.volume = 1.0
+    this.el = document.createElement('audio');
+    document.body.appendChild(this.el);
+    this.el.style.display = 'none';
+    this.el.autoplay = false;
+    this.el.preload = 'none';
+    this.el.volume = 1.0;
 
-    this.supportsNativeHLS = this.el.canPlayType('application/x-mpegURL') !== ''
+    this.supportsNativeHLS = this.el.canPlayType('application/x-mpegURL') !== '';
 
-    this._srcEl = document.createElement('source')
-    this.el.appendChild(this._srcEl)
+    this._srcEl = document.createElement('source');
+    this.el.appendChild(this._srcEl);
 
-    this.stations = null
+    this.stations = null;
 
-    this.playing = false
-    this.lastStation = null
+    this.playing = false;
+    this.lastStation = null;
 
-    this._notBuffering = false
-    this._currentSong = null
-    this._currentStation = null
+    this._notBuffering = false;
+    this._currentSong = null;
+    this._currentStation = null;
 
-    this.renewSongInterval = null
+    this.renewSongInterval = null;
 
-    this.subscribed = false
+    this.subscribed = false;
 
-    var self = this
+    var self = this;
     this.el.addEventListener('playing', function() {
-      self._notBuffering = true
-      self.emit('playing')
-    })
+      self._notBuffering = true;
+      self.emit('playing');
+    });
 
     this.el.addEventListener('stalled', function(e) {
-      self.emit('stalled')
-    })
+      self.emit('stalled');
+    });
   }
-  PlayManager.prototype = Object.create(EventEmitter.prototype)
-  PlayManager.prototype.constructor = PlayManager
+  PlayManager.prototype = Object.create(EventEmitter.prototype);
+  PlayManager.prototype.constructor = PlayManager;
 
-  PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST = !U.browser.safari
+  PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST = !U.browser.safari;
 
   PlayManager.prototype.init = function(stations) {
-    this.stations = { }
+    this.stations = { };
     stations.forEach(function(station) {
-      this.stations[station.id] = station
-    }.bind(this))
+      this.stations[station.id] = station;
+    }.bind(this));
 
-    return true
+    return true;
   }
 
   PlayManager.prototype.stop = function() {
-    this.el.src = ''
-    this.el.pause()
-    this.emit('stopped')
+    this.el.src = '';
+    this.el.pause();
+    this.emit('stopped');
 
-    this._currentSong = null
-    this._currentStation = null
+    this._currentSong = null;
+    this._currentStation = null;
 
     if (this.renewSongInterval !== null) {
-      window.clearInterval(this.renewSongInterval)
+      window.clearInterval(this.renewSongInterval);
     }
-    this.playing = false
+    this.playing = false;
 
-    this.lastStation = null
+    this.lastStation = null;
   }
 
 
   PlayManager.prototype.switchStation = function(id) {
-    var self = this
+    var self = this;
 
-    if (!id in this.stations) { return false }
+    if (!id in this.stations) { return false; }
 
-    var station = this.stations[id]
-    this.lastStation = id
+    var station = this.stations[id];
+    this.lastStation = id;
 
     if (station.old_shoutcast && !PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST) {
       // For some goddamn reason Safari decides that the tab is open as a frame
@@ -92,46 +92,46 @@
       // even allow the other kind of request to happen, because that will
       // break the page entirely.
       if ('hls' in station) {
-        this._srcEl.src = station.hls
-        this.el.src = station.hls
-        this.el.play()
-        return
+        this._srcEl.src = station.hls;
+        this.el.src = station.hls;
+        this.el.play();
+        return;
       } else {
-        throw new Error('Cannot play station in Safari')
+        throw new Error('Cannot play station in Safari');
       }
     }
 
-    this._srcEl.src = station.stream_mp3
-    this.el.src = station.stream_mp3
+    this._srcEl.src = station.stream_mp3;
+    this.el.src = station.stream_mp3;
 
     window.setTimeout(function() {
-      self.playing = true
-      self._notBuffering = false
-      Promise.resolve(self.el.play()) // Firefox doesn't return a promise
+      self.playing = true;
+      self._notBuffering = false;
+      Promise.resolve(self.el.play()); // Firefox doesn't return a promise
       .catch(function(e) {
         // AbortError occurs when a pending play() gets interrupted by pause()
         // It happens when buffering one station and switching to another, so
         // we just ignore it :)
-        if (e.name === 'AbortError') { return true }
+        if (e.name === 'AbortError') { return true; }
         // NotSupportedError occurs most often when trying to play a stream
         // that cannot be interpreted by the browser's media stack
         // (i.e. old_shoutcast for Chrome/Safari). We might be able to fall
         // back to HLS, or we might not. I dunno :)
         if (e.name === 'NotSupportedError' && ('hls' in station)) {
-          this._srcEl.src = station.hls
-          this.el.src = station.hls
-          this.el.play()
-          return
+          this._srcEl.src = station.hls;
+          this.el.src = station.hls;
+          this.el.play();
+          return;
         }
-        self.emit('playingError', e.name, e)
-        console.error('[PlayManager] Playing failed: (%s)', e.name, e)
-      })
-    }, 0)
+        self.emit('playingError', e.name, e);
+        console.error('[PlayManager] Playing failed: (%s)', e.name, e);
+      });
+    }, 0);
 
-    return station
+    return station;
   }
 
-  window.P22.Radiola.PlayManager = new PlayManager()
+  window.P22.Radiola.PlayManager = new PlayManager();
 
 })()
 // vim: set ts=2 sts=2 et sw=2:
