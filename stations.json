@@ -121,8 +121,8 @@
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_superhits.png"
   },
   {
-    "id": "ehr_kr",
-    "name": "EHR KR",
+    "id": "ehr_kh",
+    "name": "EHR KH",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/khr.mp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_kr.png"
   },
