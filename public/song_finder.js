@@ -8,31 +8,128 @@
 (function() {
   'use strict';
 
+  var DISCOVERABLE_STATIONS = {
+    swh: true, swh_gold: true, swh_rock: true,
+    starfm: true,
+    lr1: true, lr2: true, lr3: true, lr4: true,
+    lr_naba: true,
+    ehr: true, ehr_superhits: true, ehr_kh: true, ehr_fresh: true,
+      ehr_latv_hiti: true, ehr_top_40: true, ehr_love: true, ehr_darbam: true,
+      ehr_dance: true, ehr_acoustic: true,
+  };
+
+  var subscriptions = { };
+
+  var eventbus = {
+    _listeners: { },
+    _onceListeners: { },
+    on: function(name, callback) {
+      if ( ! (name in this._listeners)) {
+        this._listeners[name] = [ ];
+      }
+      this._listeners[name].push(callback);
+    },
+    once: function(name, callback) {
+      if ( ! (name in this._onceListeners)) {
+        this._onceListeners[name] = [ ];
+      }
+      this._onceListeners[name].push(callback);
+    },
+    off: function(name, callback) {
+      if (name in this._listeners) {
+        var event = this._listeners[name],
+            index = event.indexOf(callback);
+        if (index !== -1) {
+          event.splice(index, 1);
+        }
+        if (event.length === 0) {
+          delete this._listeners[name];
+        }
+      }
+      if (name in this._onceListeners) {
+        var event = this._onceListeners[name],
+            index = event.indexOf(callback);
+        if (index !== -1) {
+          event.splice(index, 1);
+        }
+        if (event.length === 0) {
+          delete this._onceListeners[name];
+        }
+      }
+    },
+    emit: function(name, data) {
+      if (name in this._onceListeners) {
+        var event = this._onceListeners[name];
+        delete this._onceListeners[name];
+        for (var i = 0, l = event.length; i < l; i += 1) {
+          event[i](data);
+        }
+      }
+
+      if (name in this._listeners) {
+        var event = this._listeners[name].slice();
+        for (var i = 0, l = event.length; i < l; i += 1) {
+          event[i](data);
+        }
+      }
+    },
+    removeEvent: function(name) {
+      if (name in this._listeners) {
+        delete this._listeners[name];
+      }
+      if (name in this._onceListeners) {
+        delete this._onceListeners[name];
+      }
+    },
+  };
+
   var SongFinder = {
-    eventbus: new EventEmitter(),
+    eventbus: eventbus,
 
     canDiscover: function(station) {
-      return Promise.resolve(false) 
-    },
-
-    discover: function(station) {
-      return Promise.reject(
-        new Error('Discovery is temporarily disabled'))
+      return station in DISCOVERABLE_STATIONS;
     },
 
     canSubscribe: function(station) {
-      return Promise.resolve(false)
+      return SongFinder.canDiscover(station);
+    },
+
+    discover: function(station) {
+      return fetch('/discover/current/' + station)
+        .then(function(resp) { return resp.json(); });
     },
 
     subscribe: function(station) {
-      return Promise.reject(
-        new Error('Discovery is temporarily disabled'))
+      if (station in subscriptions) {
+        return subscriptions[station];
+      }
+
+      var es = new EventSource('/discover/subscribe/' + station);
+      es.addEventListener('song', function(e) {
+        var data = JSON.parse(e.data);
+        eventbus.emit('song.' + station, data);
+      });
+      es.addEventListener('program', function(e) {
+        var data = JSON.parse(e.data);
+        eventbus.emit('program.' + station, data);
+      });
+
+      subscriptions[station] = es;
+      return Promise.resolve(es);
     },
 
     unsubscribe: function(station) {
-      return false
-    },
-  }
+      if ( ! (station in subscriptions)) {
+        return false;
+      }
 
-  window.P22.Radiola.SongFinder = SongFinder
+      subscriptions[station].close();
+      delete subscriptions[station];
+
+      eventbus.removeEvent('song.' + station);
+      eventbus.removeEvent('program.' + station);
+    },
+  };
+
+  window.P22.Radiola.SongFinder = SongFinder;
 })()
