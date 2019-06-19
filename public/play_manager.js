@@ -8,7 +8,7 @@
 (function() {
   'use strict';
 
-  var HLS = P22.Radiola.HLS, U = P22.Radiola.Utils
+  var U = P22.Radiola.Utils;
 
   function PlayManager() {
     this.el = document.createElement('audio')
@@ -17,6 +17,8 @@
     this.el.autoplay = false
     this.el.preload = 'none'
     this.el.volume = 1.0
+
+    this.supportsNativeHLS = this.el.canPlayType('application/x-mpegURL') !== ''
 
     this._srcEl = document.createElement('source')
     this.el.appendChild(this._srcEl)
@@ -34,8 +36,6 @@
 
     this.subscribed = false
 
-    this._hlsPlaylist = null
-
     var self = this
     this.el.addEventListener('playing', function() {
       self._notBuffering = true
@@ -50,8 +50,6 @@
   PlayManager.prototype.constructor = PlayManager
 
   PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST = !U.browser.safari
-    // TODO: check whether Edge supports ^ old_shoutcast as well
-  PlayManager.prototype.SUPPORTS_HLS = HLS.supportsHLS
 
   PlayManager.prototype.init = function(stations) {
     this.stations = { }
@@ -75,11 +73,6 @@
     }
     this.playing = false
 
-    if (this._hlsPlaylist) {
-      this._hlsPlaylist.destroy()
-      this._hlsPlaylist = null
-    }
-
     this.lastStation = null
   }
 
@@ -92,25 +85,6 @@
     var station = this.stations[id]
     this.lastStation = id
 
-    var _useHLS = function() {
-      HLS.supportsHLS
-      .then(function(sup) {
-        if (sup) {
-          HLS.HLSPlaylist.fromStreamlist(station.hls)
-          .then(function(p) {
-            self._hlsPlaylist = p
-            self._srcEl.src = p.src
-            self._srcEl.type = p.mimetype
-            self.el.src = p.src
-            self.el.play()
-          })
-        } else {
-          console.warning('Triggered HLS playing when HLS is not supported')
-        }
-      })
-      return station
-    }
-
     if (station.old_shoutcast && !PlayManager.prototype.SUPPORTS_OLD_SHOUTCAST) {
       // For some goddamn reason Safari decides that the tab is open as a frame
       // and completely breaks it if the stream is coming from an non-HTTP/1.1
@@ -118,9 +92,12 @@
       // even allow the other kind of request to happen, because that will
       // break the page entirely.
       if ('hls' in station) {
-        return _useHLS()
+        this._srcEl.src = station.hls
+        this.el.src = station.hls
+        this.el.play()
+        return
       } else {
-        throw new Error('Safari saving exception (see stack trace and nearby comment)')
+        throw new Error('Cannot play station in Safari')
       }
     }
 
@@ -140,9 +117,11 @@
         // that cannot be interpreted by the browser's media stack
         // (i.e. old_shoutcast for Chrome/Safari). We might be able to fall
         // back to HLS, or we might not. I dunno :)
-        if (e.name === 'NotSupportedError' &&
-            ('hls' in station) && !self._hlsPlaylist) {
-          return _useHLS()
+        if (e.name === 'NotSupportedError' && ('hls' in station)) {
+          this._srcEl.src = station.hls
+          this.el.src = station.hls
+          this.el.play()
+          return
         }
         self.emit('playingError', e.name, e)
         console.error('[PlayManager] Playing failed: (%s)', e.name, e)

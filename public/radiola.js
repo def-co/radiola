@@ -63,20 +63,17 @@
         this.current_station = station.name
         this.playingState = 'BUFFERING'
 
-        SF.canSubscribe(stationId)
-        .then(function(canSubscribe) {
-          if (canSubscribe) {
-            self._subscribed = true
-            SF.eventbus.addListener('song.' + stationId, function(song) {
-              if (song === null) { self.current_song = null }
-              else { self.current_song = song.artist + ' – ' + song.title }
-            })
-            SF.eventbus.addListener('program.' + stationId, function(name) {
-              self.current_program = name
-            })
-            SF.subscribe(stationId)
-          }
-        })
+        if (SF.canSubscribe(stationId)) {
+          this._subscribed = true
+          SF.eventbus.on('song.' + stationId, function(song) {
+            if (song === null) { self.current_song = null }
+            else { self.current_song = song.artist + ' – ' + song.title }
+          })
+          SF.eventbus.on('program.' + stationId, function(name) {
+            self.current_program = name
+          })
+          SF.subscribe(stationId)
+        }
       },
       showDebugInfo: function() {
         var msg = [
@@ -125,21 +122,16 @@
     }
   })
 
-  Promise.all([
-    fetch('/stations.json')
-      .then(function(resp) { return resp.json() }),
-    P22.Radiola.HLS.supportsHLS,
-  ])
-  .then(function(all) {
-    var stations = all[0], supportsHLS = all[1]
-
+  fetch('/stations.json')
+  .then(function(resp) { return resp.json() })
+  .then(function(stations) {
     PM.init(stations)
 
     for (var i = 0; i < stations.length; i++) {
       var station = stations[i]
       if (station.old_shoutcast) {
         if (PM.SUPPORTS_OLD_SHOUTCAST) { continue }
-        else if (station.hls && supportsHLS) { continue }
+        else if (station.hls && PM.supportsNativeHLS) { continue }
         else { station._incompatible = true }
       }
     }
@@ -203,10 +195,6 @@
   })
 
   PM.addListener('stalled', function() {
-    // HLS will show the source as stalled *way* too often, so we just ignore
-    // that
-    if (PM._hlsPlaylist) return
-
     if (!app.buffering_stalled) {
       app.playingState = 'STALLED'
     }
