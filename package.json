@@ -1,0 +1,9 @@
+{
+  "name": "radiola",
+  "version": "v1.2.0",
+  "requirements": {},
+  "license": "UNLICENSED",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  }
+}
