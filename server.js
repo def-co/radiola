@@ -8,5 +8,8 @@ const server = http.createServer(handler);
 server.listen('/run/p22-radiola/http-api.sock');
 
 process.on('SIGTERM', () => {
-  process.exit(0);
+  server.close();
+  setTimeout(() => {
+    process.exit(0);
+  }, 100);
 });
