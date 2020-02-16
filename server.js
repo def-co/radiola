@@ -23,6 +23,8 @@ process.on('SIGTERM', () => {
     connections.forEach((socket) => {
       socket.end();
     });
+    server.close();
+    server.unref();
   }, 1000);
   server.close(() => {
     clearTimeout(quitTimeout);
