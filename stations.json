@@ -30,6 +30,12 @@
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/skonto.png"
   },
   {
+    "id": "stolica",
+    "name": "Радыё Сталіца",
+    "stream_mp3": "http://video.tvr.by:8000/stolica",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/stolica.png"
+  },
+  {
     "id": "ehr",
     "name": "EHR",
     "stream_mp3": "http://stream.europeanhitradio.com:8000/ehr.mp3",
