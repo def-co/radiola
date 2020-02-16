@@ -14,6 +14,7 @@ server.on('connection', (socket) => {
     if (index !== -1) {
       connections.splice(index, 1);
     }
+    socket.unref();
   });
 });
 server.listen('/run/p22-radiola/http-api.sock');
@@ -22,6 +23,7 @@ process.on('SIGTERM', () => {
   let quitTimeout = setTimeout(() => {
     connections.forEach((socket) => {
       socket.end();
+      socket.unref();
     });
     server.close();
     server.unref();
