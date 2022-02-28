@@ -30,12 +30,11 @@
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/skonto.png"
   },
   {
-    "id": "stalica",
-    "name": "Радыё Сталіца",
-    "stream_mp3": "http://video.tvr.by:8000/stolica",
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/stalica.png"
+    "id": "kurzemes",
+    "name": "Kurzemes Radio",
+    "stream_mp3": "http://31.170.16.6:8000/;?type=http&nocache=457",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/kurzemes.png"
   },
-
   {
     "id": "lr1",
     "name": "LR1",
@@ -281,5 +280,12 @@
     "name": "BBC Radio 4",
     "stream_mp3": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio4fm_mf_p",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/bbc4.png"
+  }.
+
+  {
+    "id": "viegli",
+    "name": "Kartupeļu lauka radio",
+    "stream_mp3": "https://s3.radio.co/sdefc884be/listen",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/viegli.png"
   }
 ]
