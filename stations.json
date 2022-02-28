@@ -2,19 +2,19 @@
   {
     "id": "swh",
     "name": "SWH",
-    "stream_mp3": "http://87.110.219.34:8000/swhmp3",
+    "stream_mp3": "https://live.radioswh.lv:8443/swhmp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/swh.png"
   },
   {
     "id": "swh_rock",
     "name": "SWH Rock",
-    "stream_mp3": "http://87.110.219.34:8000/rockmp3",
+    "stream_mp3": "https://live.radioswh.lv:8443/rockmp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/swh_rock.png"
   },
   {
     "id": "swh_gold",
     "name": "SWH Gold",
-    "stream_mp3": "http://87.110.219.34:8000/swhgold",
+    "stream_mp3": "https://live.radioswh.lv:8443/goldmp3",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/swh_gold.png"
   },
   {
