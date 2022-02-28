@@ -141,14 +141,6 @@
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_kr.png"
   },
   {
-    "id": "ehr_summer",
-    "name": "EHR Summer Hits",
-    "stream_mp3": "http://stream.europeanhitradio.com:8000/Stream_34.mp3",
-    "stream_aac": "http://stream.europeanhitradio.com:8000/Stream_34.aac",
-    "stream_vorbis": "http://stream.europeanhitradio.com:8000/Stream_34.ogg",
-    "hls": "http://stream.europeanhitradio.com/hls/Stream_34_ES_multi.m3u8",
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_summer.png"
-  },
   {
     "id": "ehr_eurotop",
     "name": "EHR EuroTop",
@@ -275,13 +267,6 @@
     "hls": "http://stream.europeanhitradio.com/hls/Stream_28_EL_multi.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_love.png"
   },
-  {
-    "id": "bbc4",
-    "name": "BBC Radio 4",
-    "stream_mp3": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio4fm_mf_p",
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/bbc4.png"
-  },
-
   {
     "id": "viegli",
     "name": "Kartupeļu lauka radio",
