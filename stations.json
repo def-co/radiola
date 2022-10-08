@@ -267,9 +267,9 @@
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/ehr_love.png"
   },
   {
-    "id": "viegli",
-    "name": "Kartupeļu lauka radio",
-    "stream_mp3": "https://s3.radio.co/sdefc884be/listen",
-    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/viegli.png"
+    "id": "paradise",
+    "name": "Radio Paradise",
+    "stream_mp3": "https://stream.radioparadise.com/mp3-128",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/paradise.png"
   }
 ]
