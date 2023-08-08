@@ -271,5 +271,11 @@
     "name": "Radio Paradise",
     "stream_mp3": "https://stream.radioparadise.com/mp3-128",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/paradise.png"
+  },
+  {
+    "id": "xo",
+    "name": "XO FM",
+    "stream_mp3": "https://live.xo.fm/xofm256",
+    "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/xo.png"
   }
 ]
