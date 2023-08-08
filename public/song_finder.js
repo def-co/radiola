@@ -13,7 +13,7 @@
     star_fm: true,
     lr1: true, lr2: true, lr3: true, lr4: true,
     lr_naba: true,
-    viegli: true, kurzemes: true, paradise: true,
+    viegli: true, kurzemes: true, paradise: true, xo: true,
     ehr: true, ehr_superhits: true, ehr_kh: true, ehr_summer: true,
       ehr_eurotop: true, ehr_fresh: true, ehr_latv_hiti: true,
       ehr_top_40: true, ehr_darbam: true, ehr_ritam: true, ehr_fitness: true,
