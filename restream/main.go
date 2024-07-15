@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"log/slog"
 	"os"
+	"os/signal"
 	"regexp"
+	"syscall"
 )
 
 var STATIONS = map[string]string{
@@ -16,7 +20,7 @@ var STATIONS = map[string]string{
 
 func setupLogger() {
 	lvl := new(slog.LevelVar)
-	lvl.Set(LevelDebug)
+	lvl.Set(LevelInfo)
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: lvl})
 	slog.SetDefault(slog.New(h))
 }
@@ -86,6 +90,43 @@ func main() {
 		}
 	})
 
-	slog.Info("listening")
-	panic(http.ListenAndServe(":8080", nil))
+	listener, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		panic(err)
+	}
+
+	ctx, cancel := context.WithCancel(context.TODO())
+	httpFinish := make(chan struct{})
+
+	go func() {
+		slog.Info("listening")
+		err := http.Serve(listener, nil)
+		select {
+		case <-ctx.Done():
+			// silence error
+			break
+
+		default:
+			slog.Warn("http listen error", "err", err)
+			break
+		}
+		close(httpFinish)
+	}()
+
+	ch := make(chan os.Signal)
+	signal.Notify((chan<- os.Signal)(ch), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+
+	for {
+		sig := <-ch
+		if sig == syscall.SIGHUP {
+			slog.Info("reload")
+			continue
+		}
+		if sig == syscall.SIGINT || sig == syscall.SIGTERM {
+			cancel()
+			listener.Close()
+			<-httpFinish
+			break
+		}
+	}
 }
