@@ -106,6 +106,7 @@ type stream struct {
 	proc process
 	packet fanOut[packet]
 	// progress fanOut[progress]
+	burst ringbuf
 	logger *slog.Logger
 	finish chan struct{}
 }
@@ -124,6 +125,7 @@ func startStream(name, source string) (*stream, error) {
 	str := &stream{
 		proc: proc,
 		packet: newFanOut[packet](),
+		burst: newRingbuf(48 * 1024),
 		logger: logger,
 		finish: make(chan struct{}),
 	}
@@ -188,13 +190,21 @@ func (str *stream) dataReader() {
 		copy(chunk, buf[0:n])
 		p := packetRaw(chunk)
 
+		hasMp3 := false
 		for p != nil {
 			pt, rest := p.Cast()
 			if pt != nil {
 				logger.Log(nil, LevelSilly, "got packet", "type", pt.Name())
 				str.packet.Publish(pt)
+				if mp3, ok := pt.(packetMp3); ok {
+					str.burst.Append(mp3)
+					hasMp3 = true
+				}
 			}
 			p = rest
+		}
+		if hasMp3 {
+			logger.Log(nil, LevelSilly, "burst size", "val", str.burst.lengthReporter())
 		}
 	}
 }
@@ -225,4 +235,8 @@ func (str *stream) Stop() error {
 		str.logger.Debug("interrupt shut down")
 		return nil
 	}
+}
+
+func (str *stream) GetBurst() []byte {
+	return str.burst.Concat()
 }

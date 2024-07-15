@@ -20,7 +20,7 @@ var STATIONS = map[string]string{
 
 func setupLogger() {
 	lvl := new(slog.LevelVar)
-	lvl.Set(LevelInfo)
+	lvl.Set(LevelSilly)
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: lvl})
 	slog.SetDefault(slog.New(h))
 }
@@ -71,6 +71,10 @@ func main() {
 		h := w.Header()
 		h.Set("content-type", "audio/mpeg")
 		w.WriteHeader(200)
+
+		if burst := strh.s.GetBurst(); burst != nil {
+			w.Write(burst)
+		}
 
 		for {
 			select {
