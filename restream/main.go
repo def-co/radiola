@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -10,12 +12,35 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"sync/atomic"
 	"syscall"
 )
 
-var STATIONS = map[string]string{
-	"lr1": "https://60766ff53d5e6.streamlock.net/liveALR1/mp4:LR1/playlist.m3u8",
-	"lr3": "https://60766ff53d5e6.streamlock.net/liveALR3/mp4:klasika/playlist.m3u8",
+var Stations atomic.Pointer[map[string]string]
+
+func loadStations() error {
+	stations := make(map[string]string)
+	data, err := os.ReadFile(configCurrent.Load().StationsPath)
+	if err != nil {
+		return fmt.Errorf("stations load: %w", err)
+	}
+
+	var stationsRaw [](map[string]any)
+	if err := json.Unmarshal(data, &stationsRaw); err != nil {
+		return fmt.Errorf("stations parse: %w", err)
+	}
+
+	for _, obj := range stationsRaw {
+		id := obj["id"].(string)
+		hls, ok := obj["hls"]
+		if !ok {
+			continue
+		}
+		stations[id] = hls.(string)
+	}
+
+	Stations.Store(&stations)
+	return nil
 }
 
 func setupLogger() {
@@ -29,6 +54,9 @@ func main() {
 	setupLogger()
 
 	if err := configBoot(); err != nil {
+		panic(err)
+	}
+	if err := loadStations(); err != nil {
 		panic(err)
 	}
 
@@ -52,7 +80,7 @@ func main() {
 			return
 		}
 		name := string(f[1])
-		source, ok := STATIONS[name]
+		source, ok := (*Stations.Load())[name]
 		if !ok {
 			w.Header().Set("content-type", "text/plain")
 			w.WriteHeader(404)
@@ -132,6 +160,9 @@ func main() {
 				slog.Error("config reload failed", "err", err)
 			} else {
 				slog.Info("config reloaded")
+			}
+			if err := loadStations(); err != nil {
+				slog.Error("stations reload failed", "err", err)
 			}
 			continue
 		}
