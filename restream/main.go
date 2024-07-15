@@ -20,7 +20,7 @@ var STATIONS = map[string]string{
 
 func setupLogger() {
 	lvl := new(slog.LevelVar)
-	lvl.Set(LevelSilly)
+	lvl.Set(LevelInfo)
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: lvl})
 	slog.SetDefault(slog.New(h))
 }

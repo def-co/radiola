@@ -143,12 +143,12 @@ func (str *stream) errReader() {
 
 	sc := bufio.NewScanner(r)
 	for {
-		logger.Log(nil, LevelSilly, "reading")
+		logSilly(logger, nil, "reading")
 
 		if ok := sc.Scan(); !ok {
 			err := sc.Err()
 			if err == nil { // eof
-				logger.Log(nil, LevelSilly, "eof")
+				logSilly(logger, nil, "eof")
 				break
 			}
 
@@ -169,11 +169,11 @@ func (str *stream) dataReader() {
 	buf := make([]byte, 8 * 1024)
 
 	for {
-		logger.Log(nil, LevelSilly, "reading")
+		logSilly(logger, nil, "reading")
 
 		n, err := r.Read(buf)
 		if errors.Is(err, io.EOF) {
-			logger.Log(nil, LevelSilly, "eof")
+			logSilly(logger, nil, "eof")
 			break
 		}
 		if err != nil {
@@ -181,7 +181,7 @@ func (str *stream) dataReader() {
 			break
 		}
 
-		logger.Log(nil, LevelSilly, "read",
+		logSilly(logger, nil, "read",
 			"len", n,
 			"total_len", str.packetBuf.NextLength() + n)
 		if ok := str.packetBuf.Append(buf[:n]); !ok {

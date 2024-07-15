@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"sync"
 )
@@ -10,7 +11,21 @@ const (
 	LevelInfo = slog.LevelInfo
 	LevelDebug = slog.LevelDebug
 	LevelSilly = slog.Level(LevelDebug - 4)
+
+	SupportSilly = false
 )
+
+func logSilly(logger *slog.Logger, ctx context.Context, msg string, args... any) {
+	if !SupportSilly {
+		return
+	}
+
+	if logger == nil {
+		logger = slog.Default()
+	}
+
+	logger.Log(ctx, LevelSilly, msg, args...)
+}
 
 type notif struct {
 	c *sync.Cond
