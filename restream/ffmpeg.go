@@ -167,8 +167,6 @@ func (str *stream) dataReader() {
 	logger := str.logger.With("gr", "data")
 
 	buf := make([]byte, 8 * 1024)
-	chunk := make([]byte, 32 * 1024)
-	pos := 0
 
 	for {
 		logger.Log(nil, LevelSilly, "reading")
@@ -185,19 +183,14 @@ func (str *stream) dataReader() {
 
 		logger.Log(nil, LevelSilly, "read",
 			"len", n,
-			"total_len", pos + n)
-
-		if pos + n > len(chunk) {
-			logger.Log(nil, LevelSilly, "dispatch chunk",
-				"len", pos)
-			dispatchChunk := make([]byte, pos)
-			copy(dispatchChunk, chunk[:pos])
-			str.packet.Publish(dispatchChunk)
-			pos = 0
+			"total_len", str.packetBuf.NextLength() + n)
+		if ok := str.packetBuf.Append(buf[:n]); !ok {
+			str.packetBuf.Rotate()
+			str.packetNotif.Broadcast()
+			if ok := str.packetBuf.Append(buf[:n]); !ok {
+				panic("not ok")
+			}
 		}
-
-		copy(chunk[pos:], buf[:n])
-		pos += n
 	}
 }
 
@@ -227,4 +220,22 @@ func (str *stream) Stop() error {
 		str.logger.Debug("interrupt shut down")
 		return nil
 	}
+}
+
+func (str *stream) GetBurst() []byte {
+	last, curr := str.packetBuf.GetLast()
+	if len(last) + len(curr) == 0 {
+		return nil
+	}
+
+	burst := make([]byte, len(last) + len(curr))
+	copy(burst, last)
+	copy(burst[len(last):], curr)
+
+	return burst
+}
+
+func (str *stream) WaitForNext() []byte {
+	str.packetNotif.Wait()
+	return str.packetBuf.GetCurr()
 }

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"container/ring"
-	"fmt"
 	"log/slog"
 	"sync"
 )
@@ -14,51 +12,82 @@ const (
 	LevelSilly = slog.Level(LevelDebug - 4)
 )
 
-type fanOut[T any] struct {
-	cond *sync.Cond
+type notif struct {
+	c *sync.Cond
 	ver int
-	val T
 }
-
-func newFanOut[T any]() fanOut[T] {
-	return fanOut[T]{
-		cond: sync.NewCond(&sync.Mutex{}),
+func newNotif() *notif {
+	return &notif{
+		c: sync.NewCond(&sync.Mutex{}),
 		ver: 0,
-		val: *new(T),
 	}
 }
+func (n *notif) Wait() {
+	n.c.L.Lock()
+	defer n.c.L.Unlock()
 
-func (f *fanOut[T]) Wait() T {
-	f.cond.L.Lock()
-	defer f.cond.L.Unlock()
-
-	seen := f.ver
-	for f.ver == seen {
-		f.cond.Wait()
+	curr := n.ver
+	for n.ver == curr {
+		n.c.Wait()
 	}
+}
+func (n *notif) Broadcast() {
+	n.c.L.Lock()
+	defer n.c.L.Unlock()
 
-	return f.val
+	n.ver += 1
+	n.c.Broadcast()
 }
 
-func (f *fanOut[T]) GetLast() *T {
-	f.cond.L.Lock()
-	defer f.cond.L.Unlock()
+const PACKET_BUFFER_SIZE = 32 * 1024
 
-	if f.ver == 0 {
-		return nil
+type packetBuffer struct {
+	mu sync.Mutex
+	last, curr, next []byte
+}
+func newPacketBuffer() packetBuffer {
+	var pb packetBuffer
+
+	pb.last = make([]byte, 0, PACKET_BUFFER_SIZE)
+	pb.curr = make([]byte, 0, PACKET_BUFFER_SIZE)
+	pb.next = make([]byte, 0, PACKET_BUFFER_SIZE)
+
+	return pb
+}
+func (pb *packetBuffer) GetLast() ([]byte, []byte) {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+
+	return pb.last, pb.curr
+}
+func (pb *packetBuffer) GetCurr() []byte {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+
+	return pb.curr
+}
+func (pb *packetBuffer) Append(buf []byte) bool {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+
+	if len(pb.next) + len(buf) >= PACKET_BUFFER_SIZE {
+		return false
 	}
 
-	v := new(T)
-	*v = f.val
-	return &v
+	pb.next = append(pb.next, buf...)
+	return true
 }
+func (pb *packetBuffer) NextLength() int {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
 
-func (f *fanOut[T]) Publish(val T) {
-	f.cond.L.Lock()
-	defer f.cond.L.Unlock()
+	return len(pb.next)
+}
+func (pb *packetBuffer) Rotate() []byte {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
 
-	f.ver += 1
-	f.val = val
-
-	f.cond.Broadcast()
+	pb.last, pb.curr, pb.next = pb.curr, pb.next, pb.last
+	pb.last = pb.last[0:0]
+	return pb.curr
 }
