@@ -69,5 +69,6 @@ func (mh *mgrHandle) Release() {
 	proc.refcount -= 1
 	if proc.refcount == 0 {
 		proc.s.Stop()
+		proc.s = nil
 	}
 }
