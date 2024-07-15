@@ -72,8 +72,8 @@ func main() {
 		h.Set("content-type", "audio/mpeg")
 		w.WriteHeader(200)
 
-		if burst := strh.s.GetBurst(); burst != nil {
-			w.Write(burst)
+		if buf := strh.s.packet.GetLast(); buf != nil {
+			w.Write(*buf)
 		}
 
 		for {
@@ -84,8 +84,8 @@ func main() {
 				break
 			}
 
-			packet := strh.s.packet.Wait()
-			_, err := w.Write(packet.Raw())
+			chunk := strh.s.packet.Wait()
+			_, err := w.Write(chunk)
 			if errors.Is(err, io.EOF) {
 				break
 			} else if err != nil {

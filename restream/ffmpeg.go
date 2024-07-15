@@ -100,13 +100,10 @@ func startProcess(source string) (proc process, err error) {
 	return proc, nil
 }
 
-// type progress map[string]string
-
 type stream struct {
 	proc process
-	packet fanOut[packet]
-	// progress fanOut[progress]
-	burst ringbuf
+	packetNotif *notif
+	packetBuf packetBuffer
 	logger *slog.Logger
 	finish chan struct{}
 }
@@ -124,13 +121,12 @@ func startStream(name, source string) (*stream, error) {
 
 	str := &stream{
 		proc: proc,
-		packet: newFanOut[packet](),
-		burst: newRingbuf(48 * 1024),
+		packetNotif: newNotif(),
+		packetBuf: newPacketBuffer(),
 		logger: logger,
 		finish: make(chan struct{}),
 	}
 
-	// go str.progressReader()
 	go str.errReader()
 	go str.dataReader()
 	go str.waiter()
@@ -170,7 +166,10 @@ func (str *stream) dataReader() {
 	defer r.Close()
 	logger := str.logger.With("gr", "data")
 
-	buf := make([]byte, 16 * 1024)
+	buf := make([]byte, 8 * 1024)
+	chunk := make([]byte, 32 * 1024)
+	pos := 0
+
 	for {
 		logger.Log(nil, LevelSilly, "reading")
 
@@ -184,28 +183,21 @@ func (str *stream) dataReader() {
 			break
 		}
 
-		logger.Log(nil, LevelSilly, "read", "len", n)
+		logger.Log(nil, LevelSilly, "read",
+			"len", n,
+			"total_len", pos + n)
 
-		chunk := make([]byte, n)
-		copy(chunk, buf[0:n])
-		p := packetRaw(chunk)
+		if pos + n > len(chunk) {
+			logger.Log(nil, LevelSilly, "dispatch chunk",
+				"len", pos)
+			dispatchChunk := make([]byte, pos)
+			copy(dispatchChunk, chunk[:pos])
+			str.packet.Publish(dispatchChunk)
+			pos = 0
+		}
 
-		hasMp3 := false
-		for p != nil {
-			pt, rest := p.Cast()
-			if pt != nil {
-				logger.Log(nil, LevelSilly, "got packet", "type", pt.Name())
-				str.packet.Publish(pt)
-				if mp3, ok := pt.(packetMp3); ok {
-					str.burst.Append(mp3)
-					hasMp3 = true
-				}
-			}
-			p = rest
-		}
-		if hasMp3 {
-			logger.Log(nil, LevelSilly, "burst size", "val", str.burst.lengthReporter())
-		}
+		copy(chunk[pos:], buf[:n])
+		pos += n
 	}
 }
 
@@ -235,8 +227,4 @@ func (str *stream) Stop() error {
 		str.logger.Debug("interrupt shut down")
 		return nil
 	}
-}
-
-func (str *stream) GetBurst() []byte {
-	return str.burst.Concat()
 }
