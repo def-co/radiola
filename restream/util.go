@@ -12,7 +12,7 @@ const (
 	LevelDebug = slog.LevelDebug
 	LevelSilly = slog.Level(LevelDebug - 4)
 
-	SupportSilly = false
+	SupportSilly = true
 )
 
 func logSilly(logger *slog.Logger, ctx context.Context, msg string, args... any) {
@@ -54,18 +54,18 @@ func (n *notif) Broadcast() {
 	n.c.Broadcast()
 }
 
-const PACKET_BUFFER_SIZE = 32 * 1024
-
 type packetBuffer struct {
 	mu sync.Mutex
+	size int
 	last, curr, next []byte
 }
 func newPacketBuffer() packetBuffer {
 	var pb packetBuffer
 
-	pb.last = make([]byte, 0, PACKET_BUFFER_SIZE)
-	pb.curr = make([]byte, 0, PACKET_BUFFER_SIZE)
-	pb.next = make([]byte, 0, PACKET_BUFFER_SIZE)
+	pb.size = configCurrent.Load().ChunkSize
+	pb.last = make([]byte, 0, pb.size)
+	pb.curr = make([]byte, 0, pb.size)
+	pb.next = make([]byte, 0, pb.size)
 
 	return pb
 }
@@ -81,16 +81,17 @@ func (pb *packetBuffer) GetCurr() []byte {
 
 	return pb.curr
 }
-func (pb *packetBuffer) Append(buf []byte) bool {
+func (pb *packetBuffer) Append(buf []byte) (rotated bool) {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
 
-	if len(pb.next) + len(buf) >= PACKET_BUFFER_SIZE {
-		return false
+	if len(pb.next) + len(buf) >= pb.size {
+		pb.rotate()
+		rotated = true
 	}
 
 	pb.next = append(pb.next, buf...)
-	return true
+	return rotated
 }
 func (pb *packetBuffer) NextLength() int {
 	pb.mu.Lock()
@@ -102,7 +103,10 @@ func (pb *packetBuffer) Rotate() []byte {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
 
-	pb.last, pb.curr, pb.next = pb.curr, pb.next, pb.last
-	pb.last = pb.last[0:0]
+	pb.rotate()
 	return pb.curr
+}
+func (pb *packetBuffer) rotate() {
+	pb.last, pb.curr, pb.next = pb.curr, pb.next, pb.last
+	pb.next = pb.next[0:0]
 }

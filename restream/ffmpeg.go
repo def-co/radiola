@@ -11,8 +11,7 @@ import (
 	"time"
 )
 
-const FFMPEG = "/opt/local/bin/ffmpeg6"
-const PIPES = 3
+const PIPES = 2
 
 var errTimeout = errors.New("timeout")
 
@@ -64,17 +63,17 @@ func startProcess(source string) (proc process, err error) {
 		}
 	}()
 
+	ffmpegPath := configCurrent.Load().FfmpegPath
+
 	args := []string{
-		FFMPEG,
+		ffmpegPath,
 		"-loglevel", "warning",
 		"-readrate", "1.1",
 		"-i", source,
-		// "-progress", "fd:", // stdout
 		"-map_metadata", "-1",
 		"-c:a", "libmp3lame",
 		"-q:a", "5",
 		"-f", "mp3",
-		// "-fd", "3",
 		"fd:",
 	}
 
@@ -88,7 +87,6 @@ func startProcess(source string) (proc process, err error) {
 			nil,
 			proc.wfd[0],
 			proc.wfd[1],
-			// proc.wfd[2],
 		},
 	}
 
@@ -184,12 +182,8 @@ func (str *stream) dataReader() {
 		logSilly(logger, nil, "read",
 			"len", n,
 			"total_len", str.packetBuf.NextLength() + n)
-		if ok := str.packetBuf.Append(buf[:n]); !ok {
-			str.packetBuf.Rotate()
+		if rotated := str.packetBuf.Append(buf[:n]); rotated {
 			str.packetNotif.Broadcast()
-			if ok := str.packetBuf.Append(buf[:n]); !ok {
-				panic("not ok")
-			}
 		}
 	}
 }

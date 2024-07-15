@@ -20,13 +20,18 @@ var STATIONS = map[string]string{
 
 func setupLogger() {
 	lvl := new(slog.LevelVar)
-	lvl.Set(LevelInfo)
+	lvl.Set(LevelSilly)
 	h := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: lvl})
 	slog.SetDefault(slog.New(h))
 }
 
 func main() {
 	setupLogger()
+
+	if err := configBoot(); err != nil {
+		panic(err)
+	}
+
 	mgr := newManager()
 
 	re := regexp.MustCompile("^/(\\w+)\\.mp3$")
@@ -94,7 +99,7 @@ func main() {
 		}
 	})
 
-	listener, err := net.Listen("tcp", ":8080")
+	listener, err := net.Listen("tcp", configCurrent.Load().ListenOn)
 	if err != nil {
 		panic(err)
 	}
@@ -123,7 +128,11 @@ func main() {
 	for {
 		sig := <-ch
 		if sig == syscall.SIGHUP {
-			slog.Info("reload")
+			if err := configLoad(); err != nil {
+				slog.Error("config reload failed", "err", err)
+			} else {
+				slog.Info("config reloaded")
+			}
 			continue
 		}
 		if sig == syscall.SIGINT || sig == syscall.SIGTERM {
