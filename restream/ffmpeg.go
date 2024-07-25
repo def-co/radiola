@@ -192,6 +192,8 @@ func (str *stream) waiter() {
 	res, err := str.proc.p.Wait()
 	str.logger.Debug("process finished", "code", res.ExitCode(), "err", err)
 	close(str.finish)
+	str.st.Finish(res.ExitCode() == 0)
+	str.packetNotif.Broadcast()
 
 	for _, fd := range str.proc.wfd {
 		fd.Close()
@@ -229,7 +231,12 @@ func (str *stream) GetBurst() []byte {
 	return burst
 }
 
-func (str *stream) WaitForNext() []byte {
+func (str *stream) WaitForNext() ([]byte, error) {
 	str.packetNotif.Wait()
-	return str.packetBuf.GetCurr()
+	select {
+	case <-str.finish:
+		return nil, io.EOF
+	default:
+		return str.packetBuf.GetCurr(), nil
+	}
 }

@@ -101,11 +101,18 @@ func main() {
 
 		defer strh.Release()
 
-		h := w.Header()
-		h.Set("content-type", "audio/mpeg")
-		w.WriteHeader(200)
-
+		statusWritten := false
+		ensureHeaders := func() {
+			if statusWritten {
+				return
+			}
+			w.Header().Set("content-type", "audio/mpeg")
+			w.WriteHeader(200)
+			statusWritten = true
+		}
+		
 		if buf := strh.s.GetBurst(); buf != nil {
+			ensureHeaders()
 			w.Write(buf)
 		}
 
@@ -117,9 +124,19 @@ func main() {
 				break
 			}
 
-			chunk := strh.s.WaitForNext()
-			_, err := w.Write(chunk)
-			if errors.Is(err, io.EOF) {
+			chunk, err := strh.s.WaitForNext()
+			if err != nil {
+				if !statusWritten {
+					w.WriteHeader(500)
+					w.Write([]byte("internal error\n"))
+				}
+				return
+			}
+
+			ensureHeaders()
+			_, err = w.Write(chunk)
+			// TODO: handle EPIPE here correctly
+			if errors.Is(err, io.EOF) || errors.Is(err, syscall.EPIPE) {
 				break
 			} else if err != nil {
 				panic(err)
