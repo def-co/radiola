@@ -12,6 +12,7 @@ import (
 )
 
 const PIPES = 3
+const SHUTDOWN_WAIT_TIMEOUT = 5 * time.Second
 
 var errTimeout = errors.New("timeout")
 
@@ -207,7 +208,7 @@ func (str *stream) waiter() {
 func (str *stream) Stop() error {
 	str.logger.Debug("interrupting")
 
-	timer := time.NewTimer(2500 * time.Millisecond)
+	timer := time.NewTimer(SHUTDOWN_WAIT_TIMEOUT)
 	// str.proc.p.Signal(syscall.SIGINT)
 	str.proc.wfd[0].Write([]byte("q"))
 
