@@ -7,3 +7,4 @@ stations.json
 static/logos/
 
 /restream/restream
+/restream/config.json
