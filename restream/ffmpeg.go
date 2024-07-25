@@ -7,11 +7,11 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"syscall"
+	// "syscall"
 	"time"
 )
 
-const PIPES = 2
+const PIPES = 3
 
 var errTimeout = errors.New("timeout")
 
@@ -84,9 +84,9 @@ func startProcess(source string) (proc process, err error) {
 
 	procAttr := os.ProcAttr{
 		Files: []*os.File{
-			nil,
-			proc.wfd[0],
+			proc.rfd[0],
 			proc.wfd[1],
+			proc.wfd[2],
 		},
 	}
 
@@ -104,6 +104,7 @@ type stream struct {
 	packetBuf packetBuffer
 	logger *slog.Logger
 	finish chan struct{}
+	st *sentrySessionTracer
 }
 
 func startStream(name, source string) (*stream, error) {
@@ -123,6 +124,7 @@ func startStream(name, source string) (*stream, error) {
 		packetBuf: newPacketBuffer(),
 		logger: logger,
 		finish: make(chan struct{}),
+		st: sentryStartSession(name),
 	}
 
 	go str.errReader()
@@ -135,7 +137,7 @@ func startStream(name, source string) (*stream, error) {
 }
 
 func (str *stream) errReader() {
-	r := str.proc.rfd[1]
+	r := str.proc.rfd[2]
 	defer r.Close()
 	logger := str.logger.With("gr", "err")
 
@@ -156,11 +158,12 @@ func (str *stream) errReader() {
 
 		line := sc.Text()
 		logger.Warn("read", "data", line)
+		str.st.WriteStderr(sc.Bytes())
 	}
 }
 
 func (str *stream) dataReader() {
-	r := str.proc.rfd[0]
+	r := str.proc.rfd[1]
 	defer r.Close()
 	logger := str.logger.With("gr", "data")
 
@@ -183,6 +186,7 @@ func (str *stream) dataReader() {
 			"len", n,
 			"total_len", str.packetBuf.NextLength() + n)
 		if rotated := str.packetBuf.Append(buf[:n]); rotated {
+			str.st.CapturePacketDispatched(str.packetBuf.CurrLength())
 			str.packetNotif.Broadcast()
 		}
 	}
@@ -204,7 +208,8 @@ func (str *stream) Stop() error {
 	str.logger.Debug("interrupting")
 
 	timer := time.NewTimer(2500 * time.Millisecond)
-	str.proc.p.Signal(syscall.SIGINT)
+	// str.proc.p.Signal(syscall.SIGINT)
+	str.proc.wfd[0].Write([]byte("q"))
 
 	select {
 	case <-timer.C:

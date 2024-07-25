@@ -93,6 +93,12 @@ func (pb *packetBuffer) Append(buf []byte) (rotated bool) {
 	pb.next = append(pb.next, buf...)
 	return rotated
 }
+func (pb *packetBuffer) CurrLength() int {
+	pb.mu.Lock()
+	defer pb.mu.Unlock()
+
+	return len(pb.curr)
+}
 func (pb *packetBuffer) NextLength() int {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()

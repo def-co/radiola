@@ -12,6 +12,10 @@ import (
 var configLocation = flag.String("config", "", "path to config.json")
 var configCurrent atomic.Pointer[config]
 
+func configGet() *config {
+	return configCurrent.Load()
+}
+
 func configBoot() error {
 	flag.Parse()
 	return configLoad()
@@ -22,6 +26,7 @@ type config struct {
 	ListenOn string `json:"listen_on"`
 	ChunkSize int `json:"chunk_size"`
 	StationsPath string `json:"stations_path"`
+	SentryDsn string `json:"sentry_dsn"`
 }
 
 func configLoad() error {

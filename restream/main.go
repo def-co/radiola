@@ -20,7 +20,7 @@ var Stations atomic.Pointer[map[string]string]
 
 func loadStations() error {
 	stations := make(map[string]string)
-	data, err := os.ReadFile(configCurrent.Load().StationsPath)
+	data, err := os.ReadFile(configGet().StationsPath)
 	if err != nil {
 		return fmt.Errorf("stations load: %w", err)
 	}
@@ -56,6 +56,11 @@ func main() {
 	if err := configBoot(); err != nil {
 		panic(err)
 	}
+
+	if err := setupSentry(); err != nil {
+		panic(err)
+	}
+
 	if err := loadStations(); err != nil {
 		panic(err)
 	}
@@ -144,7 +149,7 @@ func main() {
 		}
 	})
 
-	listener, err := net.Listen("tcp", configCurrent.Load().ListenOn)
+	listener, err := net.Listen("tcp", configGet().ListenOn)
 	if err != nil {
 		panic(err)
 	}

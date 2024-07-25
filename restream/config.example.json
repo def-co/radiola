@@ -2,5 +2,6 @@
 	"ffmpeg_path": "/opt/local/bin/ffmpeg6",
 	"listen_on": ":8080",
 	"chunk_size": 32768,
-	"stations_path": "../stations/stations.json"
+	"stations_path": "../stations/stations.json",
+	"sentry_dsn": ""
 }
