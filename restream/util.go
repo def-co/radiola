@@ -12,7 +12,7 @@ const (
 	LevelDebug = slog.LevelDebug
 	LevelSilly = slog.Level(LevelDebug - 4)
 
-	SupportSilly = true
+	SupportSilly = false
 )
 
 func logSilly(logger *slog.Logger, ctx context.Context, msg string, args... any) {
