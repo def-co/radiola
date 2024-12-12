@@ -49,6 +49,15 @@
       }
 
     },
+
+    event: function(name) {
+      if (window.goatcounter) {
+        window.goatcounter.count({
+          event: true,
+          path: name,
+        });
+      }
+    },
   }
 
   var _intervals = [ ], _timeouts = [ ];

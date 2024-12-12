@@ -19,7 +19,7 @@
 })(function(stations) {
   'use strict';
 
-  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder;
+  var PM = P22.Radiola.PlayManager, SF = P22.Radiola.SongFinder, U = P22.Radiola.Utils;
 
   stations = stations.map(function(station) {
     if (station.old_shoutcast) {
@@ -167,6 +167,7 @@
 
   PM.addEventListener('playing', function() {
     app.playingState = PlayingState.PLAYING;
+    u.event('state:playing');
   });
 
   PM.addEventListener('stalled', function() {
@@ -174,14 +175,17 @@
       return;
     }
     app.playingState = PlayingState.STALLED;
+    U.event('state:stalled');
   });
 
   PM.addEventListener('stopped', function() {
     app.playingState = PlayingState.STOPPED;
+    u.event('state:stop');
   });
 
   PM.addEventListener('error', function() {
     app.playingState = PlayingState.ERROR;
+    u.event('state:error');
   });
 
   window.P22.Radiola.App = app;
