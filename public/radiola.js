@@ -167,7 +167,7 @@
 
   PM.addEventListener('playing', function() {
     app.playingState = PlayingState.PLAYING;
-    u.event('state:playing');
+    U.event('state:playing');
   });
 
   PM.addEventListener('stalled', function() {
@@ -180,12 +180,12 @@
 
   PM.addEventListener('stopped', function() {
     app.playingState = PlayingState.STOPPED;
-    u.event('state:stop');
+    U.event('state:stop');
   });
 
   PM.addEventListener('error', function() {
     app.playingState = PlayingState.ERROR;
-    u.event('state:error');
+    U.event('state:error');
   });
 
   window.P22.Radiola.App = app;
