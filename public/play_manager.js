@@ -88,7 +88,7 @@
     },
 
     switchStation: function(station) {
-      P22.Radiola.Utils.event('station:' + station.id);
+      P22.Radiola.Utils.event('radiola:station:' + station.id);
       if (station.old_shoutcast && ! this.supportsOldShoutcast) {
         // For some goddamn reason Safari decides that the tab is open as a
         // frame and completely breaks it if the stream is coming from a
