@@ -3,7 +3,7 @@
  *
  * @version 1.2.1 (Akords)
  * @author paulsnar <paulsnar@paulsnar.lv>
- * @license © 2016-2018 paulsnar. All Rights Reserved.
+ * @license © 2016-2024 paulsnar. All Rights Reserved.
  */
 (function() {
   'use strict';
