@@ -19,6 +19,7 @@ export default ({ mode }) => {
     build: {
       outDir: '../public',
       sourcemap: true,
+      emptyOutDir: true,
     },
     server: {
       proxy: {
