@@ -14,7 +14,7 @@ const sentryConfig: Sentry.BrowserOptions = {
 }
 
 if (import.meta.env.PROD) {
-  sentryConfig.environment = 'staging';
+  sentryConfig.environment = 'production';
 } else {
   sentryConfig.environment = 'local';
   sentryConfig.tracesSampleRate = 1.0;
