@@ -1,11 +1,21 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { sentryVitePlugin as sentry } from '@sentry/vite-plugin';
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [
+    svelte(),
+    process.env.NODE_ENV === 'production'
+      ? sentry({
+        org: process.env.VITE_SENTRY_ORG,
+        project: process.env.VITE_SENTRY_PROJECT,
+        authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+      })
+      : undefined,
+  ],
   build: {
     outDir: '../public',
+    sourcemap: true,
   },
   server: {
     proxy: {
@@ -13,4 +23,4 @@ export default defineConfig({
       '^/discover/subscribe/': 'https://radiola.p22.co',
     },
   },
-})
+});

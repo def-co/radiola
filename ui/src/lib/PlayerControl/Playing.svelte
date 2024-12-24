@@ -3,6 +3,7 @@
   import { nowPlayingFor } from '../now_playing.svelte';
   import { EState, getInstance } from '../player.svelte';
   import LoadingIndicator from '../LoadingIndicator.svelte';
+  import Button from '../components/Button.svelte';
 
   const STOP = String.fromCodePoint(0x25A0);
   const PLAY = String.fromCodePoint(0x25B6);
@@ -31,10 +32,10 @@
     {/if}
   {/snippet}
   {#snippet right()}
-    <button onclick={() => player.stop()}>
+    <Button onclick={() => player.stop()}>
       {STOP}
       Stop
-    </button>
+    </Button>
   {/snippet}
 </Layout>
 
@@ -48,15 +49,5 @@
   }
   .now-playing {
     margin-left: 1em;
-  }
-
-  button {
-    font-size: 1em;
-    background-color: rgb(0, 125, 197);
-    color: white;
-    border: none;
-    padding: 0.5em 0.75em;
-    border-radius: 0.25em;
-    cursor: pointer;
   }
 </style>
