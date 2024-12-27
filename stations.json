@@ -26,7 +26,7 @@
   {
     "id": "skonto",
     "name": "Radio Skonto",
-    "stream_mp3": "http://skonto.datucentrs.eu/mp3",
+    "stream_mp3": "https://stream.radioskonto.lv:8443/stereo",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/skonto.png"
   },
   {
