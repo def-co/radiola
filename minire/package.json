@@ -1,0 +1,17 @@
+{
+    "name": "@radiola/minire",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "json5": "^2.2.3"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.2"
+    },
+    "scripts": {
+        "build": "tsc",
+        "run": "ts-node src/index.ts"
+    }
+}
