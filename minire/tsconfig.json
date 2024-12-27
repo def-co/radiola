@@ -5,6 +5,10 @@
     "moduleResolution": "nodenext",
     "strictNullChecks": true,
     "sourceMap": true,
+    "inlineSources": true,
+    "sourceRoot": "/",
+    "noEmitHelpers": true,
+    "importHelpers": true,
   },
   "include": ["src/**/*.ts"],
 }

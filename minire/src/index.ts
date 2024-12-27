@@ -1,7 +1,20 @@
 import * as http from 'node:http';
+import 'dotenv/config';
+import * as dotenv from 'dotenv';
+
 import { type TStationID } from './types';
 import STREAM_URLS from './stream_urls';
 import { subscribe } from './client';
+
+if (
+   ! process.env.MINIRE_HOST
+   || ! process.env.MINIRE_PORT
+) {
+  console.error('Must define env variables MINIRE_HOST, MINIRE_PORT');
+  process.exit(1);
+}
+
+require('./sentry');
 
 enum ConnState {
   WAITING_ON_UPSTREAM,
@@ -57,6 +70,6 @@ const server = http.createServer((req, res) => {
     }
   });
 });
-server.listen(9501, '::1', () => {
+server.listen(Number(process.env.MINIRE_PORT), process.env.MINIRE_HOST, () => {
   console.log('listening', server.address());
 });

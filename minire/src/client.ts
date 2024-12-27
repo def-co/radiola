@@ -1,6 +1,7 @@
 import * as http from 'node:http';
 import * as net from 'node:net';
 import { type Readable as ReadableStream } from 'node:stream';
+import * as Sentry from '@sentry/node';
 import { type TStationID } from './types';
 import STREAM_URLS from './stream_urls';
 import { deferred, sleep, awaitEvent, TimeoutError } from './util';
@@ -181,6 +182,13 @@ export function subscribe(
   return Connection.getOrConnect(id).then((conn) => {
     return conn.addSubscriber([onChunk, onClose]);
   }, (err) => {
+    Sentry.captureException(err, {
+      captureContext: {
+        tags: {
+          'station.id': id,
+        },
+      },
+    });
     throw err;
   });
 }

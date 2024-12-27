@@ -8,3 +8,4 @@ static/logos/
 
 /minire/src/**/*.js
 /minire/src/**/*.js.map
+/minire/.env
