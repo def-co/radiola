@@ -32,38 +32,38 @@
   {
     "id": "kurzemes",
     "name": "Kurzemes Radio",
-    "stream_mp3": "http://31.170.16.6:8000/;?type=http&nocache=457",
+    "stream_mp3": "https://radiola.p22.co/proxy/kurzemes",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/kurzemes.png"
   },
   {
     "id": "lr1",
     "name": "LR1",
-    "stream_mp3": "http://lr1mp1.latvijasradio.lv:8012/;",
-    "old_shoutcast": true,
+    "stream_mp3": "https://radiola.p22.co/proxy/lr1",
+    "stream_mp3_upstream": "http://lr1mp1.latvijasradio.lv:8012/;",
     "hls": "http://muste.radio.org.lv:1935/shoutcast/lr1a.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/lr1.png"
   },
   {
     "id": "lr2",
     "name": "LR2",
-    "stream_mp3": "http://lr2mp1.latvijasradio.lv:8002/;",
-    "old_shoutcast": true,
+    "stream_mp3": "https://radiola.p22.co/proxy/lr2",
+    "stream_mp3_upstream": "http://lr2mp1.latvijasradio.lv:8002/;",
     "hls": "http://muste.radio.org.lv:1935/shoutcast/lr2a.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/lr2.png"
   },
   {
     "id": "lr3",
     "name": "LR3",
-    "stream_mp3": "http://lr3mp0.latvijasradio.lv:8004/;",
-    "old_shoutcast": true,
+    "stream_mp3": "https://radiola.p22.co/proxy/lr3",
+    "stream_mp3_upstream": "http://lr3mp0.latvijasradio.lv:8004/;",
     "hls": "http://muste.radio.org.lv:1935/shoutcast/lr3a.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/lr3.png"
   },
   {
     "id": "lr4",
     "name": "LR4",
-    "stream_mp3": "http://lr4mp1.latvijasradio.lv:8020/;",
-    "old_shoutcast": true,
+    "stream_mp3": "https://radiola.p22.co/proxy/lr4",
+    "stream_mp3_upstream": "http://lr4mp1.latvijasradio.lv:8020/;",
     "hls": "http://muste.radio.org.lv:1935/shoutcast/lr4a.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/lr4.png"
   },
@@ -77,8 +77,8 @@
   {
     "id": "lr_naba",
     "name": "Radio NABA",
-    "stream_mp3": "http://nabamp0.latvijasradio.lv:8016/;",
-    "old_shoutcast": true,
+    "stream_mp3": "https://radiola.p22.co/proxy/lr_naba",
+    "stream_mp3_upstream": "http://nabamp0.latvijasradio.lv:8016/;",
     "hls": "http://muste.radio.org.lv:1935/shoutcast/naba.stream/playlist.m3u8",
     "logo": "https://storage.googleapis.com/p22-co.appspot.com/radiola/naba.png"
   },
