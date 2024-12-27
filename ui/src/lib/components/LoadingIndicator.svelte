@@ -6,7 +6,7 @@
     width: 16px;
     height: 16px;
     vertical-align: middle;
-    background-image: url(../assets/loading.png);
+    background-image: url(../../assets/loading.png);
     animation: loader 0.4s steps(8) infinite;
   }
   @keyframes loader {

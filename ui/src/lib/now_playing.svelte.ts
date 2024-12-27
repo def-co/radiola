@@ -2,9 +2,8 @@ import { readable, type Readable } from 'svelte/store';
 import { type TStationID } from './types';
 import { sleep } from './util';
 
-export type TNowPlaying = Readable<string | null>;
-
-const EN_DASH = String.fromCodePoint(0x2013);
+type TNowPlayingData = string | [string, string] | null;
+export type TNowPlaying = Readable<TNowPlayingData>;
 
 const cache = new Map<TStationID, TNowPlaying>();
 const nil: TNowPlaying = readable(null);
@@ -29,12 +28,12 @@ export function nowPlayingFor(id: TStationID): TNowPlaying | null {
     return cached;
   }
 
-  let store = readable<string | null>(null, (set) => {
+  let store = readable<TNowPlayingData>(null, (set) => {
     let hasSong = false;
 
     const handleSong = (ev: MessageEvent) => {
       const data = JSON.parse(ev.data) as TSong;
-      set(`${data.artist} ${EN_DASH} ${data.title}`);
+      set([data.artist, data.title]);
       console.log('[now_playing] %s song %o', id, data);
 
       if ( ! hasSong) {
@@ -43,6 +42,9 @@ export function nowPlayingFor(id: TStationID): TNowPlaying | null {
       }
     };
     const handleProgram = (ev: MessageEvent) => {
+      if (hasSong) {
+        return;
+      }
       const data = JSON.parse(ev.data) as string;
       set(data);
       console.log('[now_playing] %s program %o', id, data);
@@ -62,4 +64,3 @@ export function nowPlayingFor(id: TStationID): TNowPlaying | null {
   cache.set(id, store);
   return store;
 }
-

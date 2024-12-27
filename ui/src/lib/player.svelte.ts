@@ -52,7 +52,6 @@ export class Player {
 
   constructor() {
     this.el = document.createElement('audio');
-    // this.state = $state(EState.STOPPED);
     this.#attachListeners();
   }
 

@@ -41,13 +41,13 @@
     onselect={handleStationSelected}
   />
   <PlayerControl state={player.currentStation ? 'playing' : 'idle'} />
-  <!-- <Player bind:this={player} {playbackState} onunmount={handlePlayerUnmount} /> -->
   {/await}
 </div>
 
 <style>
   div {
     --width: 60rem;
-    --player-control-height: 4em;
+    --player-control-height: 4rem;
+    --gap: 0.5rem;
   }
 </style>

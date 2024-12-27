@@ -34,11 +34,23 @@
     grid-template-columns: repeat(6, 1fr);;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: 0.5em;
+    gap: var(--gap);
 
     margin-bottom: calc(var(--player-control-height) + 1em);
   }
-  main > :global(*) {
-    flex: 1 1 calc(var(--width) / 6);
+  @media screen and (max-width: 50rem) {
+    main {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  @media screen and (max-width: 40rem) {
+    main {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  @media screen and (max-width: 30rem) {
+    main {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 </style>

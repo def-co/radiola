@@ -2,14 +2,16 @@
   import { type Snippet } from 'svelte';
 
   interface IProps {
+    class?: string;
+    style?: string;
     children: Snippet<[]>;
     onclick: () => void;
   }
 
-  const { onclick, children }: IProps = $props();
+  const { class: className = '', style = '', onclick, children }: IProps = $props();
 </script>
 
-<button {onclick}>
+<button class={className} {style} {onclick}>
   {@render children()}
 </button>
 

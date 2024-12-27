@@ -2,24 +2,14 @@
   import { type Snippet } from 'svelte';
 
   interface IProps {
-    left?: Snippet<[]>;
-    middle?: Snippet<[]>;
-    right?: Snippet<[]>;
+    children: Snippet<[]>;
   }
-  let {
-    left = empty,
-    middle = empty,
-    right = empty,
-  } = $props();
+  const { children }: IProps = $props();
 </script>
-
-{#snippet empty()}{/snippet}
 
 <div class="wrapper">
   <div class="content">
-    <div class="left">{@render left()}</div>
-    <div class="middle">{@render middle()}</div>
-    <div class="right">{@render right()}</div>
+    {@render children()}
   </div>
 </div>
 
@@ -43,20 +33,16 @@
 
   .content {
     position: relative;
-    max-width: var(--width);
+    width: var(--width);
     height: var(--player-control-height);
     margin: 0 auto;
-    flex: 1 0;
+    padding: 0 var(--gap);
 
-    display: grid;
-    grid-template-columns: repeat(3, auto);
+    display: flex;
+    flex-flow: row nowrap;
     align-items: center;
-  }
+    gap: var(--gap);
 
-  .middle {
-    justify-self: center;
-  }
-  .right {
-    justify-self: end;
+    text-wrap: nowrap;
   }
 </style>

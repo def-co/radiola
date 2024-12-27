@@ -3,16 +3,15 @@
 </script>
 
 <Layout>
-  {#snippet left()}
   <span>P22 Radiola</span>
-  {/snippet}
-  {#snippet right()}
-  <span>v1.3</span>
-  {/snippet}
+  <span class="right">v1.3</span>
 </Layout>
 
 <style>
   span {
     color: gray;
+  }
+  .right {
+    margin-left: auto;
   }
 </style>
