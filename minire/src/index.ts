@@ -10,7 +10,7 @@ enum ConnState {
 }
 
 const server = http.createServer((req, res) => {
-  let stationId = new URL('http://dummy' + req.url).pathname.replace(/^\//, '');
+  let stationId = new URL('http://dummy' + req.url).pathname.replace(/^\/+/, '');
   if ( ! (stationId in STREAM_URLS)) {
     res.writeHead(404, { 'content-type': 'text/plain; charset=UTF-8' });
     res.end('not found');
@@ -57,6 +57,6 @@ const server = http.createServer((req, res) => {
     }
   });
 });
-server.listen(() => {
+server.listen(9501, '::1', () => {
   console.log('listening', server.address());
 });
