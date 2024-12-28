@@ -1,5 +1,5 @@
 import { getContext, setContext } from 'svelte';
-import { type IStation } from './types';
+import { type IStation } from './stations';
 
 import { Sentry } from '../sentry';
 type Span = Sentry.Span;
@@ -47,7 +47,6 @@ export class Player {
   public currentStation: IStation | null = $state(null);
 
   #playbackSpan: Span | null = null;
-  #lastProgressSpan: Span | null = null;
   #advanceTracker: ReturnType<typeof average> | null = null;
 
   constructor() {
@@ -148,6 +147,7 @@ export class Player {
     this.state = EState.BUFFERING;
 
     if (('goatcounter' in window) && typeof window.goatcounter !== 'undefined') {
+      // @ts-ignore until i figure out this definition thing
       window.goatcounter.count({
         event: true,
         path: `radiola:station:${station.id}`,

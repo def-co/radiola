@@ -1,6 +1,5 @@
 import { readable, type Readable } from 'svelte/store';
-import { type TStationID } from './types';
-import { sleep } from './util';
+import { type TStationID } from './stations';
 
 type TNowPlayingData = string | [string, string] | null;
 export type TNowPlaying = Readable<TNowPlayingData>;

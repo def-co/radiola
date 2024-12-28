@@ -1,9 +1,7 @@
 <script lang="ts">
-  import { writable } from 'svelte/store';
   import StationList from './lib/StationList.svelte';
   import PlayerControl from './lib/PlayerControl.svelte';
-  import { type IStation } from './lib/types';
-  import { transform, transform as transformStations } from './lib/stations';
+  import { type IStation, transform as transformStations } from './lib/stations';
   import { setInstance, Player } from './lib/player.svelte';
 
   const player = $state(new Player());

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type IStation } from './types';
+  import { type IStation } from './stations';
 
   interface IProps {
     station: IStation;
@@ -37,7 +37,6 @@
   tabindex="0"
 >
   <img src={station.logoUrl} alt="">
-  <!-- <span class="title">{station.name}</span> -->
 </div>
 
 <style>
@@ -56,10 +55,6 @@
   .station.-inactive {
     opacity: 0.8;
     filter: saturate(0.8);
-    /* transform: scale(0.7); */
-  }
-  .station.-active {
-    /* box-shadow: 0 0 0.25em 0.25em rgb(118, 4, 4); */
   }
   img {
     width: 100%;

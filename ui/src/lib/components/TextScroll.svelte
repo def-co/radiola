@@ -5,7 +5,6 @@
     children: Snippet<[]>;
     class?: string;
     style?: string;
-    // content: string;
   }
   const { children, class: className = '', style = '' }: IProps = $props();
 
@@ -15,9 +14,6 @@
     SCROLL: 'SCROLL',
     STAY_RIGHT: 'STAY_RIGHT',
   };
-
-  let wrapperRef: HTMLSpanElement | null = $state(null);
-  let contentRef: HTMLSpanElement | null = $state(null);
 
   let outerWidth = $state(0);
   let textWidth = $state(0);

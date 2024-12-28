@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type IStation } from './types';
+  import { type IStation } from './stations';
   import Station from './StationItem.svelte';
 
   interface IProps {
