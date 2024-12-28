@@ -7,7 +7,7 @@
   const { children }: IProps = $props();
 </script>
 
-<div class="wrapper">
+<div class="playback-control wrapper">
   <div class="content">
     {@render children()}
   </div>

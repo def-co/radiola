@@ -1,5 +1,6 @@
 <script lang="ts">
   import { type IStation } from './stations';
+  import StationLogo from './components/StationLogo.svelte';
 
   interface IProps {
     station: IStation;
@@ -36,7 +37,7 @@
   role="button"
   tabindex="0"
 >
-  <img src={station.logoUrl} alt="">
+  <StationLogo station={station.id} />
 </div>
 
 <style>
@@ -56,7 +57,7 @@
     opacity: 0.8;
     filter: saturate(0.8);
   }
-  img {
+  .station :global(img) {
     width: 100%;
     z-index: -1;
   }

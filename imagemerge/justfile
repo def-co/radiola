@@ -1,0 +1,4 @@
+build:
+  cargo run
+  cp out.png ../ui/src/assets/station_logos.png
+  cp out.manifest.json ../ui/src/assets/station_logos.manifest.json

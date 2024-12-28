@@ -5,6 +5,7 @@
   import LoadingIndicator from '../components/LoadingIndicator.svelte';
   import Button from '../components/Button.svelte';
   import TextScroll from '../components/TextScroll.svelte';
+  import StationLogo from '../components/StationLogo.svelte';
 
   const STOP = String.fromCodePoint(0x25A0);
   const PLAY = String.fromCodePoint(0x25B6);
@@ -19,7 +20,7 @@
 </script>
 
 <Layout>
-  <img src={station.logoUrl} alt="">
+  <StationLogo station={station.id} />
   <span>
     {#if playbackState === EState.BUFFERING || playbackState === EState.STALLED}
     <LoadingIndicator />
@@ -46,7 +47,8 @@
 </Layout>
 
 <style>
-  img {
+  :global(.playback-control) :global(img) {
+    width: 3em;
     height: 3em;
     vertical-align: middle;
   }

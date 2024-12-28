@@ -8,6 +8,7 @@
     vertical-align: middle;
     background-image: url(../../assets/loading.png);
     animation: loader 0.4s steps(8) infinite;
+    image-rendering: crisp-edges;
   }
   @keyframes loader {
     from { background-position: 0px; }
