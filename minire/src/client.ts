@@ -106,12 +106,12 @@ class Connection {
 
   async setup(): Promise<Connection> {
     let url = new URL(STREAM_URLS[this.id]!);
-    this.socket = net.connect({
+    this.socket = net.createConnection({
       host: url.hostname,
       port: Number(url.port ?? '80'),
     });
     try {
-      await awaitEvent(this.socket, 'connect', { timeout: 5000 });
+      await awaitEvent(this.socket, 'connect', { timeout: 3000, withError: true });
     } catch (e) {
       this.teardown();
       throw e;

@@ -26,7 +26,7 @@ const server = http.createServer((req, res) => {
   let stationId = new URL('http://dummy' + req.url).pathname.replace(/^\/+/, '');
   if ( ! (stationId in STREAM_URLS)) {
     res.writeHead(404, { 'content-type': 'text/plain; charset=UTF-8' });
-    res.end('not found');
+    res.end('not found\n');
     return;
   }
 
@@ -60,7 +60,7 @@ const server = http.createServer((req, res) => {
       res.writeHead(502, {
         'content-type': 'text/plain; charset=UTF-8',
       });
-      res.end('could not connect to upstream');
+      res.end('could not connect to upstream\n');
     });
 
   req.once('close', () => {

@@ -1,14 +1,15 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "strictNullChecks": true,
-    "sourceMap": true,
-    "inlineSources": true,
-    "sourceRoot": "/",
-    "noEmitHelpers": true,
-    "importHelpers": true,
-  },
-  "include": ["src/**/*.ts"],
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "strictNullChecks": true,
+        "sourceMap": true,
+        "inlineSources": true,
+        "sourceRoot": "/",
+        "noEmitHelpers": true,
+        "importHelpers": true,
+        "outDir": "dist",
+    },
+    "include": ["src/**/*.ts"],
 }

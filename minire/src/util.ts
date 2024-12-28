@@ -68,12 +68,10 @@ export function awaitEvent(
     timeoutPromise = sleep(timeout);
     timeoutPromise.then(() => {
       reject(new TimeoutError());
-    }, () => {});
+    });
   }
 
-  promise.finally(cleanup);
-
-  return withCancellation(promise, () => {
+  return withCancellation(promise.finally(cleanup), () => {
     reject(new CancelledError());
   });
 }
