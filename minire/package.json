@@ -1,0 +1,21 @@
+{
+    "name": "@radiola/minire",
+    "license": "UNLICENSED",
+    "private": true,
+    "main": "dist/index.js",
+    "dependencies": {
+        "@sentry/node": "^8.47.0",
+        "dotenv": "^16.4.7",
+        "tslib": "^2.8.1"
+    },
+    "devDependencies": {
+        "@sentry/cli": "^2.39.1",
+        "@types/node": "^22.10.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.2"
+    },
+    "scripts": {
+        "build": "tsc",
+        "run": "ts-node src/index.ts"
+    }
+}

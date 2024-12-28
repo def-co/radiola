@@ -7,3 +7,5 @@ stations.json
 static/logos/
 
 /public
+/minire/.env
+/minire/dist/
