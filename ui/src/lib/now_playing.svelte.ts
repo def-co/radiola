@@ -33,8 +33,8 @@ export function nowPlayingFor(id: TStationID): TNowPlaying | null {
 
     const handleSong = (ev: MessageEvent) => {
       const data = JSON.parse(ev.data) as TSong;
+      import.meta.env.DEV && console.log('[now_playing] %s song %o', id, data);
       set([data.artist, data.title]);
-      console.log('[now_playing] %s song %o', id, data);
 
       if ( ! hasSong) {
         source.removeEventListener('program', handleProgram);
@@ -42,12 +42,12 @@ export function nowPlayingFor(id: TStationID): TNowPlaying | null {
       }
     };
     const handleProgram = (ev: MessageEvent) => {
+      const data = JSON.parse(ev.data) as string;
+      import.meta.env.DEV && console.log('[now_playing] %s program %o', id, data);
       if (hasSong) {
         return;
       }
-      const data = JSON.parse(ev.data) as string;
       set(data);
-      console.log('[now_playing] %s program %o', id, data);
     };
 
     let source = new EventSource(`/discover/subscribe/${id}`);

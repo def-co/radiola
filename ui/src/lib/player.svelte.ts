@@ -61,13 +61,13 @@ export class Player {
       if (this.el.buffered.length > 0) {
         const end = this.el.buffered.end(this.el.buffered.length - 1);
         const remainder = end - now;
-        console.log('[player] %s (%.4f / %.4f / %.4fs)', eventName, now, end, remainder);
+        import.meta.env.DEV && console.log('[player] %s (%.4f / %.4f / %.4fs)', eventName, now, end, remainder);
         return;
       }
-      console.log('[player] %s (%.4f)', eventName, now);
+      import.meta.env.DEV && console.log('[player] %s (%.4f)', eventName, now);
       return;
     }
-    console.log('[player] %s', eventName);
+    import.meta.env.DEV && console.log('[player] %s', eventName);
   }
 
   #attachListeners() {
@@ -92,7 +92,7 @@ export class Player {
         // attempt to play
         return;
       }
-      console.log('[player] error: %o', el.error);
+      import.meta.env.DEV && console.log('[player] error: %o', el.error);
       this.state = EState.ERROR;
     });
     // el.addEventListener('timeupdate', () => {
