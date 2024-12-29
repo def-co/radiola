@@ -7,7 +7,7 @@
     let img = new Image();
     img.src = stationLogos;
     img.onload = () => {
-      setTimeout(() => resolve(img), 3000);
+      resolve(img);
     };
     img.onerror = (ev) => {
       reject();
